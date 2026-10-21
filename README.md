@@ -57,6 +57,17 @@ src/
   lib/            game.ts (lógica), store.tsx (estado y persistencia), readings.ts (lecturas)
 ```
 
+## Instalar en el móvil
+
+- **Android**: descarga el APK de la última versión en
+  [Releases](https://github.com/alfonsosl/Addictions/releases/latest) →
+  `Vigilia.apk` (enlace directo: https://github.com/alfonsosl/Addictions/releases/latest/download/Vigilia.apk)
+  y ábrelo. Android pedirá permiso para «instalar apps de origen desconocido».
+  El APK lo compila automáticamente GitHub Actions (`.github/workflows/android-apk.yml`) en cada cambio.
+- **iPhone**: Apple no permite instalar apps sin pasar por su sistema. Opciones: probar con la app **Expo Go**
+  (`npm install && npx expo start` en tu ordenador y escanear el QR) o publicar en TestFlight con una cuenta
+  de Apple Developer (99 €/año) mediante `npx eas-cli@latest build -p ios`.
+
 ## Desarrollo
 
 ```bash
