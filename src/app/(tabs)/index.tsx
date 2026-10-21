@@ -1,4 +1,5 @@
 import { Link, router } from 'expo-router';
+import { useTheme , themed } from '../../lib/theme';
 import { StyleSheet, View } from 'react-native';
 import { Pressable } from '../../components/Tap';
 import { Text } from '../../components/Text';
@@ -17,6 +18,7 @@ import { useStore } from '../../lib/store';
 export default function Home() {
   const { state, now, today } = useStore();
   const { t } = useFont();
+  const theme = useTheme();
   const days = streakDays(state, now);
   const { level, next, progress } = levelFor(state.talents);
   const reflection = reflectionForDate(now);
@@ -40,9 +42,17 @@ export default function Home() {
             <Text style={t(styles.date)}>{longDate(now)}</Text>
             <Text style={t(styles.hello)}>{name ? `Paz contigo, ${name}` : 'Paz contigo'}</Text>
           </View>
+          <Pressable
+            hitSlop={12}
+            accessibilityLabel={theme.dark ? 'Modo claro' : 'Modo oscuro'}
+            onPress={theme.toggle}
+            style={[styles.settings, { marginRight: 8 }]}
+          >
+            <Glyph e={theme.dark ? 'sun' : 'moon'} size={19} color={C.navy} />
+          </Pressable>
           <Link href="/ajustes" asChild>
             <Pressable hitSlop={12} accessibilityLabel="Ajustes" style={styles.settings}>
-              <Glyph e="gear" size={20} color={C.navy} />
+              <Glyph e="sliders" size={20} color={C.navy} />
             </Pressable>
           </Link>
         </View>
@@ -140,7 +150,8 @@ function longDate(d: Date) {
   return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} de ${MONTHS[d.getMonth()]}`;
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', marginTop: 6 },
   date: { fontSize: 13, color: C.muted, fontWeight: '300', letterSpacing: 0.5 },
   hello: { fontSize: 26, fontWeight: '300', color: C.ink, letterSpacing: 0.2, marginTop: 2 },
@@ -169,4 +180,5 @@ const styles = StyleSheet.create({
   rule: { color: C.green, fontWeight: '400', fontSize: 14 },
   small: { color: C.muted, fontSize: 13 },
   why: { borderLeftWidth: 2, borderLeftColor: C.gold, paddingLeft: 14, gap: 4, marginVertical: 4 },
-});
+  }),
+);

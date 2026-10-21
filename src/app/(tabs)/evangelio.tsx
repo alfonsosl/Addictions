@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
@@ -291,7 +292,7 @@ function AllGospels() {
                           router.push({ pathname: '/capitulo/[book]/[ch]', params: { book: g.id, ch: String(i + 1) } })
                         }
                       >
-                        <Text style={[styles.chText, done && { color: '#fff' }]}>{i + 1}</Text>
+                        <Text style={[styles.chText, done && { color: C.onNavy }]}>{i + 1}</Text>
                       </Pressable>
                     );
                   })}
@@ -313,7 +314,8 @@ function LinkRow({ label, url }: { label: string; url: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   h1: { fontSize: 30, fontWeight: '300', color: C.ink, letterSpacing: 0.5, textAlign: 'center' },
   dateBar: { flexDirection: 'row', alignItems: 'center', paddingVertical: 2 },
   arrow: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
@@ -331,4 +333,5 @@ const styles = StyleSheet.create({
   ch: { width: 46, height: 46, borderRadius: 23, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
   chDone: { backgroundColor: C.navy, borderColor: C.navy },
   chText: { fontWeight: '400', color: C.navy, fontSize: 16 },
-});
+  }),
+);

@@ -1,4 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { StyleSheet, View } from 'react-native';
 import { Glyph } from '../../components/icons';
 import { Pressable } from '../../components/Tap';
@@ -91,7 +92,7 @@ export default function VirtueDetail() {
               style={[styles.option, locked && { opacity: 0.45 }]}
               feedback={false}
             >
-              <View style={[styles.optBox, on && styles.optBoxOn]}>{on && <Glyph e="✓" size={13} color="#fff" width={2.2} />}</View>
+              <View style={[styles.optBox, on && styles.optBoxOn]}>{on && <Glyph e="✓" size={13} color={C.onNavy} width={2.2} />}</View>
               <View style={{ flex: 1 }}>
                 <Text style={t(styles.optText)}>{a.text}</Text>
                 {a.hint ? <Text style={t(styles.optHint)}>{a.hint}</Text> : null}
@@ -126,7 +127,8 @@ function Stat({ n, label }: { n: number; label: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   hero: { alignItems: 'center', gap: 6, paddingTop: 8 },
   bigIcon: { width: 76, height: 76, borderRadius: 38, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   title: { fontSize: 30, fontWeight: '300', color: C.ink, textAlign: 'center' },
@@ -149,4 +151,5 @@ const styles = StyleSheet.create({
   optBoxOn: { backgroundColor: C.navy, borderColor: C.navy },
   optText: { fontSize: 15, color: C.ink },
   optHint: { fontSize: 12, color: C.muted, fontWeight: '300' },
-});
+  }),
+);

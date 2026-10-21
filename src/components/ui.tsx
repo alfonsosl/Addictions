@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { C, themed } from '../lib/theme';
 import { Glyph } from './icons';
 import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Pressable } from './Tap';
@@ -7,25 +8,7 @@ import { serif, Text } from './Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFont } from '../lib/fontScale';
 
-// Paleta inspirada en ilustración de línea: papel crema, tinta azul marino, azul mar y tonos tierra.
-export const C = {
-  bg: '#EFEADB', // papel crema
-  card: '#F7F3E8',
-  ink: '#1D2440',
-  muted: '#857E6E',
-  navy: '#1D2758', // tinta
-  navySoft: '#2E6DB4', // azul mar
-  blue: '#2E6DB4',
-  gold: '#9C7A45', // ocre / madera
-  goldSoft: '#E6DCC4',
-  tan: '#C9B796', // lana
-  brown: '#7A5A35',
-  red: '#B4442E', // ladrillo
-  redSoft: '#F2DDD3',
-  green: '#6B7D45', // oliva
-  line: '#DBD2BE',
-  night: '#1B2350',
-};
+export { C };
 
 export { serif };
 
@@ -98,9 +81,9 @@ export function Button({
   const { t } = useFont();
   const { flashing, run } = useConfirm(celebrate);
   const bg = { primary: C.navy, gold: C.gold, danger: C.red, ghost: 'transparent' }[kind];
-  const fg = kind === 'primary' || kind === 'danger' ? '#fff' : C.navy;
+  const fg = kind === 'primary' ? C.onNavy : kind === 'danger' ? '#fff' : kind === 'gold' ? C.onGold : C.navy;
   const flashBg = celebrate ? C.green : kind === 'ghost' ? C.goldSoft : bg;
-  const flashFg = celebrate ? '#fff' : fg;
+  const flashFg = celebrate ? C.onNavy : fg;
   return (
     <Pressable
       accessibilityRole="button"
@@ -141,12 +124,12 @@ export function Chip({ label, active, onPress }: { label: string; active?: boole
       onPress={onPress}
       style={[s.chip, active && { backgroundColor: C.navy, borderColor: C.navy }]}
     >
-      <Text style={{ color: active ? '#fff' : C.ink, fontSize: fs(14) }}>{label}</Text>
+      <Text style={{ color: active ? C.onNavy : C.ink, fontSize: fs(14) }}>{label}</Text>
     </Pressable>
   );
 }
 
-export const inputStyle = {
+export const inputStyle = themed(() => ({
   backgroundColor: C.card,
   borderWidth: 1,
   borderColor: C.line,
@@ -155,7 +138,7 @@ export const inputStyle = {
   fontSize: 16,
   color: C.ink,
   marginBottom: 12,
-} as const;
+}) as const);
 
 /** Bloque de cita bíblica o de un santo, con tipografía serif. */
 export function Quote({ text, source, dark }: { text: string; source?: string; dark?: boolean }) {
@@ -163,7 +146,7 @@ export function Quote({ text, source, dark }: { text: string; source?: string; d
   return (
     <View style={{ gap: 6 }}>
       <Text
-        style={{ fontFamily: serif, fontSize: fs(18), lineHeight: fs(27), fontStyle: 'italic', color: dark ? '#fff' : C.navy }}
+        style={{ fontFamily: serif, fontSize: fs(18), lineHeight: fs(27), fontStyle: 'italic', color: dark ? C.onNavy : C.navy }}
       >
         «{text}»
       </Text>
@@ -279,7 +262,8 @@ export function Segmented<T extends string>({
   );
 }
 
-const s = StyleSheet.create({
+const s = themed(() =>
+  StyleSheet.create({
   screen: { padding: 20, paddingBottom: 40, gap: 16, maxWidth: 640, width: '100%', alignSelf: 'center' },
   card: {
     backgroundColor: C.card,
@@ -298,7 +282,7 @@ const s = StyleSheet.create({
   btnText: { fontSize: 16, fontWeight: '600' },
   barBg: { height: 4, borderRadius: 2, backgroundColor: C.line, overflow: 'hidden' },
   barFill: { height: 4, borderRadius: 2 },
-  seg: { flexDirection: 'row', backgroundColor: '#F0ECE3', borderRadius: 14, padding: 3, gap: 3 },
+  seg: { flexDirection: 'row', backgroundColor: C.chip, borderRadius: 14, padding: 3, gap: 3 },
   segItem: { flex: 1, paddingVertical: 9, borderRadius: 11, alignItems: 'center' },
   segActive: {
     backgroundColor: C.card,
@@ -337,4 +321,5 @@ const s = StyleSheet.create({
     borderColor: C.line,
     backgroundColor: C.card,
   },
-});
+  }),
+);

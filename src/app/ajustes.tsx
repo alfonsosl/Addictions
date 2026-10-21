@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { THEME_OPTIONS, useTheme } from '../lib/theme';
 import { useState } from 'react';
 import { Alert, Platform, Switch, View } from 'react-native';
 import { Pressable } from '../components/Tap';
@@ -17,6 +18,7 @@ export default function Ajustes() {
   const set = (k: keyof Profile, v: any) => setP((x) => ({ ...x, [k]: v }));
   const font = useFont();
   const reminders = useReminders();
+  const theme = useTheme();
 
   const save = () => {
     updateProfile({ ...p, ifThen: p.ifThen.filter((x) => x.when.trim() || x.then.trim()) });
@@ -60,10 +62,10 @@ export default function Ajustes() {
                   justifyContent: 'center',
                   borderWidth: 1,
                   borderColor: on ? C.navy : C.line,
-                  backgroundColor: on ? C.navy : '#fff',
+                  backgroundColor: on ? C.navy : C.card,
                 }}
               >
-                <Text style={{ fontSize: Math.round(16 * f.scale), fontWeight: '700', color: on ? '#fff' : C.navy }}>A</Text>
+                <Text style={{ fontSize: Math.round(16 * f.scale), fontWeight: '700', color: on ? C.onNavy : C.navy }}>A</Text>
               </Pressable>
             );
           })}
@@ -72,6 +74,39 @@ export default function Ajustes() {
           {FONT_SCALES[font.idx].label} · Se aplica a toda la app, también al lector del Evangelio.
         </P>
         <P>«Lámpara es tu palabra para mis pasos, luz en mi sendero» (Sal 119,105).</P>
+      </Card>
+
+      <Card>
+        <Label>Apariencia</Label>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {THEME_OPTIONS.map((o) => {
+            const on = theme.pref === o.value;
+            return (
+              <Pressable
+                key={o.value}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                onPress={() => theme.setPref(o.value)}
+                style={{
+                  flexBasis: '47%',
+                  flexGrow: 1,
+                  borderRadius: 14,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: on ? C.navy : C.line,
+                  backgroundColor: on ? C.navy : C.card,
+                  gap: 2,
+                }}
+              >
+                <Text style={{ fontSize: 15, color: on ? C.onNavy : C.ink }}>{o.label}</Text>
+                <Text style={{ fontSize: 12, fontWeight: '300', color: on ? C.onNavy : C.muted }}>{o.hint}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <P muted style={{ fontSize: 13 }}>
+          El modo oscuro usa tonos cálidos y suaves, sin blancos puros, para leer de noche sin cansar la vista.
+        </P>
       </Card>
 
       <Card>
@@ -199,13 +234,13 @@ function ReminderRow({
       </View>
       {value.on && (
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <Pressable onPress={() => step(-15)} accessibilityLabel="15 minutos antes" style={timeBtn}>
+          <Pressable onPress={() => step(-15)} accessibilityLabel="15 minutos antes" style={[timeBtn, { borderColor: C.line }]}>
             <Text style={{ fontSize: 20, color: C.navy }}>−</Text>
           </Pressable>
           <Text style={{ fontSize: 28, fontWeight: '300', color: C.ink, minWidth: 90, textAlign: 'center' }}>
             {pad(value.hour)}:{pad(value.minute)}
           </Text>
-          <Pressable onPress={() => step(15)} accessibilityLabel="15 minutos después" style={timeBtn}>
+          <Pressable onPress={() => step(15)} accessibilityLabel="15 minutos después" style={[timeBtn, { borderColor: C.line }]}>
             <Text style={{ fontSize: 20, color: C.navy }}>+</Text>
           </Pressable>
         </View>
@@ -219,7 +254,6 @@ const timeBtn = {
   height: 40,
   borderRadius: 20,
   borderWidth: 1,
-  borderColor: C.line,
   alignItems: 'center',
   justifyContent: 'center',
 } as const;

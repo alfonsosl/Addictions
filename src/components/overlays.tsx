@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../lib/theme';
 import { Glyph } from './icons';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
@@ -116,7 +117,8 @@ export function HomeActions() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   toastWrap: { position: 'absolute', left: 0, right: 0, alignItems: 'center', zIndex: 100 },
   toast: {
     flexDirection: 'row',
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 8,
   },
-  toastText: { color: '#fff', fontWeight: '700', fontSize: 15, flexShrink: 1 },
+  toastText: { color: C.onNavy, fontWeight: '700', fontSize: 15, flexShrink: 1 },
   fabWrap: { position: 'absolute', right: 20, bottom: 20 },
   fab: {
     backgroundColor: C.red,
@@ -144,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.9)',
+    borderColor: C.bg,
     shadowColor: C.red,
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     maxWidth: 520,
     padding: 8,
     borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.96)',
+    backgroundColor: C.overlay,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: C.line,
     shadowColor: '#1F2A52',
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
     gap: 8,
     borderRadius: 22,
     paddingVertical: 14,
-    backgroundColor: '#F3F0E8',
+    backgroundColor: C.chip,
   },
   fallIcon: { fontSize: 18, color: C.navy, fontWeight: '700' },
   fallText: { color: C.navy, fontWeight: '700', fontSize: 16 },
@@ -197,7 +199,8 @@ const styles = StyleSheet.create({
   },
   panicDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: C.card },
   panicText: { color: '#fff', fontWeight: '800', fontSize: 17, letterSpacing: 0.5 },
-});
+  }),
+);
 
 /** Pantalla de pestaña con el botón SOS flotante siempre visible. */
 export function TabScreen({ children }: { children: ReactNode }) {

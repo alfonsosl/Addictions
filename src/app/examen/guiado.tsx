@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { VirtueCheck } from '../../components/VirtueTracker';
 import { useConfirm } from '../../components/useConfirm';
 import { Glyph } from '../../components/icons';
@@ -25,6 +26,9 @@ import {
 import { useFont } from '../../lib/fontScale';
 import { examenKey } from '../../lib/game';
 import { haptic, useStore } from '../../lib/store';
+
+// Acento crema sobre el fondo nocturno (igual en tema claro y oscuro)
+const ACCENT = '#E6DCC4';
 
 const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
@@ -82,7 +86,7 @@ export default function ExamenGuiado() {
       </View>
       <View style={styles.dots}>
         {EXAMEN_STEP_TITLES.map((_, i) => (
-          <View key={i} style={[styles.dot, i <= step && { backgroundColor: C.goldSoft }]} />
+          <View key={i} style={[styles.dot, i <= step && { backgroundColor: ACCENT }]} />
         ))}
       </View>
 
@@ -90,7 +94,7 @@ export default function ExamenGuiado() {
         {step === 0 && (
           <>
             <View style={{ alignItems: 'center', marginTop: 8 }}>
-              <Glyph e="🌙" size={44} color={C.goldSoft} width={1.2} />
+              <Glyph e="🌙" size={44} color={ACCENT} width={1.2} />
             </View>
             <Text style={t(styles.title)}>Ponte en presencia de Dios</Text>
             {EXAMEN_PREP.map((x, i) => (
@@ -119,7 +123,7 @@ export default function ExamenGuiado() {
             {REVIEW_PROMPTS.map((r) => (
               <View key={r.title} style={styles.box}>
                 <View style={styles.boxHead}>
-                  <Glyph e={r.icon} size={20} color={C.goldSoft} />
+                  <Glyph e={r.icon} size={20} color={ACCENT} />
                   <Text style={t(styles.boxTitle)}>{r.title}</Text>
                 </View>
                 <Text style={t(styles.boxText)}>{r.text}</Text>
@@ -153,7 +157,7 @@ export default function ExamenGuiado() {
             {EXAMEN_AREAS.map((a) => (
               <View key={a.id} style={styles.box}>
                 <View style={styles.boxHead}>
-                  <Glyph e={a.icon} size={20} color={C.goldSoft} />
+                  <Glyph e={a.icon} size={20} color={ACCENT} />
                   <Text style={t(styles.boxTitle)}>{a.title}</Text>
                 </View>
                 {a.questions.map((q) => {
@@ -179,7 +183,7 @@ export default function ExamenGuiado() {
             {state.virtues.focus.length > 0 && (
               <View style={styles.box}>
                 <View style={styles.boxHead}>
-                  <Glyph e="sprout" size={20} color={C.goldSoft} />
+                  <Glyph e="sprout" size={20} color={ACCENT} />
                   <Text style={t(styles.boxTitle)}>Tus virtudes: ¿qué propósitos has cumplido hoy?</Text>
                 </View>
                 {state.virtues.focus.flatMap((vid) =>
@@ -284,18 +288,19 @@ export default function ExamenGuiado() {
 }
 
 const W = 'rgba(255,255,255,';
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   root: { flex: 1, backgroundColor: C.night },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8 },
-  stepText: { color: C.goldSoft, fontWeight: '600', fontSize: 14 },
+  stepText: { color: ACCENT, fontWeight: '600', fontSize: 14 },
   close: { color: '#fff', opacity: 0.7 },
   dots: { flexDirection: 'row', gap: 6, paddingHorizontal: 20, marginTop: 10 },
   dot: { flex: 1, height: 3, borderRadius: 2, backgroundColor: W + '0.15)' },
   body: { padding: 22, gap: 14, maxWidth: 640, width: '100%', alignSelf: 'center', paddingBottom: 40 },
   moon: { fontSize: 44, textAlign: 'center', marginTop: 8 },
   title: { color: '#fff', fontSize: 25, fontWeight: '700', textAlign: 'center', fontFamily: serif },
-  subtitle: { color: C.goldSoft, fontSize: 15, fontWeight: '600', marginTop: 6 },
-  label: { color: C.goldSoft, fontSize: 12, fontWeight: '700', letterSpacing: 1.4, marginTop: 6 },
+  subtitle: { color: ACCENT, fontSize: 15, fontWeight: '600', marginTop: 6 },
+  label: { color: ACCENT, fontSize: 12, fontWeight: '700', letterSpacing: 1.4, marginTop: 6 },
   text: { color: '#fff', fontSize: 16, lineHeight: 24, textAlign: 'center', opacity: 0.88 },
   hint: { color: '#fff', opacity: 0.5, fontSize: 13, lineHeight: 18, textAlign: 'center' },
   prayer: { color: '#fff', fontSize: 18, lineHeight: 29, fontFamily: serif, fontStyle: 'italic', opacity: 0.95 },
@@ -313,7 +318,7 @@ const styles = StyleSheet.create({
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1, borderColor: W + '0.25)' },
-  chipOn: { backgroundColor: C.goldSoft, borderColor: C.goldSoft },
+  chipOn: { backgroundColor: ACCENT, borderColor: ACCENT },
   chipText: { color: '#fff' },
   q: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', paddingVertical: 6 },
   check: {
@@ -326,13 +331,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 1,
   },
-  checkOn: { backgroundColor: C.goldSoft, borderColor: C.goldSoft },
+  checkOn: { backgroundColor: ACCENT, borderColor: ACCENT },
   checkMark: { color: C.night, fontWeight: '900', fontSize: 14 },
   idea: { borderWidth: 1, borderColor: W + '0.12)', borderRadius: 14, padding: 12 },
   footer: { flexDirection: 'row', gap: 10, padding: 16, maxWidth: 640, width: '100%', alignSelf: 'center' },
   back: { width: 56, borderRadius: 16, borderWidth: 1, borderColor: W + '0.25)', alignItems: 'center', justifyContent: 'center' },
   backText: { color: '#fff', fontSize: 28, fontWeight: '300' },
-  next: { flex: 1, backgroundColor: C.goldSoft, borderRadius: 16, padding: 16, alignItems: 'center' },
+  next: { flex: 1, backgroundColor: ACCENT, borderRadius: 16, padding: 16, alignItems: 'center' },
   nextDone: { backgroundColor: '#C9D3A8' },
   nextText: { color: C.night, fontWeight: '700' },
-});
+  }),
+);

@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import { themed } from '../lib/theme';
 import Svg, { Circle, G, Line, Path } from 'react-native-svg';
 import { BADGES, DAY_MS, dateKey, nextBadge, streakDays, streakMs, type State } from '../lib/game';
 import { useFont } from '../lib/fontScale';
@@ -157,7 +158,8 @@ export function StreakChart({ state, now }: { state: State; now: Date }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   wrap: { alignItems: 'center', gap: 10, paddingTop: 6 },
   center: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
   days: { fontSize: 76, fontWeight: '300', color: C.ink, lineHeight: 84 },
@@ -171,4 +173,5 @@ const styles = StyleSheet.create({
   dayCol: { alignItems: 'center', gap: 4 },
   dayDot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1, borderColor: C.line },
   dayLetter: { fontSize: 9, color: C.muted, fontWeight: '300' },
-});
+  }),
+);

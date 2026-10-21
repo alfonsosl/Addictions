@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../lib/theme';
 import { StyleSheet, View } from 'react-native';
 import { virtueById } from '../content/virtues';
 import { useFont } from '../lib/fontScale';
@@ -29,7 +30,7 @@ export function VirtueCheck({ virtueId, actionId, dark, dateKey }: { virtueId: s
       style={styles.check}
     >
       <View style={[styles.box, dark && styles.boxDark, done && (dark ? styles.boxOnDark : styles.boxOn)]}>
-        {done && <Glyph e="✓" size={15} color={dark ? C.night : '#fff'} width={2.2} />}
+        {done && <Glyph e="✓" size={15} color={dark ? C.night : C.onNavy} width={2.2} />}
       </View>
       <View style={{ flex: 1 }}>
         <Text style={t([styles.checkText, { color: ink }, done && !dark && { color: C.muted }])}>{a.text}</Text>
@@ -97,7 +98,8 @@ export function VirtueCard({ virtueId }: { virtueId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   card: { backgroundColor: C.card, borderRadius: 20, padding: 16, gap: 10, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   icon: { width: 42, height: 42, borderRadius: 21, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
@@ -113,4 +115,5 @@ const styles = StyleSheet.create({
   hint: { fontSize: 12, lineHeight: 17, color: C.muted, fontWeight: '300', marginTop: 1 },
   heat: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 2 },
   cell: { width: 14, height: 14, borderRadius: 4, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
-});
+  }),
+);

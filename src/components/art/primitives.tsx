@@ -2,15 +2,53 @@ import { Circle, G, Path } from 'react-native-svg';
 
 // Utilidades para un dibujo de línea "a mano": curvas suaves con pequeñas irregularidades deterministas.
 
-export const INK = '#1D2758';
-export const SEA = '#2E6DB4';
-export const PAPER = '#EFEADB';
-export const WOOD = '#7A5A35';
-export const OCHRE = '#B08A4E';
-export const WOOL = ['#D9CCB2', '#CDBE9F', '#C2B08E', '#B9A684', '#E2D7C1'];
-export const OLIVE = '#7A8A52';
-export const BRICK = '#B4442E';
-export const WHITE = '#FBFAF6';
+// Paleta del dibujo. Son `let` exportados (enlaces vivos): cambian con el modo oscuro.
+const ART_LIGHT = {
+  INK: '#1D2758',
+  SEA: '#2E6DB4',
+  PAPER: '#EFEADB',
+  WOOD: '#7A5A35',
+  OCHRE: '#B08A4E',
+  WOOL: ['#D9CCB2', '#CDBE9F', '#C2B08E', '#B9A684', '#E2D7C1'],
+  OLIVE: '#7A8A52',
+  BRICK: '#B4442E',
+  WHITE: '#FBFAF6',
+  FAINT: '#CFC5AE', // líneas suaves de fondo
+  NIGHT: '#1D2758', // cielo de la escena nocturna
+  OUTLINE: '#D6CDB8', // contorno de las figuras blancas
+};
+const ART_DARK: typeof ART_LIGHT = {
+  INK: '#C9C3B2',
+  SEA: '#6F98CF',
+  PAPER: '#151A2E',
+  WOOD: '#A88B66',
+  OCHRE: '#B99A62',
+  WOOL: ['#8F8672', '#867C68', '#7C735F', '#736A57', '#9A917D'],
+  OLIVE: '#8B9A68',
+  BRICK: '#C2715B',
+  WHITE: '#DCD6C6',
+  FAINT: '#343A52',
+  NIGHT: '#0E1226',
+  OUTLINE: '#8C8676',
+};
+
+export let INK = ART_LIGHT.INK;
+export let SEA = ART_LIGHT.SEA;
+export let PAPER = ART_LIGHT.PAPER;
+export let WOOD = ART_LIGHT.WOOD;
+export let OCHRE = ART_LIGHT.OCHRE;
+export let WOOL = ART_LIGHT.WOOL;
+export let OLIVE = ART_LIGHT.OLIVE;
+export let BRICK = ART_LIGHT.BRICK;
+export let WHITE = ART_LIGHT.WHITE;
+export let FAINT = ART_LIGHT.FAINT;
+export let NIGHT = ART_LIGHT.NIGHT;
+export let OUTLINE = ART_LIGHT.OUTLINE;
+
+export function setArtPalette(dark: boolean) {
+  const p = dark ? ART_DARK : ART_LIGHT;
+  ({ INK, SEA, PAPER, WOOD, OCHRE, WOOL, OLIVE, BRICK, WHITE, FAINT, NIGHT, OUTLINE } = p);
+}
 
 /** Generador pseudoaleatorio con semilla (el dibujo es siempre igual). */
 export function rng(seed: number) {
@@ -107,8 +145,8 @@ export function Christ({ x, y, s = 1, arm = 0, sitting }: { x: number; y: number
   const head = sitting ? -21 : -30.5;
   return (
     <G transform={`translate(${x} ${y}) scale(${s})`}>
-      <Path d={robe} fill={WHITE} stroke="#D6CDB8" strokeWidth={0.6} />
-      <Circle cx={0} cy={head} r={3.3} fill={WHITE} stroke="#D6CDB8" strokeWidth={0.6} />
+      <Path d={robe} fill={WHITE} stroke={OUTLINE} strokeWidth={0.6} />
+      <Circle cx={0} cy={head} r={3.3} fill={WHITE} stroke={OUTLINE} strokeWidth={0.6} />
       {arm !== 0 && (
         <Path d={`M${arm > 0 ? 2 : -2} -22 Q${arm * 7} -20 ${arm * 12} -16`} stroke={WHITE} strokeWidth={2.6} strokeLinecap="round" fill="none" />
       )}
@@ -117,7 +155,8 @@ export function Christ({ x, y, s = 1, arm = 0, sitting }: { x: number; y: number
 }
 
 /** Persona diminuta en tinta (discípulos, multitud). */
-export function Person({ x, y, s = 1, color = INK }: { x: number; y: number; s?: number; color?: string }) {
+export function Person({ x, y, s = 1, color }: { x: number; y: number; s?: number; color?: string }) {
+  color = color ?? INK;
   return (
     <G transform={`translate(${x} ${y}) scale(${s})`}>
       <Path d="M-1.6 0 L-1.2 -9 Q0 -10.5 1.2 -9 L1.6 0 Z" fill={color} />
@@ -127,7 +166,8 @@ export function Person({ x, y, s = 1, color = INK }: { x: number; y: number; s?:
 }
 
 /** Oveja de lana con cabeza oscura. */
-export function Sheep({ x, y, s = 1, wool, flip, head = '#7A5A35' }: { x: number; y: number; s?: number; wool: string; flip?: boolean; head?: string }) {
+export function Sheep({ x, y, s = 1, wool, flip, head }: { x: number; y: number; s?: number; wool: string; flip?: boolean; head?: string }) {
+  head = head ?? WOOD;
   return (
     <G transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
       <Path d="M-6 3 L-6 7 M-2 3.5 L-2 7.5 M3 3.5 L3 7.5 M6 3 L6 7" stroke="#6B5A42" strokeWidth={0.9} strokeLinecap="round" />

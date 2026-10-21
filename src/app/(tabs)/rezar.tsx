@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { Glyph } from '../../components/icons';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -93,7 +94,8 @@ function Row({ icon = '🙏', title, subtitle, onPress }: { icon?: string; title
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   author: { color: C.muted, fontWeight: '500', fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase' },
   quote: { fontFamily: serif, fontStyle: 'italic', color: C.ink, fontSize: 18, lineHeight: 25 },
   more: { color: C.blue, fontWeight: '400' },
@@ -108,4 +110,5 @@ const styles = StyleSheet.create({
     borderColor: C.line,
     padding: 14,
   },
-});
+  }),
+);

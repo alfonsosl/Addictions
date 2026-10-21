@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { StyleSheet, View } from 'react-native';
 import { Glyph } from '../../components/icons';
 import { SceneCard } from '../../components/LoveIllustration';
@@ -72,7 +73,8 @@ export default function Virtudes() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   title: { fontSize: 28, fontWeight: '300', color: C.ink },
   verse: { fontFamily: serif, fontStyle: 'italic', fontSize: 18, lineHeight: 26, color: C.ink },
   source: { color: C.muted, fontSize: 13, fontWeight: '300', marginTop: -4 },
@@ -82,4 +84,5 @@ const styles = StyleSheet.create({
   icon: { width: 42, height: 42, borderRadius: 21, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
   name: { fontSize: 17, color: C.ink },
   sub: { fontSize: 13, color: C.muted, fontWeight: '300' },
-});
+  }),
+);

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { themed } from '../lib/theme';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Pressable } from '../components/Tap';
 import { SCENE_META, type SceneId } from '../components/art/scenes';
@@ -61,12 +62,14 @@ export default function Galeria() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   wrap: { alignSelf: 'center', paddingTop: 96, alignItems: 'center', gap: 4 },
   caption: { fontSize: 20, fontWeight: '300', color: C.ink, letterSpacing: 0.5, textAlign: 'center' },
   src: { fontSize: 13, color: C.muted, fontWeight: '300' },
   nav: { position: 'absolute', bottom: 28, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24 },
-  btn: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(247,243,232,0.9)', alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  btn: { width: 48, height: 48, borderRadius: 24, backgroundColor: C.overlay, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   btnText: { fontSize: 26, color: C.navy, fontWeight: '300' },
   count: { color: C.muted, fontWeight: '300' },
-});
+  }),
+);

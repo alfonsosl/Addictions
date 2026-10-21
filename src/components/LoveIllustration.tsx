@@ -1,4 +1,5 @@
 import { StyleSheet, View } from 'react-native';
+import { themed } from '../lib/theme';
 import { Pressable } from './Tap';
 import Svg from 'react-native-svg';
 import { loveForDate } from '../content/love';
@@ -55,11 +56,13 @@ export function DailyLove({ date, compact, onPress }: { date: Date; compact?: bo
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   card: { gap: 14 },
   body: { gap: 6, paddingHorizontal: 12, alignItems: 'center' },
   label: { color: C.muted, fontWeight: '500', letterSpacing: 2 },
   verse: { fontFamily: serif, fontStyle: 'italic', color: C.ink, textAlign: 'center' },
   source: { color: C.muted, fontWeight: '300', letterSpacing: 0.5 },
   thought: { color: C.navy, fontWeight: '300', textAlign: 'center', marginTop: 4 },
-});
+  }),
+);

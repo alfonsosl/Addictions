@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { themed } from '../lib/theme';
 import { useConfirm } from './useConfirm';
 import { useEffect, useState } from 'react';
 import { Animated, Modal, StyleSheet, View } from 'react-native';
@@ -168,7 +169,8 @@ export function StreakWelcome() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg, justifyContent: 'space-between' },
   close: { position: 'absolute', right: 18, zIndex: 2, padding: 6 },
   inner: { alignItems: 'center', gap: 4, paddingHorizontal: 28, maxWidth: 560, width: '100%', alignSelf: 'center' },
@@ -182,4 +184,5 @@ const styles = StyleSheet.create({
   source: { color: C.muted, fontSize: 13, fontWeight: '300' },
   btn: { marginHorizontal: 24, borderRadius: 28, paddingVertical: 16, alignItems: 'center', backgroundColor: C.navy, maxWidth: 520, width: '88%', alignSelf: 'center' },
   btnText: { color: C.bg, fontSize: 16, fontWeight: '400', letterSpacing: 0.5 },
-});
+  }),
+);

@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Pressable } from '../../components/Tap';
@@ -153,7 +154,8 @@ function Detail({ label, text }: { label: string; text: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   stats: { flexDirection: 'row', gap: 12 },
   stat: {
     flex: 1,
@@ -179,4 +181,5 @@ const styles = StyleSheet.create({
   chev: { color: C.muted, fontSize: 16 },
   dLabel: { fontSize: 12, fontWeight: '600', color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
   dText: { fontSize: 15, lineHeight: 22, color: C.ink },
-});
+  }),
+);

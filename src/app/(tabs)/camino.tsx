@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../../lib/theme';
 import { Glyph } from '../../components/icons';
 import { StyleSheet, View } from 'react-native';
 import { Pressable } from '../../components/Tap';
@@ -39,7 +40,7 @@ export default function Camino() {
               onPress={() => (m.id === 'examen' && !ok ? router.push('/examen') : toggleMission(m.id))}
             >
               <View style={[styles.check, ok && { backgroundColor: C.green, borderColor: C.green }]}>
-                {ok && <Glyph e="✓" size={16} color="#fff" width={2} />}
+                {ok && <Glyph e="✓" size={16} color={C.onNavy} width={2} />}
               </View>
               <Glyph e={m.icon} size={22} color={ok ? C.muted : C.navy} />
               <View style={{ flex: 1 }}>
@@ -168,7 +169,8 @@ function Stat({ n, label }: { n: number; label: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between' },
   mission: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   check: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.2, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
@@ -186,4 +188,5 @@ const styles = StyleSheet.create({
   badgeDays: { fontSize: 11, color: C.muted },
   level: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 6, borderRadius: 12 },
   levelActive: { backgroundColor: C.goldSoft },
-});
+  }),
+);

@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { themed } from '../lib/theme';
 import { useConfirm } from '../components/useConfirm';
 import { Glyph } from '../components/icons';
 import { useEffect, useState } from 'react';
@@ -225,7 +226,8 @@ function UrgeTimer() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   root: { flex: 1, backgroundColor: C.night },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8 },
   stepText: { color: CREAM, fontWeight: '700' },
@@ -260,4 +262,5 @@ const styles = StyleSheet.create({
   winDone: { backgroundColor: CREAM },
   win: { borderWidth: 1.5, borderColor: CREAM, borderRadius: 14, padding: 14, alignItems: 'center' },
   winText: { color: CREAM, fontWeight: '700' },
-});
+  }),
+);

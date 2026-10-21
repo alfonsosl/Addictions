@@ -24,6 +24,10 @@ Cinco pestañas con un **estilo de ilustración de línea** (papel crema, tinta 
 | **Camino** | Regla de vida, examen, estadísticas, insignias (con celebración al conseguirlas) y niveles. |
 | **Ayuda** | Tus planes, 10 estrategias con su fundamento y teléfonos de crisis (024 / 112). |
 
+### Modo oscuro
+
+En Ajustes → Apariencia: **Automático** (como el teléfono), **Por la noche** (oscuro de 21:00 a 7:00), **Claro** u **Oscuro**. También hay un botón de luna/sol en Inicio y en el lector del Evangelio. El modo oscuro usa tonos cálidos y de bajo contraste, sin blancos puros, y las ilustraciones tienen su propia versión nocturna. Técnicamente, la paleta (`src/lib/theme.tsx`) es mutable, las hojas de estilo se recalculan con `themed()` y al cambiar de tema la app se vuelve a montar y regresa a la misma pantalla.
+
 ### Respuesta al pulsar
 
 Todos los botones se encogen y vibran al tocarlos. Los importantes («Amén», «He leído», «Ya me he confesado», «He vencido»…) muestran además una confirmación con ✓ antes de hacer la acción.

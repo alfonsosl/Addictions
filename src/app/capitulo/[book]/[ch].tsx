@@ -1,4 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Glyph } from '../../../components/icons';
+import { useTheme , themed } from '../../../lib/theme';
 import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, View } from 'react-native';
 import { Pressable } from '../../../components/Tap';
@@ -25,6 +27,7 @@ export default function Chapter() {
 
   // El tamaño de letra es el mismo de toda la app (Ajustes); A−/A+ lo cambia también aquí.
   const { idx, setIdx, fs } = useFont();
+  const theme = useTheme();
   const fontSize = fs(19);
 
   const go = (n: number) => router.replace({ pathname: '/capitulo/[book]/[ch]', params: { book: book.id, ch: String(n) } });
@@ -48,6 +51,14 @@ export default function Chapter() {
                 </Pressable>
                 <Pressable onPress={() => setIdx(idx + 1)} hitSlop={8} accessibilityLabel="Letra más grande" style={[styles.fontBtn, dark && styles.fontBtnDark]}>
                   <Text style={{ fontSize: 19, color: ink }}>A+</Text>
+                </Pressable>
+                <Pressable
+                  onPress={theme.toggle}
+                  hitSlop={8}
+                  accessibilityLabel={theme.dark ? 'Modo claro' : 'Modo oscuro para leer de noche'}
+                  style={[styles.fontBtn, dark && styles.fontBtnDark]}
+                >
+                  <Glyph e={theme.dark ? 'sun' : 'moon'} size={18} color={ink} />
                 </Pressable>
               </View>
             </View>
@@ -110,7 +121,8 @@ export default function Chapter() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   book: { fontSize: 12, letterSpacing: 2.5, fontWeight: '400' },
   chNum: { fontSize: 64, fontWeight: '300', lineHeight: 72 },
   chTitle: { fontFamily: serif, fontStyle: 'italic', textAlign: 'center', maxWidth: 320 },
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: C.line,
-    backgroundColor: 'rgba(247,243,232,0.7)',
+    backgroundColor: C.overlay,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -133,4 +145,5 @@ const styles = StyleSheet.create({
   pray: { gap: 4, paddingTop: 8 },
   credit: { color: C.muted, fontSize: 12, lineHeight: 17 },
   link: { color: C.blue, paddingVertical: 6 },
-});
+  }),
+);

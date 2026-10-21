@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { themed } from '../lib/theme';
 import { Animated, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SCENE_META, type SceneId } from './art/scenes';
@@ -16,7 +17,7 @@ export function IllustratedScroll({
   header,
   children,
   bottomSpace = 40,
-  heroRatio = 0.74,
+  heroRatio = 0.88,
 }: {
   scene: SceneId;
   header: (dark: boolean) => ReactNode;
@@ -62,11 +63,13 @@ export function IllustratedScroll({
   );
 }
 
-const styles = StyleSheet.create({
+const styles = themed(() =>
+  StyleSheet.create({
   hero: { justifyContent: 'space-between', paddingBottom: 12 },
   inner: { paddingHorizontal: 22, maxWidth: 640, width: '100%', alignSelf: 'center', gap: 16 },
   body: { paddingTop: 8 },
   hint: { alignItems: 'center' },
   hintText: { color: C.muted, fontSize: 12, letterSpacing: 2, fontWeight: '300', textTransform: 'uppercase' },
   hintArrow: { color: C.muted, fontSize: 20, marginTop: -4 },
-});
+  }),
+);
