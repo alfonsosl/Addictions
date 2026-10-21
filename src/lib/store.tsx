@@ -57,7 +57,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [newBadge, setNewBadge] = useState<G.Badge | null>(null);
   const loaded = useRef(false);
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
   const prevBest = useRef<number | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

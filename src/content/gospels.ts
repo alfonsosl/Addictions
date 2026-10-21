@@ -1,7 +1,7 @@
-// Los cuatro Evangelios: índice completo de capítulos.
-// El texto se lee en la Biblia católica en español de la Conferencia Episcopal de EE. UU. (USCCB).
-// Si se añade un texto de dominio público (p. ej. Torres Amat, 1823) en OFFLINE_TEXT,
-// la app lo muestra directamente y sin conexión.
+// Los cuatro Evangelios: índice de capítulos y texto completo sin conexión.
+// Texto: La Sagrada Biblia, traducción de Félix Torres Amat (1823-1825), edición de 1882. Dominio público.
+// Se genera con scripts/gospels/build.py (ver README, «Texto de los Evangelios»).
+import GOSPEL_TEXT_JSON from './gospel-text.json';
 
 export type GospelBook = {
   id: 'mt' | 'mc' | 'lc' | 'jn';
@@ -163,8 +163,18 @@ export function onlineUrl(book: GospelBook, ch: number) {
   return `https://bible.usccb.org/es/bible/${book.slug}/${ch}`;
 }
 
-/**
- * Texto offline opcional: { mt: [[v1, v2, …], …], … }.
- * Vacío por defecto: ver README («Texto completo sin conexión»).
- */
-export const OFFLINE_TEXT: Partial<Record<GospelBook['id'], string[][]>> = {};
+/** Texto de cada Evangelio: [capítulo][versículo]. "" = versículo perdido en la digitalización. */
+export const GOSPEL_TEXT = GOSPEL_TEXT_JSON as Record<GospelBook['id'], string[][]>;
+
+export const TEXT_CREDIT =
+  'La Sagrada Biblia, trad. de Félix Torres Amat (1823-1825), ed. de 1882. Dominio público. ' +
+  'Digitalización del proyecto biblia-elim, revisada para Vigilia frente a la Vulgata. ' +
+  'Ortografía original con acentos modernizados en «a, e, o, u» y «Jesús».';
+
+/** Primer capítulo sin leer, en orden canónico (para «Continuar leyendo»). */
+export function nextUnread(read: string[]): { book: GospelBook; ch: number } | null {
+  for (const g of GOSPELS) {
+    for (let i = 1; i <= g.chapters.length; i++) if (!read.includes(chapterId(g.id, i))) return { book: g, ch: i };
+  }
+  return null;
+}

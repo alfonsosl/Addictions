@@ -1,13 +1,13 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TabScreen } from '../../components/overlays';
 import { Button, C, Card, H1, H2, Label, P, ProgressBar, Segmented, serif } from '../../components/ui';
-import { chapterId, GOSPELS, RECOMMENDED, TOTAL_CHAPTERS } from '../../content/gospels';
+import { chapterId, GOSPELS, nextUnread, RECOMMENDED, TOTAL_CHAPTERS } from '../../content/gospels';
 import { LECTIO_STEPS } from '../../content/prayers';
 import { PRIEST_SITES } from '../../content/priests';
-import { DAY_MS } from '../../lib/game';
+import { DAY_MS, dateKey } from '../../lib/game';
 import { fetchReadings, officialLinks, type DayReadings } from '../../lib/readings';
 import { useStore } from '../../lib/store';
 
@@ -32,31 +32,32 @@ export default function Evangelio() {
 }
 
 function Today() {
-  const { state, today, markReading } = useStore();
+  const { state, now, today, markReading } = useStore();
   const [offset, setOffset] = useState(0);
-  const [data, setData] = useState<DayReadings | null>(null);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [attempt, setAttempt] = useState(0);
+  // Resultado de la última descarga, etiquetado con su fecha: mientras no coincide, se está cargando.
+  const [result, setResult] = useState<{ key: string; data: DayReadings | null } | null>(null);
   const [open, setOpen] = useState<string>('GSP');
-  const date = new Date(Date.now() + offset * DAY_MS);
+  const date = new Date(now.getTime() + offset * DAY_MS);
+  const key = `${dateKey(date)}#${attempt}`;
+  const loading = result?.key !== key;
+  const data = loading ? null : result.data;
+  const error = !loading && !result.data;
   const read = state.readingsRead.includes(today);
 
-  const load = useCallback(async (d: Date) => {
-    setLoading(true);
-    setError(false);
-    try {
-      setData(await fetchReadings(d));
-    } catch {
-      setData(null);
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    load(new Date(Date.now() + offset * DAY_MS));
-  }, [offset, load]);
+    let cancelled = false;
+    const d = new Date(Date.now() + offset * DAY_MS);
+    const k = `${dateKey(d)}#${attempt}`;
+    fetchReadings(d)
+      .then((r) => !cancelled && setResult({ key: k, data: r }))
+      .catch(() => !cancelled && setResult({ key: k, data: null }));
+    return () => {
+      cancelled = true;
+    };
+  }, [offset, attempt]);
+
+  const retry = () => setAttempt((a) => a + 1);
 
   const dateLabel = date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   const gospel = data?.readings.find((r) => r.key === 'GSP');
@@ -124,11 +125,11 @@ function Today() {
       {!loading && error && (
         <Card>
           <H2>No se pudieron descargar las lecturas</H2>
-          <P muted>Comprueba tu conexión, o léelas en una de estas webs:</P>
+          <P muted>Las lecturas del día necesitan conexión. Sin internet puedes leer los cuatro Evangelios completos en la pestaña «Los 4 Evangelios». Con conexión, también en estas webs:</P>
           {officialLinks(date).map((l) => (
             <LinkRow key={l.url} label={l.label} url={l.url} />
           ))}
-          <Button title="Reintentar" kind="ghost" onPress={() => load(date)} />
+          <Button title="Reintentar" kind="ghost" onPress={retry} />
         </Card>
       )}
 
@@ -165,6 +166,7 @@ function AllGospels() {
   const { state } = useStore();
   const [openBook, setOpenBook] = useState<string | null>(null);
   const readCount = state.chaptersRead.length;
+  const next = nextUnread(state.chaptersRead);
 
   return (
     <>
@@ -179,6 +181,18 @@ function AllGospels() {
         <P muted style={{ fontSize: 14 }}>
           Un capítulo al día: en {TOTAL_CHAPTERS} días habrás leído los cuatro Evangelios. Cada capítulo suma +5 talentos.
         </P>
+        <Text style={{ color: C.green, fontWeight: '700', fontSize: 13 }}>✓ Texto completo disponible sin conexión</Text>
+        {next ? (
+          <Button
+            title={`▶ Continuar: ${next.book.short} ${next.ch}`}
+            kind="gold"
+            onPress={() =>
+              router.push({ pathname: '/capitulo/[book]/[ch]', params: { book: next.book.id, ch: String(next.ch) } })
+            }
+          />
+        ) : (
+          <P>🎉 ¡Has leído los cuatro Evangelios completos!</P>
+        )}
       </Card>
 
       <Label>⭐ Para la lucha por la pureza</Label>

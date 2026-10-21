@@ -13,7 +13,7 @@ Cinco pestañas, con el **botón SOS siempre a un toque**: grande en Inicio y fl
 | **Inicio** | Contador, **botón de pánico arriba del todo**, «Tu día con Dios» (Evangelio, reflexión, oración del momento, examen), nivel y regla de vida, «mi porqué». |
 | **🆘 Botón de pánico** | Respiración guiada → oración → acciones de huida, tus planes «si… entonces…» y llamar/SMS al compañero → tu porqué → temporizador de 10 min. |
 | **Evangelio · Hoy** | Lecturas del día, **comentario del día con su autor** (santos, papas y sacerdotes), enlaces a comentarios de sacerdotes (evangeli.net, Vatican News, Opus Dei) y *Lectio Divina*. |
-| **Evangelio · Los 4 Evangelios** | Índice completo de Mateo, Marcos, Lucas y Juan (89 capítulos titulados), capítulos recomendados para la lucha, progreso de lectura y +5 talentos por capítulo. El texto se lee en la Biblia católica de la USCCB (en español), dentro de la app. |
+| **Evangelio · Los 4 Evangelios** | **Texto completo sin conexión** de Mateo, Marcos, Lucas y Juan (traducción católica de Torres Amat), 89 capítulos titulados, lector con tamaño de letra ajustable, «Continuar leyendo», capítulos recomendados para la lucha, progreso y +5 talentos por capítulo. |
 | **Rezar** | 7 oraciones; **8 reflexiones a partir de palabras de sacerdotes, obispos y papas** (San Agustín, San Josemaría, Francisco, Benedicto XVI, Juan Pablo II, San Alfonso, Padre Pío), cada una con su fuente; 21 reflexiones bíblicas. |
 | **Camino** | Regla de vida, examen, estadísticas, insignias (con celebración al conseguirlas) y niveles. |
 | **Ayuda** | Tus planes, 10 estrategias con su fundamento y teléfonos de crisis (024 / 112). |
@@ -64,6 +64,7 @@ npm install
 npm start            # abre con Expo Go (escanea el QR) o en un emulador
 npm run web          # versión web
 npm run typecheck
+npm run lint
 npm test
 ```
 
@@ -71,13 +72,31 @@ Para publicar en las tiendas: `npx eas-cli@latest build` (ver la documentación 
 
 ## Limitaciones y pendientes
 
-- **Lecturas**: se descargan del feed público de Evangelizo (`feed.evangelizo.org`). No se ha podido probar desde el entorno de desarrollo (la red estaba bloqueada), así que hay que verificarlo en un dispositivo. Si falla, la app muestra enlaces a las fuentes oficiales. Antes de publicar conviene revisar los términos de uso del feed o buscar un acuerdo con la fuente.
+- **Lecturas**: se descargan del feed público de Evangelizo (`feed.evangelizo.org`). No se ha podido probar desde el entorno de desarrollo (la red estaba bloqueada), así que hay que verificarlo en un dispositivo. Necesitan conexión; sin red, la app muestra enlaces a fuentes oficiales y remite a los Evangelios completos, que sí funcionan offline. Antes de publicar conviene revisar los términos de uso del feed o buscar un acuerdo con la fuente.
 - **Citas**: siguen traducciones castellanas habituales y pueden variar ligeramente según la edición. Las citas de sacerdotes y papas son breves, llevan su fuente y se contrastaron en internet; la de Padre Pío es de atribución tradicional (se indica en la app).
 - **Comentarios de sacerdotes**: no se copian homilías completas (tienen derechos de autor). El comentario diario se carga en directo desde su fuente, con el autor, y hay enlaces a otras webs.
-
-## Texto completo sin conexión
-
-`src/content/gospels.ts` → `OFFLINE_TEXT` acepta el texto de los cuatro Evangelios (`{ mt: [[versículo1, versículo2, …], …], mc: …, lc: …, jn: … }`). Si está relleno, la app muestra el texto directamente, sin conexión. Debe ser una traducción católica **de dominio público** (p. ej. Torres Amat, 1823) o con licencia para distribuirla. No uses la Biblia de Jerusalén, la de la CEE, la de Navarra ni la de la USCCB: tienen derechos de autor.
 - **Ideas para más adelante**: recordatorios (expo-notifications), bloqueo con PIN o biometría, modo oscuro, exportar/importar datos y Rosario guiado.
+
+## Texto de los Evangelios (sin conexión)
+
+- **Traducción**: *La Sagrada Biblia*, de Félix Torres Amat (1823-1825), traducida de la Vulgata; edición de 1882. Es católica y de **dominio público** (el traductor murió en 1847).
+- **Origen digital**: módulo «TorresAmat» del proyecto [biblia-elim](https://github.com/OmarGonD/biblia-elim) (`modulos/sqlite/TorresAmat.sqlite`), obtenido por OCR del facsímil de Internet Archive y marcado por sus autores como dominio público y **sin revisar**.
+- **Revisión hecha para Vigilia**: los cuatro Evangelios se han leído completos y se han aplicado **1.261 correcciones** documentadas en `scripts/gospels/corrections.tsv`:
+  - erratas del OCR («celesWww» → «celestial», «Elba» → «E iba»…);
+  - cabeceras de página, pies de grabado y notas al pie colados en el texto;
+  - versículos fusionados o descolocados, recolocados con la Vulgata Clementina como guía ([`@bible-api/bible-api-version-vulgate`](https://www.npmjs.com/package/@bible-api/bible-api-version-vulgate), MIT-0).
+- **Marcas editoriales**: `[palabra]` = palabra restaurada (perdida en el OCR, asegurada por la Vulgata o por un pasaje paralelo); `[…]` = texto perdido. **No se ha inventado texto.**
+- **Ortografía**: se conserva la de 1882 (Phariséos, Christo, corazon…), salvo los acentos de «á, é, ó, ú» sueltas y «Jesus» → «Jesús».
+- **Versículos perdidos**: 12 de 3.777 (0,3 %): Mt 9,1; Mc 11,23; Jn 1,44.50.51; 3,35; 8,1-2; 10,1; 15,1-3. La app lo indica y ofrece un enlace a la Biblia de la USCCB online.
+- **Numeración**: la de la Vulgata (en algunos capítulos difiere en un versículo de las Biblias modernas, p. ej. Mc 8-9, Jn 6).
+
+Regenerar el texto:
+
+```bash
+python3 scripts/gospels/build.py --sqlite RUTA/TorresAmat.sqlite --vulgate RUTA/vulgate.json
+npm test   # comprueba capítulos, versículos perdidos y restos del OCR
+```
+
+Las traducciones modernas (Jerusalén, CEE, Navarra, USCCB…) tienen derechos de autor y no pueden incluirse en la app.
 
 Esta app acompaña, pero no sustituye a la dirección espiritual ni a la ayuda psicológica profesional.

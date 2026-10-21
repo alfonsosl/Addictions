@@ -1,5 +1,5 @@
 import { Link, router } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { C, Card, Label, P, ProgressBar, Quote, Screen, SectionTitle, Tile } from '../../components/ui';
 import { MISSIONS } from '../../content/missions';
@@ -135,7 +135,7 @@ export default function Home() {
 }
 
 function PanicButton() {
-  const pulse = useRef(new Animated.Value(0)).current;
+  const [pulse] = useState(() => new Animated.Value(0));
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([

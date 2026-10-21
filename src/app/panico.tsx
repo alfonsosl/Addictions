@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { C } from '../components/ui';
@@ -137,7 +137,7 @@ export default function Panic() {
 }
 
 function Breathing() {
-  const scale = useRef(new Animated.Value(0.55)).current;
+  const [scale] = useState(() => new Animated.Value(0.55));
   const [t, setT] = useState(0); // segundos transcurridos
   const phase = Math.floor(t / PHASE_S) % PHASES.length;
   const left = PHASE_S - (t % PHASE_S);

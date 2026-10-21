@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { haptic, useStore } from '../lib/store';
@@ -9,7 +9,7 @@ import { Button, C, Screen } from './ui';
 export function ToastHost() {
   const { toast } = useStore();
   const insets = useSafeAreaInsets();
-  const y = useRef(new Animated.Value(-120)).current;
+  const [y] = useState(() => new Animated.Value(-120));
 
   useEffect(() => {
     Animated.spring(y, { toValue: toast ? 0 : -120, useNativeDriver: true, friction: 8 }).start();
@@ -30,7 +30,7 @@ export function ToastHost() {
 /** Celebración a pantalla completa cuando se consigue una insignia. */
 export function BadgeCelebration() {
   const { newBadge, dismissBadge } = useStore();
-  const scale = useRef(new Animated.Value(0.3)).current;
+  const [scale] = useState(() => new Animated.Value(0.3));
   useEffect(() => {
     if (newBadge) {
       scale.setValue(0.3);
@@ -56,7 +56,7 @@ export function BadgeCelebration() {
 
 /** Botón SOS flotante: siempre a un toque en todas las pestañas (en Inicio ya hay uno grande). */
 export function PanicFab() {
-  const pulse = useRef(new Animated.Value(1)).current;
+  const [pulse] = useState(() => new Animated.Value(1));
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([

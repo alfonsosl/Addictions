@@ -4,9 +4,15 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { C } from '../../components/ui';
 import { useStore } from '../../lib/store';
 
-const icon = (e: string) => ({ focused }: { focused: boolean }) => (
-  <Text style={{ fontSize: focused ? 24 : 21, opacity: focused ? 1 : 0.5 }}>{e}</Text>
-);
+function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
+  return <Text style={{ fontSize: focused ? 24 : 21, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
+}
+
+function icon(emoji: string) {
+  return function Icon({ focused }: { focused: boolean }) {
+    return <TabIcon emoji={emoji} focused={focused} />;
+  };
+}
 
 export default function TabsLayout() {
   const { ready, state } = useStore();
