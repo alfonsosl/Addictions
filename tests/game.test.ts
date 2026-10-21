@@ -11,6 +11,7 @@ import {
   topTriggers,
   markReading,
   saveExamen,
+  markChapter,
   REWARDS,
   DAY_MS,
 } from '../src/lib/game.ts';
@@ -74,4 +75,11 @@ test('disparadores más frecuentes', () => {
   const r = (t: string[]) => ({ at: '', streakDays: 0, triggers: t, note: '' });
   const top = topTriggers([r(['Soledad', 'Noche']), r(['Soledad']), r(['Estrés'])]);
   assert.deepEqual(top[0], { trigger: 'Soledad', count: 2 });
+});
+
+test('capítulos del Evangelio: premio una sola vez', () => {
+  let s = markChapter(initialState, 'jn-15');
+  s = markChapter(s, 'jn-15');
+  assert.equal(s.talents, REWARDS.chapter);
+  assert.deepEqual(s.chaptersRead, ['jn-15']);
 });

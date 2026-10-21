@@ -6,15 +6,17 @@ App móvil (iOS / Android, también web) para ayudar a dejar la pornografía des
 
 ## Funcionalidades
 
+Cinco pestañas, con el **botón SOS siempre a un toque**: grande en Inicio y flotante en el resto.
+
 | Pantalla | Qué hace |
 |---|---|
-| **Inicio** | Contador de días/horas en libertad, mejor racha, nivel, próxima insignia, reflexión del día, «mi porqué» y acceso a «He caído». |
-| **🆘 Botón de pánico** | Flujo de 5 pasos: respiración cuadrada 4-4-4-4 animada → oración (jaculatorias, San Miguel) → acciones físicas de huida + planes «si… entonces…» + llamar/SMS al compañero → recordar tu porqué y tus días → temporizador de 10 min «surfea la ola». «He vencido» suma talentos. |
-| **Lecturas** | Lecturas del día del calendario litúrgico (1ª lectura, salmo, 2ª lectura, Evangelio), navegación por días, caché local, enlaces a Vatican News / Evangelizo / evangeli.net y guía de Lectio Divina. |
-| **Camino** | Regla de vida diaria (7 misiones), examen de conciencia ignaciano, estadísticas, 10 insignias por racha, 8 niveles y disparadores más frecuentes. |
-| **Arsenal** | 10 estrategias con su fundamento, 7 oraciones y 21 reflexiones bíblicas. |
-| **Caída** | Sin culpa: el hijo pródigo, análisis de disparadores (HALT), acto de contrición, buscar confesión y registrar la confesión (+talentos). |
-| **Ajustes** | Nombre, porqué, compañero de camino, planes «si… entonces…» y borrado de datos. |
+| **Inicio** | Contador, **botón de pánico arriba del todo**, «Tu día con Dios» (Evangelio, reflexión, oración del momento, examen), nivel y regla de vida, «mi porqué». |
+| **🆘 Botón de pánico** | Respiración guiada → oración → acciones de huida, tus planes «si… entonces…» y llamar/SMS al compañero → tu porqué → temporizador de 10 min. |
+| **Evangelio · Hoy** | Lecturas del día, **comentario del día con su autor** (santos, papas y sacerdotes), enlaces a comentarios de sacerdotes (evangeli.net, Vatican News, Opus Dei) y *Lectio Divina*. |
+| **Evangelio · Los 4 Evangelios** | Índice completo de Mateo, Marcos, Lucas y Juan (89 capítulos titulados), capítulos recomendados para la lucha, progreso de lectura y +5 talentos por capítulo. El texto se lee en la Biblia católica de la USCCB (en español), dentro de la app. |
+| **Rezar** | 7 oraciones; **8 reflexiones a partir de palabras de sacerdotes, obispos y papas** (San Agustín, San Josemaría, Francisco, Benedicto XVI, Juan Pablo II, San Alfonso, Padre Pío), cada una con su fuente; 21 reflexiones bíblicas. |
+| **Camino** | Regla de vida, examen, estadísticas, insignias (con celebración al conseguirlas) y niveles. |
+| **Ayuda** | Tus planes, 10 estrategias con su fundamento y teléfonos de crisis (024 / 112). |
 
 ### Mecánica de juego
 
@@ -70,7 +72,12 @@ Para publicar en las tiendas: `npx eas-cli@latest build` (ver la documentación 
 ## Limitaciones y pendientes
 
 - **Lecturas**: se descargan del feed público de Evangelizo (`feed.evangelizo.org`). No se ha podido probar desde el entorno de desarrollo (la red estaba bloqueada), así que hay que verificarlo en un dispositivo. Si falla, la app muestra enlaces a las fuentes oficiales. Antes de publicar conviene revisar los términos de uso del feed o buscar un acuerdo con la fuente.
-- **Citas**: siguen traducciones castellanas habituales y pueden variar ligeramente según la edición.
+- **Citas**: siguen traducciones castellanas habituales y pueden variar ligeramente según la edición. Las citas de sacerdotes y papas son breves, llevan su fuente y se contrastaron en internet; la de Padre Pío es de atribución tradicional (se indica en la app).
+- **Comentarios de sacerdotes**: no se copian homilías completas (tienen derechos de autor). El comentario diario se carga en directo desde su fuente, con el autor, y hay enlaces a otras webs.
+
+## Texto completo sin conexión
+
+`src/content/gospels.ts` → `OFFLINE_TEXT` acepta el texto de los cuatro Evangelios (`{ mt: [[versículo1, versículo2, …], …], mc: …, lc: …, jn: … }`). Si está relleno, la app muestra el texto directamente, sin conexión. Debe ser una traducción católica **de dominio público** (p. ej. Torres Amat, 1823) o con licencia para distribuirla. No uses la Biblia de Jerusalén, la de la CEE, la de Navarra ni la de la USCCB: tienen derechos de autor.
 - **Ideas para más adelante**: recordatorios (expo-notifications), bloqueo con PIN o biometría, modo oscuro, exportar/importar datos y Rosario guiado.
 
 Esta app acompaña, pero no sustituye a la dirección espiritual ni a la ayuda psicológica profesional.

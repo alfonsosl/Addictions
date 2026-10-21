@@ -13,7 +13,7 @@ export default function Examen() {
   const [resolution, setResolution] = useState(prev?.resolution ?? '');
 
   return (
-    <Screen>
+    <Screen edges={['left', 'right', 'bottom']}>
       <P muted>Cinco minutos antes de dormir, con el móvil ya fuera del dormitorio si puedes.</P>
       {EXAMEN_STEPS.map((s) => (
         <Card key={s.title}>

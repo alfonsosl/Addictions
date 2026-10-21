@@ -1,23 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Platform } from 'react-native';
 import { MISSIONS } from '../content/missions';
 import * as G from './game';
 
 const KEY = 'vigilia:state:v1';
+
+export type Toast = { id: number; icon: string; text: string };
 
 type Actions = {
   start: (profile: G.Profile, streakStart: Date) => void;
   updateProfile: (profile: G.Profile) => void;
   toggleMission: (missionId: string) => void;
   markReading: () => void;
+  markChapter: (chapterId: string) => void;
   addVictory: () => void;
   relapse: (triggers: string[], note: string) => void;
   addConfession: () => void;
   saveExamen: (e: { gratitude: string; struggle: string; resolution: string }) => void;
   resetAll: () => void;
+  dismissBadge: () => void;
 };
 
-type Ctx = { state: G.State; now: Date; ready: boolean; today: string } & Actions;
+type Ctx = {
+  state: G.State;
+  now: Date;
+  ready: boolean;
+  today: string;
+  toast: Toast | null;
+  newBadge: G.Badge | null; // insignia recién conseguida (para celebrarla)
+} & Actions;
 
 const StoreContext = createContext<Ctx | null>(null);
 
@@ -27,11 +40,32 @@ function ensureMission(s: G.State, key: string, id: string): G.State {
   return G.toggleMission(s, key, id, m.reward, MISSIONS.length);
 }
 
+export function haptic(kind: 'light' | 'success' | 'heavy' = 'light') {
+  if (Platform.OS === 'web') return;
+  const p =
+    kind === 'success'
+      ? Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      : Haptics.impactAsync(kind === 'heavy' ? Haptics.ImpactFeedbackStyle.Heavy : Haptics.ImpactFeedbackStyle.Light);
+  p.catch(() => {});
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<G.State>(G.initialState);
   const [ready, setReady] = useState(false);
   const [now, setNow] = useState(() => new Date());
+  const [toast, setToast] = useState<Toast | null>(null);
+  const [newBadge, setNewBadge] = useState<G.Badge | null>(null);
   const loaded = useRef(false);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const prevBest = useRef<number | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((icon: string, text: string) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ id: Date.now(), icon, text });
+    toastTimer.current = setTimeout(() => setToast(null), 2600);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -57,39 +91,82 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!loaded.current) return;
     AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
+    // Detecta insignias nuevas para celebrarlas.
+    if (prevBest.current !== null && state.bestStreakDays > prevBest.current) {
+      const gained = G.BADGES.filter((b) => b.days > prevBest.current! && b.days <= state.bestStreakDays).pop();
+      if (gained) {
+        setNewBadge(gained);
+        haptic('success');
+      }
+    }
+    prevBest.current = state.bestStreakDays;
   }, [state]);
 
   const today = G.dateKey(now);
 
-  const update = useCallback((fn: (s: G.State, n: Date) => G.State) => {
-    const n = new Date();
-    setNow(n);
-    setState((s) => fn(G.tick(s, n), n));
-  }, []);
+  const update = useCallback(
+    (fn: (s: G.State, n: Date) => G.State, reward?: { icon: string; text: string }) => {
+      const n = new Date();
+      setNow(n);
+      setState((s) => fn(G.tick(s, n), n));
+      if (reward) {
+        showToast(reward.icon, reward.text);
+        haptic('success');
+      }
+    },
+    [showToast],
+  );
 
   const actions: Actions = useMemo(
     () => ({
-      start: (profile, streakStart) =>
-        update(() => G.tick({ ...G.initialState, profile, streakStart: streakStart.toISOString() }, new Date())),
-      updateProfile: (profile) => update((s) => ({ ...s, profile })),
-      toggleMission: (id) =>
-        update((s, n) => {
-          const m = MISSIONS.find((x) => x.id === id)!;
-          return G.toggleMission(s, G.dateKey(n), id, m.reward, MISSIONS.length);
+      start: (profile, streakStart) => {
+        prevBest.current = null; // no celebrar los días previos declarados en el registro
+        update(() => G.tick({ ...G.initialState, profile, streakStart: streakStart.toISOString() }, new Date()));
+      },
+      updateProfile: (profile) => update((s) => ({ ...s, profile }), { icon: '✓', text: 'Cambios guardados' }),
+      toggleMission: (id) => {
+        const m = MISSIONS.find((x) => x.id === id)!;
+        const added = !(stateRef.current.missionsByDate[G.dateKey(new Date())] ?? []).includes(id);
+        update((s, n) => G.toggleMission(s, G.dateKey(n), id, m.reward, MISSIONS.length));
+        haptic('light');
+        if (added) showToast(m.icon, `${m.title} · +${m.reward} talentos`);
+      },
+      markReading: () =>
+        update((s, n) => ensureMission(G.markReading(s, G.dateKey(n)), G.dateKey(n), 'evangelio'), {
+          icon: '📖',
+          text: `Palabra meditada · +${G.REWARDS.reading} talentos`,
         }),
-      markReading: () => update((s, n) => ensureMission(G.markReading(s, G.dateKey(n)), G.dateKey(n), 'evangelio')),
-      addVictory: () => update((s, n) => G.addVictory(s, n)),
+      markChapter: (cid) =>
+        update((s) => G.markChapter(s, cid), { icon: '📖', text: `Capítulo leído · +${G.REWARDS.chapter} talentos` }),
+      addVictory: () =>
+        update((s, n) => G.addVictory(s, n), {
+          icon: '✝️',
+          text: `¡Tentación vencida! +${G.REWARDS.victory} talentos`,
+        }),
       relapse: (triggers, note) => update((s, n) => G.relapse(s, n, triggers, note)),
-      addConfession: () => update((s, n) => G.addConfession(s, n)),
-      saveExamen: (e) => update((s, n) => ensureMission(G.saveExamen(s, G.dateKey(n), e), G.dateKey(n), 'examen')),
+      addConfession: () =>
+        update((s, n) => G.addConfession(s, n), {
+          icon: '🕊️',
+          text: `Has vuelto a casa · +${G.REWARDS.confession} talentos`,
+        }),
+      saveExamen: (e) =>
+        update((s, n) => ensureMission(G.saveExamen(s, G.dateKey(n), e), G.dateKey(n), 'examen'), {
+          icon: '🌙',
+          text: 'Examen guardado. Descansa en paz.',
+        }),
       resetAll: () => {
+        prevBest.current = null;
         setState(G.initialState);
       },
+      dismissBadge: () => setNewBadge(null),
     }),
-    [update],
+    [update, showToast],
   );
 
-  const value = useMemo(() => ({ state, now, ready, today, ...actions }), [state, now, ready, today, actions]);
+  const value = useMemo(
+    () => ({ state, now, ready, today, toast, newBadge, ...actions }),
+    [state, now, ready, today, toast, newBadge, actions],
+  );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
 

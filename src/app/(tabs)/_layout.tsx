@@ -5,7 +5,7 @@ import { C } from '../../components/ui';
 import { useStore } from '../../lib/store';
 
 const icon = (e: string) => ({ focused }: { focused: boolean }) => (
-  <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.55 }}>{e}</Text>
+  <Text style={{ fontSize: focused ? 24 : 21, opacity: focused ? 1 : 0.5 }}>{e}</Text>
 );
 
 export default function TabsLayout() {
@@ -25,13 +25,15 @@ export default function TabsLayout() {
         tabBarActiveTintColor: C.navy,
         tabBarInactiveTintColor: C.muted,
         tabBarStyle: { backgroundColor: '#fff', borderTopColor: C.line },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700' },
         sceneStyle: { backgroundColor: C.bg },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: icon('🏠') }} />
-      <Tabs.Screen name="lecturas" options={{ title: 'Lecturas', tabBarIcon: icon('📖') }} />
+      <Tabs.Screen name="evangelio" options={{ title: 'Evangelio', tabBarIcon: icon('📖') }} />
+      <Tabs.Screen name="rezar" options={{ title: 'Rezar', tabBarIcon: icon('🙏') }} />
       <Tabs.Screen name="camino" options={{ title: 'Camino', tabBarIcon: icon('⛰️') }} />
-      <Tabs.Screen name="arsenal" options={{ title: 'Arsenal', tabBarIcon: icon('🛡️') }} />
+      <Tabs.Screen name="ayuda" options={{ title: 'Ayuda', tabBarIcon: icon('🧭') }} />
     </Tabs>
   );
 }

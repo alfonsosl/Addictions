@@ -31,6 +31,7 @@ export type State = {
   victories: string[]; // ISO: tentaciones vencidas con el botón de pánico
   relapses: Relapse[];
   confessions: string[]; // ISO
+  chaptersRead: string[]; // "mt-5", "jn-15"…
 };
 
 export const initialState: State = {
@@ -46,6 +47,7 @@ export const initialState: State = {
   victories: [],
   relapses: [],
   confessions: [],
+  chaptersRead: [],
 };
 
 // Recompensas (talentos — Mt 25,14-30: hacer fructificar lo recibido)
@@ -56,6 +58,7 @@ export const REWARDS = {
   examen: 10,
   confession: 30,
   fullDayBonus: 15,
+  chapter: 5,
 } as const;
 
 export function dateKey(d: Date): string {
@@ -127,6 +130,11 @@ export function markReading(state: State, key: string): State {
   return { ...state, readingsRead: [...state.readingsRead, key], talents: state.talents + REWARDS.reading };
 }
 
+export function markChapter(state: State, chapterId: string): State {
+  if (state.chaptersRead.includes(chapterId)) return state;
+  return { ...state, chaptersRead: [...state.chaptersRead, chapterId], talents: state.talents + REWARDS.chapter };
+}
+
 export function addVictory(state: State, now: Date): State {
   return { ...state, victories: [...state.victories, now.toISOString()], talents: state.talents + REWARDS.victory };
 }
@@ -183,7 +191,7 @@ export type Badge = { days: number; icon: string; title: string; text: string };
 export const BADGES: Badge[] = [
   { days: 1, icon: '🌱', title: 'Me levantaré', text: '«Me levantaré, iré a mi padre» (Lc 15,18). El primer día es el más valiente.' },
   { days: 3, icon: '🌅', title: 'Al tercer día', text: 'Tres días: la tradición de la Resurrección. Lo muerto empieza a vivir.' },
-  { days: 7, icon: '🕯️', title: 'Una semana', text: 'Siete días completos. Tu cerebro empieza a notar el cambio.' },
+  { days: 7, icon: '🕯️', title: 'Una semana', text: 'Siete días completos. Has demostrado que, con Dios, es posible.' },
   { days: 14, icon: '🛡️', title: 'Escudo de la fe', text: '«Embrazad el escudo de la fe» (Ef 6,16). Dos semanas de lucha.' },
   { days: 30, icon: '⚓', title: 'Un mes', text: 'Treinta días. Has demostrado que es posible.' },
   { days: 40, icon: '🏜️', title: 'Cuarenta días', text: 'Como Cristo en el desierto (Mt 4,1-11): tentado y vencedor.' },

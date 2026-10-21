@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { BadgeCelebration, ToastHost } from '../components/overlays';
 import { C } from '../components/ui';
 import { StoreProvider } from '../lib/store';
 
@@ -25,7 +26,12 @@ export default function RootLayout() {
           <Stack.Screen name="examen" options={{ title: 'Examen de conciencia' }} />
           <Stack.Screen name="ajustes" options={{ title: 'Ajustes' }} />
           <Stack.Screen name="reflexion/[id]" options={{ title: 'Reflexión' }} />
+          <Stack.Screen name="sacerdote/[id]" options={{ title: 'Palabra de un pastor' }} />
+          <Stack.Screen name="capitulo/[book]/[ch]" options={{ title: 'Evangelio' }} />
+          <Stack.Screen name="oracion/[id]" options={{ title: 'Oración' }} />
         </Stack>
+        <ToastHost />
+        <BadgeCelebration />
       </StoreProvider>
     </SafeAreaProvider>
   );

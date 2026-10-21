@@ -5,7 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // la pantalla ofrece enlaces a fuentes oficiales.
 
 export type Reading = { key: 'FR' | 'PS' | 'SR' | 'GSP'; label: string; reference: string; text: string };
-export type DayReadings = { date: string; liturgicalTitle: string; readings: Reading[]; source: string };
+export type Commentary = { title: string; author: string; source: string; text: string };
+export type DayReadings = {
+  date: string;
+  liturgicalTitle: string;
+  readings: Reading[];
+  commentary: Commentary | null;
+  source: string;
+};
 
 const FEED = 'https://feed.evangelizo.org/v2/reader.php';
 const LABELS: Record<Reading['key'], string> = {
@@ -47,15 +54,23 @@ async function get(params: Record<string, string>, timeoutMs = 10_000): Promise<
 
 export async function fetchReadings(d: Date): Promise<DayReadings> {
   const date = yyyymmdd(d);
-  const cacheKey = `vigilia:readings:${date}`;
+  const cacheKey = `vigilia:readings:v2:${date}`;
   try {
     const cached = await AsyncStorage.getItem(cacheKey);
     if (cached) return JSON.parse(cached);
   } catch {}
 
   const keys: Reading['key'][] = ['FR', 'PS', 'SR', 'GSP'];
+  const opt = (params: Record<string, string>) => get({ date, ...params }).catch(() => '');
+  // Comentario del día al Evangelio (santos, papas y sacerdotes), con su autor y su fuente.
+  const commentaryP = Promise.all([
+    opt({ type: 'comment_t' }),
+    opt({ type: 'comment_a' }),
+    opt({ type: 'comment_s' }),
+    opt({ type: 'comment' }),
+  ]);
   const [liturgicalTitle, ...parts] = await Promise.all([
-    get({ date, type: 'liturgic_t' }).catch(() => ''),
+    opt({ type: 'liturgic_t' }),
     ...keys.flatMap((content) => [
       get({ date, type: 'reading_lt', content }).catch(() => ''),
       get({ date, type: 'reading', content }).catch(() => ''),
@@ -70,7 +85,9 @@ export async function fetchReadings(d: Date): Promise<DayReadings> {
   });
   if (!readings.some((r) => r.key === 'GSP')) throw new Error('No se pudo obtener el Evangelio');
 
-  const result: DayReadings = { date, liturgicalTitle, readings, source: 'evangeliodeldia.org' };
+  const [cTitle, cAuthor, cSource, cText] = await commentaryP;
+  const commentary = cText ? { title: cTitle, author: cAuthor, source: cSource, text: cText } : null;
+  const result: DayReadings = { date, liturgicalTitle, readings, commentary, source: 'evangeliodeldia.org' };
   try {
     await AsyncStorage.setItem(cacheKey, JSON.stringify(result));
   } catch {}

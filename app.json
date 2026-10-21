@@ -25,7 +25,8 @@
       "output": "single"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-web-browser"
     ],
     "scheme": "vigilia",
     "description": "Acompañamiento católico para dejar la pornografía: lecturas del día, oración, contador, botón de pánico y un camino gamificado.",

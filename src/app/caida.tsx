@@ -19,7 +19,7 @@ export default function Relapse() {
 
   if (step === 0)
     return (
-      <Screen>
+      <Screen edges={['left', 'right', 'bottom']}>
         <H2>Mírale a Él, no a tu caída</H2>
         <Card style={{ backgroundColor: C.goldSoft, borderColor: C.gold }}>
           <P style={{ fontStyle: 'italic' }}>
@@ -42,7 +42,7 @@ export default function Relapse() {
 
   if (step === 1)
     return (
-      <Screen>
+      <Screen edges={['left', 'right', 'bottom']}>
         <H2>¿Qué lo desencadenó?</H2>
         <P muted>Sin juzgarte: solo para aprender. Elige todo lo que aplique.</P>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -69,7 +69,7 @@ export default function Relapse() {
     );
 
   return (
-    <Screen>
+    <Screen edges={['left', 'right', 'bottom']}>
       <H2>Levántate y vuelve a casa</H2>
       <P>Tu nueva racha ya ha comenzado. Tres pasos para hoy:</P>
       <Card>

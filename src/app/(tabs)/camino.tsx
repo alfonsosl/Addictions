@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Button, C, Card, H1, H2, Label, P, ProgressBar, Screen } from '../../components/ui';
+import { TabScreen } from '../../components/overlays';
+import { Button, C, Card, H1, H2, Label, P, ProgressBar } from '../../components/ui';
+import { TOTAL_CHAPTERS } from '../../content/gospels';
 import { MISSIONS } from '../../content/missions';
 import { BADGES, LEVELS, REWARDS, levelFor, streakDays, topTriggers } from '../../lib/game';
 import { useStore } from '../../lib/store';
@@ -13,7 +15,7 @@ export default function Camino() {
   const triggers = topTriggers(state.relapses);
 
   return (
-    <Screen>
+    <TabScreen>
       <H1>Tu camino</H1>
 
       <Card>
@@ -54,6 +56,8 @@ export default function Camino() {
         <Stat n={best} label="mejor racha" />
         <Stat n={state.victories.length} label="tentaciones vencidas" />
         <Stat n={state.confessions.length} label="confesiones" />
+        <Stat n={state.chaptersRead.length} label={`de ${TOTAL_CHAPTERS} capítulos del Evangelio`} />
+        <Stat n={state.readingsRead.length} label="días con el Evangelio de hoy" />
       </View>
 
       <Card>
@@ -112,12 +116,13 @@ export default function Camino() {
         <P>• Cada día limpio: +{REWARDS.cleanDay}</P>
         <P>• Vencer una tentación con el botón de pánico: +{REWARDS.victory}</P>
         <P>• Meditar las lecturas: +{REWARDS.reading} · Examen de conciencia: +{REWARDS.examen}</P>
+        <P>• Leer un capítulo de los Evangelios: +{REWARDS.chapter}</P>
         <P>• Confesarte: +{REWARDS.confession}</P>
         <P muted style={{ fontSize: 14 }}>
           Los talentos nunca se pierden: una caída reinicia la racha, no tu camino. «Has sido fiel en lo poco» (Mt 25,21).
         </P>
       </Card>
-    </Screen>
+    </TabScreen>
   );
 }
 

@@ -33,7 +33,7 @@ export default function Ajustes() {
   };
 
   return (
-    <Screen>
+    <Screen edges={['left', 'right', 'bottom']}>
       <Card>
         <Label>Nombre</Label>
         <TextInput style={inputStyle} value={p.name} onChangeText={(v) => set('name', v)} />
