@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, Pressable, Switch, View } from 'react-native';
+import { Text, TextInput } from '../components/Text';
 import { Button, C, Card, H2, inputStyle, Label, P, Screen } from '../components/ui';
 import { FONT_SCALES, useFont } from '../lib/fontScale';
 import type { Profile } from '../lib/game';
+import { useReminders, type Reminder } from '../lib/notifications';
 import { useStore } from '../lib/store';
 
 export default function Ajustes() {
@@ -13,6 +15,7 @@ export default function Ajustes() {
   );
   const set = (k: keyof Profile, v: any) => setP((x) => ({ ...x, [k]: v }));
   const font = useFont();
+  const reminders = useReminders();
 
   const save = () => {
     updateProfile({ ...p, ifThen: p.ifThen.filter((x) => x.when.trim() || x.then.trim()) });
@@ -68,6 +71,34 @@ export default function Ajustes() {
           {FONT_SCALES[font.idx].label} · Se aplica a toda la app, también al lector del Evangelio.
         </P>
         <P>«Lámpara es tu palabra para mis pasos, luz en mi sendero» (Sal 119,105).</P>
+      </Card>
+
+      <Card>
+        <Label>Recordatorios</Label>
+        {reminders.supported ? (
+          <>
+            <ReminderRow
+              title="Evangelio del día"
+              subtitle="Cada día, para leer y meditar"
+              value={reminders.settings.gospel}
+              onChange={(patch) => reminders.update('gospel', patch)}
+            />
+            <ReminderRow
+              title="Examen de la noche"
+              subtitle="Antes de dormir"
+              value={reminders.settings.examen}
+              onChange={(patch) => reminders.update('examen', patch)}
+            />
+            {reminders.denied && (
+              <P style={{ color: C.red, fontSize: 14 }}>
+                Las notificaciones están desactivadas para Vigilia. Actívalas en los ajustes del teléfono.
+              </P>
+            )}
+            <P muted style={{ fontSize: 13 }}>Se programan en el propio teléfono: funcionan sin conexión.</P>
+          </>
+        ) : (
+          <P muted style={{ fontSize: 14 }}>Los recordatorios funcionan en la app del móvil (Android o iPhone).</P>
+        )}
       </Card>
 
       <Card>
@@ -132,3 +163,62 @@ export default function Ajustes() {
     </Screen>
   );
 }
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+function ReminderRow({
+  title,
+  subtitle,
+  value,
+  onChange,
+}: {
+  title: string;
+  subtitle: string;
+  value: Reminder;
+  onChange: (patch: Partial<Reminder>) => void;
+}) {
+  const step = (d: number) => {
+    const total = (value.hour * 60 + value.minute + d + 24 * 60) % (24 * 60);
+    onChange({ hour: Math.floor(total / 60), minute: total % 60 });
+  };
+  return (
+    <View style={{ paddingVertical: 8, gap: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, color: C.ink }}>{title}</Text>
+          <Text style={{ fontSize: 13, color: C.muted, fontWeight: '300' }}>{subtitle}</Text>
+        </View>
+        <Switch
+          accessibilityLabel={`Recordatorio: ${title}`}
+          value={value.on}
+          onValueChange={(on) => onChange({ on })}
+          trackColor={{ true: C.navy, false: C.line }}
+          thumbColor={C.card}
+        />
+      </View>
+      {value.on && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+          <Pressable onPress={() => step(-15)} accessibilityLabel="15 minutos antes" style={timeBtn}>
+            <Text style={{ fontSize: 20, color: C.navy }}>−</Text>
+          </Pressable>
+          <Text style={{ fontSize: 28, fontWeight: '300', color: C.ink, minWidth: 90, textAlign: 'center' }}>
+            {pad(value.hour)}:{pad(value.minute)}
+          </Text>
+          <Pressable onPress={() => step(15)} accessibilityLabel="15 minutos después" style={timeBtn}>
+            <Text style={{ fontSize: 20, color: C.navy }}>+</Text>
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+}
+
+const timeBtn = {
+  width: 40,
+  height: 40,
+  borderRadius: 20,
+  borderWidth: 1,
+  borderColor: C.line,
+  alignItems: 'center',
+  justifyContent: 'center',
+} as const;

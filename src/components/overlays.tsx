@@ -1,9 +1,12 @@
 import { router } from 'expo-router';
+import { Glyph } from './icons';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from './Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { haptic, useStore } from '../lib/store';
-import { Button, C, Screen } from './ui';
+import { MilestoneModal, messageFor } from './StreakWelcome';
+import { C, Screen } from './ui';
 
 /** Aviso breve de recompensa ("+5 talentos"). */
 export function ToastHost() {
@@ -19,7 +22,7 @@ export function ToastHost() {
     <Animated.View pointerEvents="none" style={[styles.toastWrap, { top: insets.top + 8, transform: [{ translateY: y }] }]}>
       {toast ? (
         <View style={styles.toast}>
-          <Text style={{ fontSize: 20 }}>{toast.icon}</Text>
+          <Glyph e={toast.icon} size={20} color={C.bg} />
           <Text style={styles.toastText}>{toast.text}</Text>
         </View>
       ) : null}
@@ -30,27 +33,19 @@ export function ToastHost() {
 /** Celebración a pantalla completa cuando se consigue una insignia. */
 export function BadgeCelebration() {
   const { newBadge, dismissBadge } = useStore();
-  const [scale] = useState(() => new Animated.Value(0.3));
-  useEffect(() => {
-    if (newBadge) {
-      scale.setValue(0.3);
-      Animated.spring(scale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
-    }
-  }, [newBadge, scale]);
   if (!newBadge) return null;
+  const m = messageFor(newBadge.days);
   return (
-    <Modal transparent animationType="fade" visible onRequestClose={dismissBadge}>
-      <View style={styles.backdrop}>
-        <View style={styles.celebrate}>
-          <Text style={styles.celebrateLabel}>¡NUEVA INSIGNIA!</Text>
-          <Animated.Text style={{ fontSize: 84, transform: [{ scale }] }}>{newBadge.icon}</Animated.Text>
-          <Text style={styles.celebrateTitle}>{newBadge.title}</Text>
-          <Text style={styles.celebrateDays}>{newBadge.days} días en libertad</Text>
-          <Text style={styles.celebrateText}>{newBadge.text}</Text>
-          <Button title="Gracias, Señor 🙏" kind="gold" onPress={dismissBadge} style={{ alignSelf: 'stretch' }} />
-        </View>
-      </View>
-    </Modal>
+    <MilestoneModal
+      visible
+      onClose={dismissBadge}
+      scene={m.scene}
+      label="NUEVA INSIGNIA"
+      big={String(newBadge.days)}
+      unit={newBadge.days === 1 ? 'día en libertad' : 'días en libertad'}
+      caption={newBadge.title}
+      text={newBadge.text}
+    />
   );
 }
 
@@ -139,12 +134,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   toastText: { color: '#fff', fontWeight: '700', fontSize: 15, flexShrink: 1 },
-  backdrop: { flex: 1, backgroundColor: 'rgba(15,20,45,0.75)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  celebrate: { backgroundColor: C.bg, borderRadius: 28, padding: 24, alignItems: 'center', gap: 8, width: '100%', maxWidth: 420 },
-  celebrateLabel: { color: C.gold, fontWeight: '900', letterSpacing: 2 },
-  celebrateTitle: { fontSize: 26, fontWeight: '900', color: C.navy, textAlign: 'center' },
-  celebrateDays: { color: C.muted, fontWeight: '700' },
-  celebrateText: { fontSize: 16, lineHeight: 23, color: C.ink, textAlign: 'center', marginBottom: 8 },
   fabWrap: { position: 'absolute', right: 20, bottom: 20 },
   fab: {
     backgroundColor: C.red,
@@ -205,7 +194,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  panicDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
+  panicDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: C.card },
   panicText: { color: '#fff', fontWeight: '800', fontSize: 17, letterSpacing: 0.5 },
 });
 

@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
+import { Glyph } from '../components/icons';
 import { useEffect, useState } from 'react';
-import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { C } from '../components/ui';
+import { C, serif } from '../components/ui';
 import { PRAYERS } from '../content/prayers';
 import { useFont } from '../lib/fontScale';
 import { streakDays } from '../lib/game';
 import { useStore } from '../lib/store';
 
 // Flujo de emergencia: 1) Para y respira  2) Reza  3) Muévete  4) Recuerda tu porqué  5) Surfea la ola
+const CREAM = '#EFEADB';
 const STEPS = ['Respira', 'Reza', 'Muévete', 'Tu porqué', 'Espera'];
 
 const PHASES = [
@@ -19,13 +22,13 @@ const PHASES = [
 ];
 const PHASE_S = 4; // respiración cuadrada 4-4-4-4
 
-const ACTIONS = [
-  '🚶 Levántate ahora y sal de la habitación',
-  '📵 Deja el móvil en otra habitación o apágalo',
-  '💧 Lávate la cara con agua fría',
-  '💪 Haz 20 flexiones o sentadillas',
-  '🌳 Sal a dar un paseo de 10 minutos',
-  '🗣️ Ve a donde haya otras personas',
+const ACTIONS: [string, string][] = [
+  ['🚶', 'Levántate ahora y sal de la habitación'],
+  ['📵', 'Deja el móvil en otra habitación o apágalo'],
+  ['💧', 'Lávate la cara con agua fría'],
+  ['🏃', 'Haz 20 flexiones o sentadillas'],
+  ['🌳', 'Sal a dar un paseo de 10 minutos'],
+  ['🤝', 'Ve a donde haya otras personas'],
 ];
 
 export default function Panic() {
@@ -52,7 +55,7 @@ export default function Panic() {
       </View>
       <View style={styles.dots}>
         {STEPS.map((_, i) => (
-          <View key={i} style={[styles.dot, i <= step && { backgroundColor: C.gold }]} />
+          <View key={i} style={[styles.dot, i <= step && { backgroundColor: CREAM }]} />
         ))}
       </View>
 
@@ -72,9 +75,10 @@ export default function Panic() {
           <>
             <Text style={t(styles.title)}>Huye: no dialogues con la tentación</Text>
             <Text style={t(styles.text)}>«Él, dejando el manto en sus manos, salió huyendo» (Gn 39,12). Elige una y hazla YA:</Text>
-            {ACTIONS.map((a) => (
+            {ACTIONS.map(([icon, a]) => (
               <View key={a} style={styles.action}>
-                <Text style={t(styles.actionText)}>{a}</Text>
+                <Glyph e={icon} size={22} color={CREAM} />
+                <Text style={[t(styles.actionText), { flex: 1 }]}>{a}</Text>
               </View>
             ))}
             {p?.ifThen.length ? (
@@ -90,7 +94,7 @@ export default function Panic() {
             {p?.contactPhone ? (
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <Pressable style={[styles.callBtn, { flex: 1 }]} onPress={() => Linking.openURL(`tel:${p.contactPhone}`)}>
-                  <Text style={t(styles.callText)}>📞 Llamar a {p.contactName || 'mi contacto'}</Text>
+                  <Text style={t(styles.callText)}>Llamar a {p.contactName || 'mi contacto'}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.callBtn, { flex: 1, backgroundColor: C.navySoft }]}
@@ -98,7 +102,7 @@ export default function Panic() {
                     Linking.openURL(`sms:${p.contactPhone}?body=${encodeURIComponent('Estoy teniendo una lucha ahora. ¿Puedes rezar por mí o llamarme?')}`)
                   }
                 >
-                  <Text style={t(styles.callText)}>💬 Enviar mensaje</Text>
+                  <Text style={t(styles.callText)}>Enviar mensaje</Text>
                 </Pressable>
               </View>
             ) : (
@@ -127,11 +131,11 @@ export default function Panic() {
       <View style={styles.footer}>
         {step < STEPS.length - 1 ? (
           <Pressable style={styles.next} onPress={() => setStep(step + 1)}>
-            <Text style={t(styles.nextText)}>Siguiente →</Text>
+            <Text style={t(styles.nextText)}>Siguiente</Text>
           </Pressable>
         ) : null}
         <Pressable style={styles.win} onPress={win}>
-          <Text style={t(styles.winText)}>✝️ He vencido esta tentación (+20 talentos)</Text>
+          <Text style={t(styles.winText)}>He vencido esta tentación (+20 talentos)</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -193,7 +197,7 @@ function UrgeTimer() {
 
   return (
     <View style={{ alignItems: 'center', gap: 14 }}>
-      <Text style={t(styles.title)}>Surfea la ola 🌊</Text>
+      <Text style={t(styles.title)}>Surfea la ola</Text>
       <Text style={t(styles.text)}>
         El impulso sube, llega a un pico y baja. Si no lo alimentas, pasa. Espera 10 minutos haciendo otra cosa: reza
         un misterio del Rosario, camina, habla con alguien.
@@ -214,37 +218,37 @@ function UrgeTimer() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#141B38' },
+  root: { flex: 1, backgroundColor: C.night },
   topBar: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8 },
-  stepText: { color: C.goldSoft, fontWeight: '700' },
+  stepText: { color: CREAM, fontWeight: '700' },
   close: { color: '#fff', opacity: 0.7 },
   dots: { flexDirection: 'row', gap: 6, paddingHorizontal: 20, marginTop: 10 },
   dot: { flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)' },
   body: { padding: 20, gap: 14, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800', textAlign: 'center' },
-  subtitle: { color: C.gold, fontSize: 16, fontWeight: '700', marginTop: 8 },
+  title: { color: '#fff', fontFamily: serif, fontSize: 26, fontWeight: '500', textAlign: 'center' },
+  subtitle: { color: CREAM, fontSize: 16, fontWeight: '700', marginTop: 8 },
   text: { color: '#fff', fontSize: 17, lineHeight: 25, textAlign: 'center', opacity: 0.92 },
   textMuted: { color: '#fff', opacity: 0.6, textAlign: 'center' },
   prayer: { color: '#fff', fontSize: 19, lineHeight: 30, textAlign: 'center' },
   prayerSmall: { color: '#fff', opacity: 0.85, fontSize: 15, lineHeight: 23, fontStyle: 'italic' },
-  quote: { color: C.goldSoft, fontStyle: 'italic', textAlign: 'center', fontSize: 16 },
-  why: { color: C.goldSoft, fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic' },
-  big: { color: '#fff', fontSize: 80, fontWeight: '900', textAlign: 'center' },
-  action: { backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 14, padding: 14 },
-  actionText: { color: '#fff', fontSize: 17 },
-  plans: { gap: 6, borderLeftWidth: 3, borderLeftColor: C.gold, paddingLeft: 12 },
+  quote: { color: CREAM, fontStyle: 'italic', textAlign: 'center', fontSize: 16 },
+  why: { color: CREAM, fontSize: 20, lineHeight: 28, textAlign: 'center', fontStyle: 'italic' },
+  big: { color: '#fff', fontSize: 80, fontWeight: '300', textAlign: 'center' },
+  action: { flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(239,234,219,0.35)', borderRadius: 14, padding: 14 },
+  actionText: { color: '#fff', fontSize: 17, fontWeight: '300' },
+  plans: { gap: 6, borderLeftWidth: 3, borderLeftColor: CREAM, paddingLeft: 12 },
   planText: { color: '#fff', fontSize: 15, lineHeight: 22 },
   callBtn: { backgroundColor: C.green, borderRadius: 14, padding: 14, alignItems: 'center' },
   callText: { color: '#fff', fontWeight: '700' },
   circleWrap: { width: 240, height: 240, alignItems: 'center', justifyContent: 'center' },
-  circle: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(201,162,39,0.35)', borderWidth: 2, borderColor: C.gold },
+  circle: { position: 'absolute', width: 240, height: 240, borderRadius: 120, backgroundColor: 'rgba(46,109,180,0.25)', borderWidth: 1, borderColor: CREAM },
   circleCenter: { alignItems: 'center' },
   phase: { color: '#fff', fontSize: 24, fontWeight: '700' },
-  phaseCount: { color: C.goldSoft, fontSize: 40, fontWeight: '900' },
-  timer: { color: '#fff', fontSize: 64, fontWeight: '900', fontVariant: ['tabular-nums'] },
+  phaseCount: { color: CREAM, fontSize: 40, fontWeight: '300' },
+  timer: { color: '#fff', fontSize: 64, fontWeight: '300', fontVariant: ['tabular-nums'] },
   footer: { padding: 16, gap: 10, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  next: { backgroundColor: C.gold, borderRadius: 14, padding: 16, alignItems: 'center' },
-  nextText: { color: C.navy, fontWeight: '800', fontSize: 17 },
-  win: { borderWidth: 1.5, borderColor: C.gold, borderRadius: 14, padding: 14, alignItems: 'center' },
-  winText: { color: C.goldSoft, fontWeight: '700' },
+  next: { backgroundColor: CREAM, borderRadius: 14, padding: 16, alignItems: 'center' },
+  nextText: { color: C.navy, fontWeight: '500', fontSize: 17 },
+  win: { borderWidth: 1.5, borderColor: CREAM, borderRadius: 14, padding: 14, alignItems: 'center' },
+  winText: { color: CREAM, fontWeight: '700' },
 });

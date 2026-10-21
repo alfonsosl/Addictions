@@ -1,9 +1,9 @@
-// "La grandeza del amor de Dios": una ilustración y un versículo distintos cada día (ciclo de 14 días).
+// "La grandeza del amor de Dios": una ilustración y un versículo distintos cada día (ciclo de 16 días).
 // Citas según traducciones castellanas habituales; pueden variar ligeramente según la edición.
 
-export type Scene = 'cross' | 'door' | 'shepherd' | 'hands' | 'heart' | 'sunrise' | 'dove' | 'night' | 'vine' | 'anchor';
+import type { SceneId } from '../components/art/scenes';
 
-export type LoveDay = { scene: Scene; title: string; verse: string; source: string; thought: string };
+export type LoveDay = { scene: SceneId; title: string; verse: string; source: string; thought: string };
 
 export const LOVE_DAYS: LoveDay[] = [
   {
@@ -14,25 +14,25 @@ export const LOVE_DAYS: LoveDay[] = [
     thought: 'No tienes que ganarte su amor: ya te lo ha dado entero en la Cruz.',
   },
   {
-    scene: 'door',
+    scene: 'path',
     title: 'El Padre sale a tu encuentro',
     verse: 'Cuando todavía estaba lejos, su padre lo vio y se conmovió; echó a correr, se le echó al cuello y lo cubrió de besos.',
     source: 'Lc 15,20',
     thought: 'Antes de que termines de pedir perdón, Él ya ha corrido hacia ti.',
   },
   {
-    scene: 'shepherd',
+    scene: 'flock',
     title: 'Da la vida por ti',
     verse: 'Yo soy el buen pastor. El buen pastor da la vida por las ovejas.',
     source: 'Jn 10,11',
     thought: 'Te conoce por tu nombre y no se cansa de buscarte.',
   },
   {
-    scene: 'hands',
-    title: 'No te olvidará',
-    verse: '¿Puede una madre olvidarse de su criatura? Pues aunque ella se olvide, yo no te olvidaré. Mira, te llevo tatuado en las palmas de mis manos.',
-    source: 'Is 49,15-16',
-    thought: 'Tu nombre está escrito en sus manos. Ninguna caída lo borra.',
+    scene: 'sea',
+    title: 'Su mano está tendida',
+    verse: 'Al punto Jesús extendió la mano, lo agarró y le dijo: «¡Hombre de poca fe! ¿Por qué has dudado?».',
+    source: 'Mt 14,31',
+    thought: 'Cuando empiezas a hundirte, no tienes que salir solo: grítale y te agarrará.',
   },
   {
     scene: 'heart',
@@ -42,7 +42,7 @@ export const LOVE_DAYS: LoveDay[] = [
     thought: 'No te ama cuando eres perfecto: te ama ahora, para hacerte libre.',
   },
   {
-    scene: 'sunrise',
+    scene: 'field',
     title: 'Nueva cada mañana',
     verse: 'La misericordia del Señor no se acaba, no se agota su compasión: se renueva cada mañana. ¡Qué grande es tu fidelidad!',
     source: 'Lam 3,22-23',
@@ -70,28 +70,28 @@ export const LOVE_DAYS: LoveDay[] = [
     thought: 'Unido a Él, como el sarmiento a la vid, darás fruto.',
   },
   {
-    scene: 'anchor',
+    scene: 'tomb',
     title: 'Nada te separará',
     verse: 'Ni la muerte ni la vida, ni lo presente ni lo futuro… ni criatura alguna podrá separarnos del amor de Dios manifestado en Cristo Jesús.',
     source: 'Rom 8,38-39',
     thought: 'Tu ancla está en Él. Las olas pasan; su amor permanece.',
   },
   {
-    scene: 'shepherd',
+    scene: 'flock',
     title: 'Te carga sobre sus hombros',
     verse: 'Va tras la oveja perdida hasta que la encuentra. Y cuando la encuentra, se la carga sobre los hombros, lleno de alegría.',
     source: 'Lc 15,4-5',
     thought: 'Cuando ya no puedes más, no te riñe: te lleva.',
   },
   {
-    scene: 'door',
+    scene: 'well',
     title: 'Ven a descansar',
     verse: 'Venid a mí todos los que estáis cansados y agobiados, y yo os aliviaré.',
     source: 'Mt 11,28',
     thought: 'Lo que buscas en la pantalla —descanso, consuelo— está en Él.',
   },
   {
-    scene: 'hands',
+    scene: 'field',
     title: 'Ternura de Padre',
     verse: 'Como un padre siente ternura por sus hijos, siente el Señor ternura por los que le temen; porque él sabe de qué estamos hechos.',
     source: 'Sal 103,13-14',
@@ -103,6 +103,27 @@ export const LOVE_DAYS: LoveDay[] = [
     verse: 'Porque eres precioso a mis ojos, eres estimado y yo te amo.',
     source: 'Is 43,4',
     thought: 'Tu dignidad no depende de tu racha: eres hijo amado.',
+  },
+  {
+    scene: 'mountain',
+    title: 'Más firme que los montes',
+    verse: 'Aunque los montes cambien de lugar y las colinas se tambaleen, mi amor no se apartará de tu lado.',
+    source: 'Is 54,10',
+    thought: 'Tu fidelidad tiembla; la suya no. Apóyate en Él.',
+  },
+  {
+    scene: 'light',
+    title: 'La luz no se apaga',
+    verse: 'Yo soy la luz del mundo; el que me sigue no caminará en tinieblas, sino que tendrá la luz de la vida.',
+    source: 'Jn 8,12',
+    thought: 'Lo que se hace en la oscuridad pierde su fuerza cuando lo llevas a la luz.',
+  },
+  {
+    scene: 'bread',
+    title: 'Él sacia tu hambre',
+    verse: 'Yo soy el pan de vida. El que viene a mí no tendrá hambre, y el que cree en mí no tendrá sed jamás.',
+    source: 'Jn 6,35',
+    thought: 'El hambre de tu corazón tiene nombre: es hambre de Él.',
   },
 ];
 

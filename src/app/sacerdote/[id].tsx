@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { Text } from 'react-native';
+import { Text } from '../../components/Text';
 import { Button, C, Card, H1, Label, P, Quote, Screen } from '../../components/ui';
 import { PRIEST_REFLECTIONS } from '../../content/priests';
 

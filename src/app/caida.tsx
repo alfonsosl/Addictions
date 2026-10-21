@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Linking, TextInput, View } from 'react-native';
+import { Linking, View } from 'react-native';
+import { TextInput } from '../components/Text';
 import { Button, C, Card, Chip, H2, inputStyle, Label, P, Screen } from '../components/ui';
 import { PRAYERS } from '../content/prayers';
 import { TRIGGERS } from '../content/strategies';
@@ -88,7 +89,7 @@ export default function Relapse() {
           onPress={() => Linking.openURL('https://www.google.com/maps/search/iglesia+cat%C3%B3lica+confesiones')}
         />
         <Button
-          title="✝️ Ya me he confesado (+30 talentos)"
+          title="Ya me he confesado (+30 talentos)"
           kind="gold"
           onPress={() => {
             addConfession();

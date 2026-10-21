@@ -1,9 +1,17 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { TabScreen } from '../../components/overlays';
-import { Button, C, Card, H1, H2, Label, P, ProgressBar, Segmented, serif } from '../../components/ui';
+import { useEffect, useState, type ReactNode } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '../../components/Text';
+import type { SceneId } from '../../components/art/scenes';
+import { Glyph } from '../../components/icons';
+import { IllustratedScroll } from '../../components/IllustratedScroll';
+import { PanicFab, TabScreen } from '../../components/overlays';
+import { Button, C, Card, H2, Label, P, ProgressBar, Segmented, serif } from '../../components/ui';
+import { sceneForReference } from '../../content/gospelScenes';
+import { SceneCard } from '../../components/LoveIllustration';
+import { loveForDate } from '../../content/love';
+import { useFont } from '../../lib/fontScale';
 import { chapterId, GOSPELS, nextUnread, RECOMMENDED, TOTAL_CHAPTERS } from '../../content/gospels';
 import { LECTIO_STEPS } from '../../content/prayers';
 import { PRIEST_SITES } from '../../content/priests';
@@ -13,26 +21,36 @@ import { useStore } from '../../lib/store';
 
 type Mode = 'hoy' | 'evangelios';
 
+// Escena que representa a cada Evangelio en la lista.
+const BOOK_SCENE: Record<string, SceneId> = { mt: 'mountain', mc: 'sea', lc: 'flock', jn: 'vine' };
+
 export default function Evangelio() {
   const [mode, setMode] = useState<Mode>('hoy');
-  return (
-    <TabScreen>
-      <H1>Evangelio</H1>
+  const tabs = (dark: boolean) => (
+    <>
+      <Text style={[styles.h1, dark && { color: '#F3EEDF' }]}>Evangelio</Text>
       <Segmented
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'hoy', label: '📅 Hoy' },
-          { value: 'evangelios', label: '📚 Los 4 Evangelios' },
+          { value: 'hoy', label: 'Hoy' },
+          { value: 'evangelios', label: 'Los 4 Evangelios' },
         ]}
       />
-      {mode === 'hoy' ? <Today /> : <AllGospels />}
+    </>
+  );
+  if (mode === 'hoy') return <Today tabs={tabs} />;
+  return (
+    <TabScreen>
+      {tabs(false)}
+      <AllGospels />
     </TabScreen>
   );
 }
 
-function Today() {
+function Today({ tabs }: { tabs: (dark: boolean) => ReactNode }) {
   const { state, now, today, markReading } = useStore();
+  const { fs } = useFont();
   const [offset, setOffset] = useState(0);
   const [attempt, setAttempt] = useState(0);
   // Resultado de la última descarga, etiquetado con su fecha: mientras no coincide, se está cargando.
@@ -62,103 +80,119 @@ function Today() {
   const dateLabel = date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   const gospel = data?.readings.find((r) => r.key === 'GSP');
   const others = data?.readings.filter((r) => r.key !== 'GSP') ?? [];
+  // Sin lecturas (o mientras cargan), la ilustración del amor de Dios de ese día.
+  const scene = sceneForReference(gospel?.reference, loveForDate(date).scene);
 
   return (
-    <>
-      <View style={styles.dateBar}>
-        <Pressable onPress={() => setOffset(offset - 1)} hitSlop={10} style={styles.arrow} accessibilityLabel="Día anterior">
-          <Text style={styles.arrowText}>‹</Text>
-        </Pressable>
-        <Pressable onPress={() => setOffset(0)} style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={styles.dateText}>{offset === 0 ? `Hoy, ${dateLabel}` : dateLabel}</Text>
-          {offset !== 0 && <Text style={{ color: C.muted, fontSize: 12 }}>Toca para volver a hoy</Text>}
-        </Pressable>
-        <Pressable onPress={() => setOffset(offset + 1)} hitSlop={10} style={styles.arrow} accessibilityLabel="Día siguiente">
-          <Text style={styles.arrowText}>›</Text>
-        </Pressable>
-      </View>
-
-      {loading && <ActivityIndicator color={C.navy} style={{ marginTop: 24 }} />}
-
-      {!loading && data && (
-        <>
-          {data.liturgicalTitle ? <Text style={styles.liturgy}>{data.liturgicalTitle}</Text> : null}
-
-          {gospel && (
-            <Card style={{ borderColor: C.gold, borderWidth: 2 }}>
-              <Label>✝️ Evangelio del día</Label>
-              <H2>{gospel.reference}</H2>
-              <Text style={styles.scripture}>{gospel.text}</Text>
-            </Card>
-          )}
-
-          {data.commentary && (
-            <Card style={{ backgroundColor: C.navy, borderColor: C.navy }}>
-              <Text style={styles.lightLabel}>COMENTARIO DEL DÍA</Text>
-              {data.commentary.title ? (
-                <Text style={{ color: '#fff', fontSize: 18, fontWeight: '800' }}>{data.commentary.title}</Text>
-              ) : null}
-              <Text style={{ color: C.gold, fontWeight: '700' }}>{data.commentary.author}</Text>
-              {data.commentary.source ? (
-                <Text style={{ color: '#fff', opacity: 0.7, fontSize: 13 }}>{data.commentary.source}</Text>
-              ) : null}
-              <Text style={[styles.scripture, { color: '#fff' }]}>{data.commentary.text}</Text>
-            </Card>
-          )}
-
-          {others.map((r) => (
-            <Card key={r.key}>
-              <Pressable onPress={() => setOpen(open === r.key ? '' : r.key)} style={styles.rowBetween}>
-                <View style={{ flex: 1 }}>
-                  <Label>{r.label}</Label>
-                  <Text style={{ fontWeight: '700', color: C.navy }}>{r.reference || r.label}</Text>
+    <View style={{ flex: 1 }}>
+      <IllustratedScroll
+        scene={scene}
+        bottomSpace={110}
+        header={(dark) => {
+          const ink = dark ? '#F3EEDF' : C.ink;
+          return (
+            <>
+              {tabs(dark)}
+              <View style={styles.dateBar}>
+                <Pressable onPress={() => setOffset(offset - 1)} hitSlop={10} style={styles.arrow} accessibilityLabel="Día anterior">
+                  <View style={{ transform: [{ rotate: '180deg' }] }}>
+                    <Glyph e="chevron" size={18} color={ink} />
+                  </View>
+                </Pressable>
+                <Pressable onPress={() => setOffset(0)} style={{ flex: 1, alignItems: 'center' }}>
+                  <Text style={[styles.dateText, { color: ink }]}>{offset === 0 ? `Hoy, ${dateLabel}` : dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1)}</Text>
+                  {offset !== 0 && <Text style={{ color: dark ? '#CFC7B2' : C.muted, fontSize: 12 }}>Toca para volver a hoy</Text>}
+                </Pressable>
+                <Pressable onPress={() => setOffset(offset + 1)} hitSlop={10} style={styles.arrow} accessibilityLabel="Día siguiente">
+                  <Glyph e="chevron" size={18} color={ink} />
+                </Pressable>
+              </View>
+              {loading && <ActivityIndicator color={ink} style={{ marginTop: 24 }} />}
+              {gospel && (
+                <View style={{ alignItems: 'center', gap: 6, marginTop: 18 }}>
+                  {data?.liturgicalTitle ? <Text style={[styles.liturgy, { color: dark ? '#CFC7B2' : C.muted }]}>{data.liturgicalTitle}</Text> : null}
+                  <Text style={[styles.heroRef, { color: ink, fontSize: fs(34), lineHeight: fs(40) }]}>{gospel.reference}</Text>
+                  <Text style={[styles.heroLabel, { color: dark ? '#CFC7B2' : C.muted }]}>EVANGELIO DEL DÍA</Text>
                 </View>
-                <Text style={{ color: C.muted, fontSize: 20 }}>{open === r.key ? '▾' : '▸'}</Text>
-              </Pressable>
-              {open === r.key && <Text style={styles.scripture}>{r.text}</Text>}
-            </Card>
-          ))}
-          <Text style={{ color: C.muted, fontSize: 12 }}>Lecturas y comentario: {data.source}</Text>
-        </>
-      )}
+              )}
+            </>
+          );
+        }}
+      >
+        {!loading && data && (
+          <>
+            {gospel && <Text style={[styles.scripture, { fontSize: fs(19), lineHeight: fs(30) }]}>{gospel.text}</Text>}
 
-      {!loading && error && (
-        <Card>
-          <H2>No se pudieron descargar las lecturas</H2>
-          <P muted>Las lecturas del día necesitan conexión. Sin internet puedes leer los cuatro Evangelios completos en la pestaña «Los 4 Evangelios». Con conexión, también en estas webs:</P>
-          {officialLinks(date).map((l) => (
+            {offset === 0 && (
+              <Button
+                title={read ? 'Ya has meditado el Evangelio de hoy' : 'He leído y meditado (+10 talentos)'}
+                kind={read ? 'ghost' : 'primary'}
+                disabled={read}
+                onPress={markReading}
+              />
+            )}
+
+            {data.commentary && (
+              <View style={styles.comment}>
+                <Label>Comentario del día</Label>
+                {data.commentary.title ? <Text style={styles.commentTitle}>{data.commentary.title}</Text> : null}
+                <Text style={{ color: C.blue }}>{data.commentary.author}</Text>
+                {data.commentary.source ? <Text style={{ color: C.muted, fontSize: 13 }}>{data.commentary.source}</Text> : null}
+                <Text style={[styles.scripture, { fontSize: fs(18), lineHeight: fs(28) }]}>{data.commentary.text}</Text>
+              </View>
+            )}
+
+            {others.map((r) => (
+              <View key={r.key} style={styles.other}>
+                <Pressable onPress={() => setOpen(open === r.key ? '' : r.key)} style={styles.rowBetween}>
+                  <View style={{ flex: 1 }}>
+                    <Label>{r.label}</Label>
+                    <Text style={{ color: C.ink, fontSize: 16 }}>{r.reference || r.label}</Text>
+                  </View>
+                  <View style={{ transform: [{ rotate: open === r.key ? '90deg' : '0deg' }] }}>
+                    <Glyph e="chevron" size={18} color={C.muted} />
+                  </View>
+                </Pressable>
+                {open === r.key && <Text style={[styles.scripture, { fontSize: fs(18), lineHeight: fs(28) }]}>{r.text}</Text>}
+              </View>
+            ))}
+            <Text style={{ color: C.muted, fontSize: 12 }}>Lecturas y comentario: {data.source}</Text>
+          </>
+        )}
+
+        {!loading && error && (
+          <Card>
+            <H2>No se pudieron descargar las lecturas</H2>
+            <P muted>
+              Las lecturas del día necesitan conexión. Sin internet puedes leer los cuatro Evangelios completos en «Los 4
+              Evangelios». Con conexión, también en estas webs:
+            </P>
+            {officialLinks(date).map((l) => (
+              <LinkRow key={l.url} label={l.label} url={l.url} />
+            ))}
+            <Button title="Reintentar" kind="ghost" onPress={retry} />
+          </Card>
+        )}
+
+        <View style={styles.other}>
+          <Label>Más comentarios de sacerdotes</Label>
+          {PRIEST_SITES.map((l) => (
             <LinkRow key={l.url} label={l.label} url={l.url} />
           ))}
-          <Button title="Reintentar" kind="ghost" onPress={retry} />
-        </Card>
-      )}
+        </View>
 
-      {offset === 0 && (
-        <Button
-          title={read ? '✓ Ya has meditado el Evangelio de hoy' : '✓ He leído y meditado (+10 talentos)'}
-          kind={read ? 'ghost' : 'gold'}
-          disabled={read}
-          onPress={markReading}
-        />
-      )}
-
-      <Card>
-        <Label>🎙️ Más comentarios de sacerdotes</Label>
-        {PRIEST_SITES.map((l) => (
-          <LinkRow key={l.url} label={l.label} url={l.url} />
-        ))}
-      </Card>
-
-      <Card style={{ backgroundColor: C.goldSoft, borderColor: C.gold }}>
-        <Label>Cómo orar con el Evangelio · Lectio Divina</Label>
-        {LECTIO_STEPS.map((s) => (
-          <P key={s.title}>
-            <Text style={{ fontWeight: '800' }}>{s.title}: </Text>
-            {s.text}
-          </P>
-        ))}
-      </Card>
-    </>
+        <View style={styles.other}>
+          <Label>Cómo orar con el Evangelio · Lectio Divina</Label>
+          {LECTIO_STEPS.map((s) => (
+            <P key={s.title}>
+              <Text style={{ fontWeight: '500' }}>{s.title}: </Text>
+              {s.text}
+            </P>
+          ))}
+        </View>
+      </IllustratedScroll>
+      <PanicFab />
+    </View>
   );
 }
 
@@ -181,21 +215,21 @@ function AllGospels() {
         <P muted style={{ fontSize: 14 }}>
           Un capítulo al día: en {TOTAL_CHAPTERS} días habrás leído los cuatro Evangelios. Cada capítulo suma +5 talentos.
         </P>
-        <Text style={{ color: C.green, fontWeight: '700', fontSize: 13 }}>✓ Texto completo disponible sin conexión</Text>
+        <Text style={{ color: C.green, fontSize: 13 }}>Texto completo disponible sin conexión</Text>
         {next ? (
           <Button
-            title={`▶ Continuar: ${next.book.short} ${next.ch}`}
-            kind="gold"
+            title={`Continuar: ${next.book.short} ${next.ch}`}
+            kind="primary"
             onPress={() =>
               router.push({ pathname: '/capitulo/[book]/[ch]', params: { book: next.book.id, ch: String(next.ch) } })
             }
           />
         ) : (
-          <P>🎉 ¡Has leído los cuatro Evangelios completos!</P>
+          <P>¡Has leído los cuatro Evangelios completos!</P>
         )}
       </Card>
 
-      <Label>⭐ Para la lucha por la pureza</Label>
+      <Label>Para la lucha por la pureza</Label>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {RECOMMENDED.map((r) => {
           const g = GOSPELS.find((x) => x.id === r.book)!;
@@ -206,10 +240,12 @@ function AllGospels() {
               style={[styles.reco, done && { borderColor: C.green }]}
               onPress={() => router.push({ pathname: '/capitulo/[book]/[ch]', params: { book: r.book, ch: String(r.ch) } })}
             >
-              <Text style={{ fontWeight: '800', color: C.navy }}>
-                {done ? '✓ ' : ''}
-                {g.short} {r.ch}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                {done && <Glyph e="✓" size={14} color={C.green} />}
+                <Text style={{ fontWeight: '500', color: C.navy }}>
+                  {g.short} {r.ch}
+                </Text>
+              </View>
               <Text style={{ color: C.muted, fontSize: 12 }}>{r.why}</Text>
             </Pressable>
           );
@@ -222,14 +258,18 @@ function AllGospels() {
         return (
           <Card key={g.id}>
             <Pressable onPress={() => setOpenBook(isOpen ? null : g.id)} style={styles.rowBetween}>
-              <Text style={{ fontSize: 30, marginRight: 10 }}>{g.icon}</Text>
+              <View style={{ marginRight: 12 }}>
+                <SceneCard id={BOOK_SCENE[g.id]} height={54} radius={12} />
+              </View>
               <View style={{ flex: 1 }}>
                 <H2>{g.short}</H2>
                 <Text style={{ color: C.muted, fontSize: 13 }}>
                   {g.chapters.length} capítulos · {read} leídos
                 </Text>
               </View>
-              <Text style={{ color: C.muted, fontSize: 20 }}>{isOpen ? '▾' : '▸'}</Text>
+              <View style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}>
+                <Glyph e="chevron" size={18} color={C.muted} />
+              </View>
             </Pressable>
             {isOpen && (
               <>
@@ -265,23 +305,27 @@ function AllGospels() {
 function LinkRow({ label, url }: { label: string; url: string }) {
   return (
     <Pressable onPress={() => WebBrowser.openBrowserAsync(url).catch(() => {})} style={{ paddingVertical: 6 }}>
-      <Text style={{ color: C.navySoft, fontSize: 15, fontWeight: '600' }}>↗ {label}</Text>
+      <Text style={{ color: C.blue, fontSize: 15 }}>↗ {label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  dateBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: C.line, padding: 6 },
-  arrow: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10, backgroundColor: C.bg },
-  arrowText: { fontSize: 24, color: C.navy, fontWeight: '700' },
-  dateText: { color: C.navy, fontWeight: '800', textTransform: 'capitalize' },
-  liturgy: { color: C.navySoft, fontWeight: '700', textAlign: 'center', fontSize: 15 },
+  h1: { fontSize: 30, fontWeight: '300', color: C.ink, letterSpacing: 0.5, textAlign: 'center' },
+  dateBar: { flexDirection: 'row', alignItems: 'center', paddingVertical: 2 },
+  arrow: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  dateText: { color: C.ink, fontWeight: '400' },
+  liturgy: { color: C.muted, textAlign: 'center', fontSize: 14, fontWeight: '300' },
+  heroRef: { fontFamily: serif, textAlign: 'center' },
+  heroLabel: { fontSize: 11, letterSpacing: 2.5, fontWeight: '400' },
   scripture: { fontFamily: serif, fontSize: 18, lineHeight: 29, color: C.ink },
-  lightLabel: { color: C.gold, letterSpacing: 1, fontSize: 12, fontWeight: '800' },
+  comment: { gap: 6, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
+  commentTitle: { fontFamily: serif, fontSize: 21, color: C.ink },
+  other: { gap: 6, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  reco: { flexBasis: '47%', flexGrow: 1, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: C.line, padding: 10 },
+  reco: { flexBasis: '47%', flexGrow: 1, backgroundColor: C.card, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, padding: 10 },
   chGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  ch: { width: 46, height: 46, borderRadius: 12, backgroundColor: C.bg, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
-  chDone: { backgroundColor: C.green, borderColor: C.green },
-  chText: { fontWeight: '800', color: C.navy, fontSize: 16 },
+  ch: { width: 46, height: 46, borderRadius: 23, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  chDone: { backgroundColor: C.navy, borderColor: C.navy },
+  chText: { fontWeight: '400', color: C.navy, fontSize: 16 },
 });

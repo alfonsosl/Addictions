@@ -1,5 +1,7 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Glyph } from '../../components/icons';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '../../components/Text';
 import { TabScreen } from '../../components/overlays';
 import { Button, C, Card, H1, H2, Label, P, ProgressBar } from '../../components/ui';
 import { TOTAL_CHAPTERS } from '../../content/gospels';
@@ -35,9 +37,9 @@ export default function Camino() {
               onPress={() => (m.id === 'examen' && !ok ? router.push('/examen') : toggleMission(m.id))}
             >
               <View style={[styles.check, ok && { backgroundColor: C.green, borderColor: C.green }]}>
-                {ok && <Text style={{ color: '#fff', fontWeight: '900' }}>✓</Text>}
+                {ok && <Glyph e="✓" size={16} color="#fff" width={2} />}
               </View>
-              <Text style={{ fontSize: 22 }}>{m.icon}</Text>
+              <Glyph e={m.icon} size={22} color={ok ? C.muted : C.navy} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.mTitle, ok && { textDecorationLine: 'line-through', color: C.muted }]}>{m.title}</Text>
                 <Text style={styles.mHint}>{m.hint}</Text>
@@ -49,7 +51,7 @@ export default function Camino() {
         <P muted style={{ fontSize: 13 }}>Completa todas para un bonus de +{REWARDS.fullDayBonus} talentos.</P>
       </Card>
 
-      <Button title="🌙 Hacer el examen de conciencia" onPress={() => router.push('/examen')} />
+      <Button title="Hacer el examen de la noche" onPress={() => router.push('/examen')} />
 
       <View style={styles.stats}>
         <Stat n={state.talents} label="talentos" />
@@ -67,7 +69,7 @@ export default function Camino() {
             const ok = best >= b.days;
             return (
               <View key={b.days} style={[styles.badge, !ok && { opacity: 0.35 }]}>
-                <Text style={{ fontSize: 30 }}>{ok ? b.icon : '🔒'}</Text>
+                <Glyph e={ok ? b.icon : '🔒'} size={30} color={ok ? C.navy : C.muted} width={1.3} />
                 <Text style={styles.badgeTitle}>{b.title}</Text>
                 <Text style={styles.badgeDays}>{b.days} d</Text>
               </View>
@@ -78,7 +80,7 @@ export default function Camino() {
           .slice(-1)
           .map((b) => (
             <P key={b.days} muted style={{ fontSize: 14 }}>
-              Última: {b.icon} {b.text}
+              Última: {b.title}. {b.text}
             </P>
           ))}
       </Card>
@@ -87,7 +89,9 @@ export default function Camino() {
         <Label>Niveles</Label>
         {LEVELS.map((l, i) => (
           <View key={l.name} style={[styles.level, i === index && styles.levelActive]}>
-            <Text style={{ width: 28, fontSize: 18 }}>{i < index ? '✅' : i === index ? '⭐' : '▫️'}</Text>
+            <View style={{ width: 28 }}>
+              {i <= index ? <Glyph e={i < index ? '✓' : '⭐'} size={18} color={i < index ? C.green : C.gold} /> : <View style={styles.dot} />}
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.mTitle, i > index && { color: C.muted }]}>{l.name}</Text>
               <Text style={styles.mHint}>{l.motto}</Text>
@@ -138,13 +142,14 @@ function Stat({ n, label }: { n: number; label: string }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between' },
   mission: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
-  check: { width: 26, height: 26, borderRadius: 8, borderWidth: 2, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
+  check: { width: 24, height: 24, borderRadius: 12, borderWidth: 1.2, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
   mTitle: { fontSize: 16, fontWeight: '600', color: C.ink },
   mHint: { fontSize: 13, color: C.muted },
-  reward: { color: C.gold, fontWeight: '800' },
+  reward: { color: C.gold, fontWeight: '500' },
   stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  stat: { flexGrow: 1, flexBasis: '45%', backgroundColor: '#fff', borderRadius: 16, padding: 14, borderWidth: 1, borderColor: C.line },
-  statN: { fontSize: 28, fontWeight: '900', color: C.navy },
+  stat: { flexGrow: 1, flexBasis: '45%', backgroundColor: C.card, borderRadius: 16, padding: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
+  dot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1, borderColor: C.muted, marginLeft: 5 },
+  statN: { fontSize: 30, fontWeight: '300', color: C.navy },
   statL: { color: C.muted, fontSize: 13 },
   badges: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   badge: { width: '30%', flexGrow: 1, alignItems: 'center', padding: 8, borderRadius: 14, backgroundColor: C.bg },

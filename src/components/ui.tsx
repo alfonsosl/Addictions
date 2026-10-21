@@ -1,26 +1,31 @@
 import type { ReactNode } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Glyph } from './icons';
+import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { serif, Text } from './Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFont } from '../lib/fontScale';
 
-// Paleta minimalista: fondo marfil, tinta azul noche y un único acento dorado.
+// Paleta inspirada en ilustración de línea: papel crema, tinta azul marino, azul mar y tonos tierra.
 export const C = {
-  bg: '#FAF8F4',
-  card: '#FFFFFF',
-  ink: '#1E2235',
-  muted: '#7A7E8C',
-  navy: '#1F2A52',
-  navySoft: '#3A4778',
-  gold: '#B8912A',
-  goldSoft: '#F5EDD6',
-  red: '#B3261E',
-  redSoft: '#FBEAE8',
-  green: '#2E7D4F',
-  line: '#ECE7DC',
-  night: '#141B38',
+  bg: '#EFEADB', // papel crema
+  card: '#F7F3E8',
+  ink: '#1D2440',
+  muted: '#857E6E',
+  navy: '#1D2758', // tinta
+  navySoft: '#2E6DB4', // azul mar
+  blue: '#2E6DB4',
+  gold: '#9C7A45', // ocre / madera
+  goldSoft: '#E6DCC4',
+  tan: '#C9B796', // lana
+  brown: '#7A5A35',
+  red: '#B4442E', // ladrillo
+  redSoft: '#F2DDD3',
+  green: '#6B7D45', // oliva
+  line: '#DBD2BE',
+  night: '#1B2350',
 };
 
-export const serif = Platform.select({ ios: 'Georgia', android: 'serif', default: 'Georgia, "Times New Roman", serif' });
+export { serif };
 
 export function Screen({
   children,
@@ -125,7 +130,7 @@ export function Chip({ label, active, onPress }: { label: string; active?: boole
 }
 
 export const inputStyle = {
-  backgroundColor: '#fff',
+  backgroundColor: C.card,
   borderWidth: 1,
   borderColor: C.line,
   borderRadius: 14,
@@ -172,9 +177,9 @@ export function Tile({
       onPress={onPress}
       style={({ pressed }) => [s.tile, pressed && { transform: [{ scale: 0.97 }] }]}
     >
-      <Text style={{ fontSize: 26 }}>{icon}</Text>
+      <Glyph e={icon} size={26} color={C.navy} width={1.3} />
       <Text style={t(s.tileTitle)}>{title}</Text>
-      <Text style={t([s.tileSub, done && { color: C.green, fontWeight: '700' }])}>{done ? '✓ Hecho' : subtitle}</Text>
+      <Text style={t([s.tileSub, done && { color: C.green, fontWeight: '700' }])}>{done ? 'Hecho' : subtitle}</Text>
     </Pressable>
   );
 }
@@ -203,8 +208,8 @@ export function ListRow({
       onPress={onPress}
       style={({ pressed }) => [s.row, !last && s.rowLine, pressed && { opacity: 0.6 }]}
     >
-      <View style={[s.rowIcon, done && { backgroundColor: '#E6F2EA' }]}>
-        <Text style={{ fontSize: 18 }}>{done ? '✓' : icon}</Text>
+      <View style={[s.rowIcon, done && { borderColor: C.green }]}>
+        <Glyph e={done ? '✓' : icon} size={20} color={done ? C.green : C.navy} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={t(s.rowTitle)}>{title}</Text>
@@ -214,7 +219,7 @@ export function ListRow({
           </Text>
         ) : null}
       </View>
-      <Text style={s.rowChevron}>›</Text>
+      <Glyph e="chevron" size={18} color="#B9AF9A" />
     </Pressable>
   );
 }
@@ -278,7 +283,7 @@ const s = StyleSheet.create({
   seg: { flexDirection: 'row', backgroundColor: '#F0ECE3', borderRadius: 14, padding: 3, gap: 3 },
   segItem: { flex: 1, paddingVertical: 9, borderRadius: 11, alignItems: 'center' },
   segActive: {
-    backgroundColor: '#fff',
+    backgroundColor: C.card,
     shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 4,
@@ -289,7 +294,7 @@ const s = StyleSheet.create({
   tile: {
     flexBasis: '47%',
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: C.card,
     borderRadius: 20,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: C.line,
@@ -301,7 +306,7 @@ const s = StyleSheet.create({
   tileSub: { fontSize: 13, color: C.muted },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
   rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
-  rowIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F4F1EA', alignItems: 'center', justifyContent: 'center' },
+  rowIcon: { width: 40, height: 40, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { fontSize: 16, fontWeight: '600', color: C.ink },
   rowSub: { fontSize: 13, color: C.muted, marginTop: 1 },
   rowChevron: { fontSize: 24, color: '#C9C4B8', fontWeight: '300' },
@@ -312,6 +317,6 @@ const s = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: C.line,
-    backgroundColor: '#fff',
+    backgroundColor: C.card,
   },
 });

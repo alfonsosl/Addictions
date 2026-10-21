@@ -1,44 +1,96 @@
 import Svg, { Circle, Path } from 'react-native-svg';
+import { Text } from './Text';
 
-// Iconos de línea fina para la barra de pestañas.
-export type IconName = 'home' | 'book' | 'candle' | 'mountain' | 'compass';
+// Iconos de línea fina, mismo trazo que las ilustraciones. Lienzo de 24×24.
+const PATHS = {
+  home: ['M3.5 10.5 12 3.5l8.5 7', 'M5.5 9v11h13V9', 'M12 12.5v5M9.8 14.6h4.4'],
+  book: ['M12 6.5C10 5 7 4.5 3.5 5v13.5C7 18 10 18.5 12 20c2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z', 'M12 6.5V20'],
+  books: ['M4 4.5h4v15H4z', 'M8 6.5h4v13H8z', 'm13 6.2 3.8-1 3.6 13.6-3.8 1z'],
+  candle: ['M12 3c-1.6 2-2.2 3.3-2.2 4.4A2.2 2.2 0 0 0 12 9.6a2.2 2.2 0 0 0 2.2-2.2C14.2 6.3 13.6 5 12 3Z', 'M9 12h6v8.5H9z', 'M6.5 20.5h11'],
+  mountain: ['M2.5 19.5 9 8.5l4 6.5 2.5-3.5 6 8H2.5Z', 'M17 3.5v4M15 5.5h4'],
+  compass: ['M15.5 8.5l-2 5-5 2 2-5 5-2Z'],
+  gear: ['M12 8.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Z', 'M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8'],
+  moon: ['M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10Z'],
+  sun: ['M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z', 'M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4'],
+  sunrise: ['M7 17a5 5 0 0 1 10 0', 'M2.5 17h19M5 20.5h14', 'M12 4.5v3.5M4.8 9.8l1.6 1.6M19.2 9.8l-1.6 1.6'],
+  sunset: ['M7 15a5 5 0 0 1 10 0', 'M2.5 15h19M5 18.5h14M8 21.5h8'],
+  sparkle: ['M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z', 'M18.5 16v4M16.5 18h4'],
+  pray: ['M12 4.5c-1 1.2-2.6 4-3.2 7.4L7 14.5l-3 3 3.5 3 3-3.5c1-1.2 1.5-2.6 1.5-4V4.5Z', 'M12 4.5c1 1.2 2.6 4 3.2 7.4l1.8 2.6 3 3-3.5 3-3-3.5c-1-1.2-1.5-2.6-1.5-4'],
+  cross: ['M12 3v18', 'M7.5 8h9'],
+  heart: ['M12 20s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 7.6 4.2 4.2 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z'],
+  dove: ['M3.5 12.5c3 .3 5.3-.5 7-2.6L13 6.5c1-1.4 3.4-1.5 4.5.2l2 .8-2 .8c-.6 4.4-3.6 7.7-8.4 8.2L6 19.5l1.2-3.4c-1.7-.7-3-1.9-3.7-3.6Z', 'M15.8 7.6h.01'],
+  sprout: ['M12 20.5v-9', 'M12 11.5C12 7.5 9 5.5 5 5.5c0 4 3 6 7 6Z', 'M12 13.5c0-3.4 2.6-5.5 6.5-5.5 0 3.6-2.8 5.5-6.5 5.5Z', 'M7.5 20.5h9'],
+  tree: ['M12 21v-6', 'M12 3c-3.5 0-6 2.7-6 6 0 3.2 2.6 5.5 6 5.5s6-2.3 6-5.5C18 5.7 15.5 3 12 3Z', 'M12 15l-2.5-2.5M12 13l2.5-2'],
+  shield: ['M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z', 'M12 8v8M9 11h6'],
+  anchor: ['M12 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z', 'M12 7.5V20.5', 'M8.5 10.5h7', 'M4.5 13.5c0 4 3.4 7 7.5 7s7.5-3 7.5-7', 'M3 15l1.5-1.5L6 15M18 15l1.5-1.5L21 15'],
+  desert: ['M2.5 19.5c3-4 7-4.5 10-2.5 2.6 1.7 5.7 1.6 9-.5', 'M2.5 15.5c2.5-1.8 5-2 7.5-1', 'M17 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z'],
+  repeat: ['M17 3.5l3 3-3 3', 'M4 11.5V10a3.5 3.5 0 0 1 3.5-3.5H20', 'M7 20.5l-3-3 3-3', 'M20 12.5V14a3.5 3.5 0 0 1-3.5 3.5H4'],
+  crown: ['M3.5 8l3.8 3.5L12 5l4.7 6.5L20.5 8l-1.5 10h-14L3.5 8Z', 'M5 20.5h14'],
+  star: ['m12 3.5 2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.4l-5.1 2.8L8 13.5l-4.3-4 5.8-.7L12 3.5Z'],
+  lock: ['M6 11h12v9.5H6z', 'M8.5 11V8a3.5 3.5 0 0 1 7 0v3', 'M12 14.5v2.5'],
+  check: ['M5 12.5l4.5 4.5L19 7.5'],
+  phone: ['M5 4.5h3.5l1.5 4-2 1.3a10 10 0 0 0 6.2 6.2l1.3-2 4 1.5V19a1.5 1.5 0 0 1-1.6 1.5C10.8 20 4 13.2 3.5 6.1A1.5 1.5 0 0 1 5 4.5Z'],
+  message: ['M4 5.5h16v11H9.5L5 20v-3.5H4z', 'M8 10h8M8 13h5'],
+  wave: ['M2.5 9c2.5-2.5 4.5-2.5 6.3 0s4 2.5 6.4 0 4.3-2.5 6.3 0', 'M2.5 14c2.5-2.5 4.5-2.5 6.3 0s4 2.5 6.4 0 4.3-2.5 6.3 0', 'M2.5 19c2.5-2.5 4.5-2.5 6.3 0s4 2.5 6.4 0 4.3-2.5 6.3 0'],
+  walk: ['M13 4.5a1.5 1.5 0 1 0 0-.1', 'M10 21l2-6.5-2.5-2.5 1-4.5L14 10l3 1', 'M12 14.5l3 2.5 1 4M9.5 7.5 6.5 9l-1 3.5'],
+  run: ['M14.5 4.5a1.5 1.5 0 1 0 0-.1', 'M5 20.5l3.5-1 2-3.5', 'M8 11l3-3.5 3 2 2.5 3H20', 'M11 7.5l-1 5 4 2.5-1.5 5.5'],
+  drop: ['M12 3.5c-3.5 4.6-5.5 7.8-5.5 10.5a5.5 5.5 0 0 0 11 0c0-2.7-2-5.9-5.5-10.5Z', 'M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5'],
+  nophone: ['M8 3.5h8v17H8z', 'M11 17.5h2', 'M3.5 3.5l17 17'],
+  people: ['M8.5 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z', 'M3.5 19.5c0-3 2.2-5.5 5-5.5s5 2.5 5 5.5', 'M16 10.5a2.2 2.2 0 1 0 0-4.4', 'M15 14.2c3 .1 5.5 2.4 5.5 5.3'],
+  search: ['M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Z', 'M15.5 15.5l5 5'],
+  door: ['M6 20.5V4.5h9v16', 'M15 7.5l3.5-1.5v14.5H15', 'M12 12.5v1', 'M3.5 20.5h17'],
+  target: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z', 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z', 'M12 11.5v1'],
+  help: ['M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z', 'M12 8v8M8 12h8'],
+  rosary: ['M12 3.5a5 5 0 0 0-5 5c0 3 2.5 5 5 7.5 2.5-2.5 5-4.5 5-7.5a5 5 0 0 0-5-5Z', 'M12 16v5M10 18.5h4'],
+  calendar: ['M4 6h16v14.5H4z', 'M4 10h16', 'M8.5 3.5V7M15.5 3.5V7'],
+  church: ['M12 2.5v4M10.5 4h3', 'M7.5 21V11l4.5-4.5 4.5 4.5v10', 'M3.5 21v-6l4-2.5M20.5 21v-6l-4-2.5', 'M10.5 21v-4a1.5 1.5 0 0 1 3 0v4', 'M2.5 21h19'],
+  mic: ['M9 4.5a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0z', 'M5.5 10.5a6.5 6.5 0 0 0 13 0', 'M12 17v3.5M9 20.5h6'],
+  alert: ['M12 4 2.5 20h19L12 4Z', 'M12 10v4.5M12 17v.5'],
+  angel: ['M12 7.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z', 'M9 21l1-10h4l1 10Z', 'M10 11.5C7 10 5 7.5 4 5c0 4 2 7.5 5.5 8.5M14 11.5c3-1.5 5-4 6-6.5 0 4-2 7.5-5.5 8.5'],
+  lion: ['M12 5.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Z', 'M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4', 'M10 11h.01M14 11h.01M11 14.5h2l-1 1.2z'],
+  ox: ['M4 5c0 2.5 1.6 4 4 4.5M20 5c0 2.5-1.6 4-4 4.5', 'M8 9.5h8l-.5 6c-.3 2.4-1.8 4-3.5 4s-3.2-1.6-3.5-4z', 'M10.5 17h3M10 12.5h.01M14 12.5h.01'],
+  eagle: ['M12 9.5c-2-3-5.5-4.5-9.5-4.5 1.5 3.5 4.5 6.5 9.5 7 5-.5 8-3.5 9.5-7-4 0-7.5 1.5-9.5 4.5Z', 'M10.5 12.5 12 20l1.5-7.5', 'M12 9.5V6.5a1.3 1.3 0 0 1 2 0'],
+  bell: ['M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15Z', 'M10 20.5a2 2 0 0 0 4 0'],
+  sheep: ['M5 12.5c-1.5-2.5.5-5 3-4.5.8-2 4.2-2 5 0 2.5-.5 4 2 3 4-.5 2.5-3 3.5-5.5 3.5S5.5 14.5 5 12.5Z', 'M16 10.5c1.5-1 3.5 0 3.5 1.8 0 1.2-1 2-2.2 1.7', 'M8 15.5v3M13 15.5v3'],
+  undo: ['M8 5.5 4 9.5l4 4', 'M4.5 9.5H14a5.5 5.5 0 0 1 0 11h-3'],
+  close: ['M6 6l12 12M18 6 6 18'],
+  chevron: ['M9.5 5.5l6 6.5-6 6.5'],
+  chart: ['M4 20.5V4', 'M4 20.5h16.5', 'M7.5 16l3.5-4 3 2.5 5.5-6.5'],
+  image: ['M3.5 5h17v14h-17z', 'M3.5 16.5l5-5 4 4 2.5-2.5 5.5 5.5', 'M15.5 8.5h.01'],
+} as const;
 
-export function Icon({ name, color, size = 24 }: { name: IconName; color: string; size?: number }) {
-  const p = { stroke: color, strokeWidth: 1.7, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
+export type IconName = keyof typeof PATHS;
+
+const CIRCLES: Partial<Record<IconName, [number, number, number][]>> = {
+  compass: [[12, 12, 8.5]],
+};
+
+export function Icon({ name, color, size = 24, width = 1.5 }: { name: IconName; color: string; size?: number; width?: number }) {
+  const p = { stroke: color, strokeWidth: width, fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' } as const;
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
-      {name === 'home' && (
-        <>
-          <Path d="M3.5 10.5 12 3.5l8.5 7" {...p} />
-          <Path d="M5.5 9v11h13V9" {...p} />
-          <Path d="M12 12.5v5M9.8 14.6h4.4" {...p} />
-        </>
-      )}
-      {name === 'book' && (
-        <>
-          <Path d="M12 6.5C10 5 7 4.5 3.5 5v13.5C7 18 10 18.5 12 20c2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z" {...p} />
-          <Path d="M12 6.5V20" {...p} />
-        </>
-      )}
-      {name === 'candle' && (
-        <>
-          <Path d="M12 3c-1.6 2-2.2 3.3-2.2 4.4A2.2 2.2 0 0 0 12 9.6a2.2 2.2 0 0 0 2.2-2.2C14.2 6.3 13.6 5 12 3Z" {...p} />
-          <Path d="M9 12h6v8.5H9z" {...p} />
-          <Path d="M6.5 20.5h11" {...p} />
-        </>
-      )}
-      {name === 'mountain' && (
-        <>
-          <Path d="M2.5 19.5 9 8.5l4 6.5 2.5-3.5 6 8H2.5Z" {...p} />
-          <Path d="M17 3.5v4M15 5.5h4" {...p} />
-        </>
-      )}
-      {name === 'compass' && (
-        <>
-          <Circle cx="12" cy="12" r="8.5" {...p} />
-          <Path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" {...p} />
-        </>
-      )}
+      {CIRCLES[name]?.map(([cx, cy, r], i) => <Circle key={`c${i}`} cx={cx} cy={cy} r={r} {...p} />)}
+      {PATHS[name].map((d, i) => (
+        <Path key={i} d={d} {...p} />
+      ))}
     </Svg>
   );
+}
+
+// Correspondencia de los emojis usados en el contenido con iconos de línea.
+const EMOJI: Record<string, IconName> = {
+  '🏠': 'home', '📖': 'book', '📚': 'books', '🕯️': 'candle', '⛰️': 'mountain', '🧭': 'compass', '⚙️': 'gear', '⚙︎': 'gear',
+  '🌙': 'moon', '☀️': 'sun', '🌄': 'sunrise', '🌅': 'sunrise', '🌆': 'sunset', '✨': 'sparkle', '🙏': 'pray', '✝️': 'cross',
+  '💛': 'heart', '🤍': 'heart', '🕊️': 'dove', '🌱': 'sprout', '🌳': 'tree', '🛡️': 'shield', '⚓': 'anchor', '🏜️': 'desert',
+  '🔁': 'repeat', '👑': 'crown', '⭐': 'star', '🔒': 'lock', '✓': 'check', '✅': 'check', '📞': 'phone', '💬': 'message',
+  '🌊': 'wave', '🚶': 'walk', '🏃': 'run', '💪': 'run', '💧': 'drop', '📵': 'nophone', '🤝': 'people', '🗣️': 'people',
+  '🔍': 'search', '🚪': 'door', '🎯': 'target', '🩺': 'help', '📿': 'rosary', '📅': 'calendar', '⛪': 'church', '🎙️': 'mic',
+  '🚨': 'alert', '👤': 'angel', '🦁': 'lion', '🐂': 'ox', '🦅': 'eagle', '🎉': 'star', '🔔': 'bell', '🐑': 'sheep',
+};
+
+/** Muestra el icono de línea que corresponde a un emoji del contenido. */
+export function Glyph({ e, size = 22, color = '#1D2758', width }: { e: string; size?: number; color?: string; width?: number }) {
+  const name = EMOJI[e] ?? (e in PATHS ? (e as IconName) : undefined);
+  if (!name) return <Text style={{ fontSize: size * 0.8, color }}>{e}</Text>;
+  return <Icon name={name} color={color} size={size} width={width} />;
 }

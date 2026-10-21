@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Text } from 'react-native';
+import { Text } from '../../components/Text';
 import { Button, C, Card, P, Screen, serif } from '../../components/ui';
 import { PRAYERS } from '../../content/prayers';
 import { useFont } from '../../lib/fontScale';
@@ -22,7 +22,7 @@ export default function PrayerScreen() {
       </Card>
       {isMorning && !offered ? (
         <Button
-          title="🌄 He ofrecido mi día (+5)"
+          title="He ofrecido mi día (+5)"
           kind="gold"
           onPress={() => {
             toggleMission('ofrecimiento');
@@ -30,7 +30,7 @@ export default function PrayerScreen() {
           }}
         />
       ) : (
-        <Button title="Amén 🙏" kind="gold" onPress={() => router.back()} />
+        <Button title="Amén" kind="gold" onPress={() => router.back()} />
       )}
     </Screen>
   );

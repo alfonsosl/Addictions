@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
+import { SceneCard } from '../components/LoveIllustration';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
-import { Button, C, Card, Chip, H1, H2, inputStyle, Label, P, Screen } from '../components/ui';
+import { View } from 'react-native';
+import { TextInput } from '../components/Text';
+import { Button, C, Card, Chip, H1, H2, inputStyle, Label, P, Screen, serif } from '../components/ui';
 import { DAY_MS } from '../lib/game';
 import { useStore } from '../lib/store';
 
@@ -45,9 +47,11 @@ export default function Onboarding() {
 
       {step === 0 && (
         <>
-          <Text style={{ fontSize: 56, textAlign: 'center', marginTop: 24 }}>🕯️</Text>
+          <View style={{ marginTop: 8, marginHorizontal: -4 }}>
+            <SceneCard id="light" height={220} />
+          </View>
           <H1>Vigilia</H1>
-          <P style={{ fontStyle: 'italic', color: C.navySoft }}>
+          <P style={{ fontFamily: serif, fontStyle: 'italic', color: C.ink, fontSize: 18 }}>
             «Velad y orad para no caer en tentación; el espíritu está pronto, pero la carne es débil.» (Mt 26,41)
           </P>
           <P>

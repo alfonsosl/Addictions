@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '../../components/Text';
 import { LoveArt } from '../../components/LoveIllustration';
 import { Button, C, Card, H1, Label, P, Screen, SectionTitle } from '../../components/ui';
 import { EXAMEN_AREAS, SLEEP_CHECKLIST } from '../../content/examen';
@@ -58,7 +59,7 @@ export default function ExamenHome() {
       ) : null}
 
       <Button
-        title={done ? '✓ Hecho esta noche · repasar o editar' : 'Empezar el examen de esta noche'}
+        title={done ? 'Hecho esta noche · repasar o editar' : 'Empezar el examen de esta noche'}
         kind={done ? 'ghost' : 'primary'}
         onPress={() => router.push('/examen/guiado')}
       />
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
   stats: { flexDirection: 'row', gap: 12 },
   stat: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: C.card,
     borderRadius: 18,
     paddingVertical: 14,
     alignItems: 'center',

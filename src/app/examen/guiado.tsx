@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
+import { Glyph } from '../../components/icons';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput } from '../../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DailyLove } from '../../components/LoveIllustration';
 import { C, serif } from '../../components/ui';
@@ -83,7 +85,9 @@ export default function ExamenGuiado() {
       <ScrollView key={step} contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         {step === 0 && (
           <>
-            <Text style={styles.moon}>🌙</Text>
+            <View style={{ alignItems: 'center', marginTop: 8 }}>
+              <Glyph e="🌙" size={44} color={C.goldSoft} width={1.2} />
+            </View>
             <Text style={t(styles.title)}>Ponte en presencia de Dios</Text>
             {EXAMEN_PREP.map((x, i) => (
               <Text key={i} style={t(styles.text)}>
@@ -110,9 +114,10 @@ export default function ExamenGuiado() {
             <Text style={t(styles.text)}>Como quien ve una película a su lado, sin juzgarte: solo mirando.</Text>
             {REVIEW_PROMPTS.map((r) => (
               <View key={r.title} style={styles.box}>
-                <Text style={t(styles.boxTitle)}>
-                  {r.icon} {r.title}
-                </Text>
+                <View style={styles.boxHead}>
+                  <Glyph e={r.icon} size={20} color={C.goldSoft} />
+                  <Text style={t(styles.boxTitle)}>{r.title}</Text>
+                </View>
                 <Text style={t(styles.boxText)}>{r.text}</Text>
               </View>
             ))}
@@ -143,9 +148,10 @@ export default function ExamenGuiado() {
             </Text>
             {EXAMEN_AREAS.map((a) => (
               <View key={a.id} style={styles.box}>
-                <Text style={t(styles.boxTitle)}>
-                  {a.icon} {a.title}
-                </Text>
+                <View style={styles.boxHead}>
+                  <Glyph e={a.icon} size={20} color={C.goldSoft} />
+                  <Text style={t(styles.boxTitle)}>{a.title}</Text>
+                </View>
                 {a.questions.map((q) => {
                   const on = marked.includes(q.id);
                   return (
@@ -271,6 +277,7 @@ const styles = StyleSheet.create({
   text: { color: '#fff', fontSize: 16, lineHeight: 24, textAlign: 'center', opacity: 0.88 },
   hint: { color: '#fff', opacity: 0.5, fontSize: 13, lineHeight: 18, textAlign: 'center' },
   prayer: { color: '#fff', fontSize: 18, lineHeight: 29, fontFamily: serif, fontStyle: 'italic', opacity: 0.95 },
+  boxHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   box: { backgroundColor: W + '0.06)', borderRadius: 16, padding: 14, gap: 8 },
   boxTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
   boxText: { color: '#fff', fontSize: 15, lineHeight: 22, opacity: 0.88 },

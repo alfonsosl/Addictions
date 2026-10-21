@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
+import { Glyph } from '../../components/icons';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '../../components/Text';
 import { TabScreen } from '../../components/overlays';
-import { C, Card, H1, H2, P, Segmented } from '../../components/ui';
+import { C, Card, H1, H2, P, Segmented, serif } from '../../components/ui';
 import { PRAYERS } from '../../content/prayers';
 import { PRIEST_REFLECTIONS } from '../../content/priests';
 import { REFLECTIONS } from '../../content/reflections';
@@ -18,9 +20,9 @@ export default function Rezar() {
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'oraciones', label: '🙏 Oraciones' },
-          { value: 'pastores', label: '⛪ Sacerdotes' },
-          { value: 'reflexiones', label: '✨ Biblia' },
+          { value: 'oraciones', label: 'Oraciones' },
+          { value: 'pastores', label: 'Sacerdotes' },
+          { value: 'reflexiones', label: 'Biblia' },
         ]}
       />
 
@@ -35,7 +37,8 @@ export default function Rezar() {
               onPress={() => router.push({ pathname: '/oracion/[id]', params: { id: p.id } })}
             />
           ))}
-          <Row icon="🌙" title="Examen de conciencia" subtitle="Cinco pasos antes de dormir" onPress={() => router.push('/examen')} />
+          <Row icon="🌙" title="Examen de la noche" subtitle="Siete pasos antes de dormir" onPress={() => router.push('/examen')} />
+          <Row icon="image" title="Ilustraciones" subtitle="Contempla una escena del Evangelio en silencio" onPress={() => router.push('/galeria')} />
         </>
       )}
 
@@ -62,7 +65,7 @@ export default function Rezar() {
               <Card>
                 <H2>{r.title}</H2>
                 <Text style={styles.quote}>«{r.quote}»</Text>
-                <Text style={{ color: C.muted, fontWeight: '700', fontSize: 13 }}>{r.source}</Text>
+                <Text style={{ color: C.muted, fontWeight: '300', fontSize: 13 }}>{r.source}</Text>
               </Card>
             </Pressable>
           ))}
@@ -75,29 +78,32 @@ export default function Rezar() {
 function Row({ icon = '🙏', title, subtitle, onPress }: { icon?: string; title: string; subtitle: string; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
-      <Text style={{ fontSize: 24 }}>{icon}</Text>
+      <View style={styles.rowIcon}>
+        <Glyph e={icon} size={22} color={C.navy} />
+      </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontWeight: '800', color: C.navy, fontSize: 16 }}>{title}</Text>
+        <Text style={{ fontWeight: '500', color: C.ink, fontSize: 16 }}>{title}</Text>
         <Text style={{ color: C.muted, fontSize: 13 }} numberOfLines={2}>
           {subtitle}
         </Text>
       </View>
-      <Text style={{ color: C.muted, fontSize: 22 }}>›</Text>
+      <Glyph e="chevron" size={18} color={C.muted} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  author: { color: C.gold, fontWeight: '800', fontSize: 13, letterSpacing: 0.5, textTransform: 'uppercase' },
-  quote: { fontStyle: 'italic', color: C.navy, fontSize: 16, lineHeight: 23 },
-  more: { color: C.navySoft, fontWeight: '700' },
+  author: { color: C.muted, fontWeight: '500', fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase' },
+  quote: { fontFamily: serif, fontStyle: 'italic', color: C.ink, fontSize: 18, lineHeight: 25 },
+  more: { color: C.blue, fontWeight: '400' },
+  rowIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: C.line },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#fff',
+    backgroundColor: C.card,
     borderRadius: 16,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: C.line,
     padding: 14,
   },

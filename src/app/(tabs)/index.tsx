@@ -1,25 +1,23 @@
 import { Link, router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '../../components/Text';
+import { Glyph } from '../../components/icons';
 import { DailyLove } from '../../components/LoveIllustration';
+import { StreakChart } from '../../components/StreakChart';
 import { HomeActions } from '../../components/overlays';
 import { C, Card, Label, ListRow, P, ProgressBar, Screen, SectionTitle } from '../../components/ui';
 import { MISSIONS } from '../../content/missions';
 import { PRAYERS } from '../../content/prayers';
 import { reflectionForDate } from '../../content/reflections';
 import { useFont } from '../../lib/fontScale';
-import { BADGES, DAY_MS, examenKey, levelFor, nextBadge, streakDays, streakMs } from '../../lib/game';
+import { examenKey, levelFor, streakDays } from '../../lib/game';
 import { useStore } from '../../lib/store';
 
 export default function Home() {
   const { state, now, today } = useStore();
   const { t } = useFont();
   const days = streakDays(state, now);
-  const rest = streakMs(state, now) % DAY_MS;
-  const hours = Math.floor(rest / 3_600_000);
-  const minutes = Math.floor((rest % 3_600_000) / 60_000);
   const { level, next, progress } = levelFor(state.talents);
-  const badge = nextBadge(days);
-  const prevDays = BADGES.filter((b) => b.days < (badge?.days ?? 0)).pop()?.days ?? 0;
   const reflection = reflectionForDate(now);
   const doneMissions = state.missionsByDate[today] ?? [];
   const name = state.profile?.name;
@@ -38,36 +36,24 @@ export default function Home() {
           </View>
           <Link href="/ajustes" asChild>
             <Pressable hitSlop={12} accessibilityLabel="Ajustes" style={styles.settings}>
-              <Text style={{ fontSize: 17, color: C.navy }}>⚙︎</Text>
+              <Glyph e="gear" size={20} color={C.navy} />
             </Pressable>
           </Link>
         </View>
 
-        {/* Contador */}
-        <Pressable onPress={() => router.push('/camino')} style={styles.counter} accessibilityLabel={`${days} días en libertad`}>
-          <Text style={styles.counterDays}>{days}</Text>
-          <Text style={t(styles.counterUnit)}>{days === 1 ? 'día en libertad' : 'días en libertad'}</Text>
-          <Text style={t(styles.counterSub)}>
-            {hours} h {minutes} min · mejor racha {Math.max(state.bestStreakDays, days)} d
-          </Text>
-          {badge && (
-            <View style={styles.counterBadge}>
-              <ProgressBar value={(days - prevDays) / (badge.days - prevDays)} />
-              <Text style={t(styles.counterNext)}>
-                {badge.icon} {badge.title} · faltan {badge.days - days} {badge.days - days === 1 ? 'día' : 'días'}
-              </Text>
-            </View>
-          )}
+        {/* Contador en forma de gráfico */}
+        <Pressable onPress={() => router.push('/camino')} accessibilityLabel={`${days} días en libertad`}>
+          <StreakChart state={state} now={now} />
         </Pressable>
 
         {isNight && !examenDone && (
           <Pressable onPress={() => router.push('/examen/guiado')} style={styles.night}>
-            <Text style={{ fontSize: 26 }}>🌙</Text>
+            <Glyph e="🌙" size={26} color="#EFEADB" width={1.3} />
             <View style={{ flex: 1 }}>
               <Text style={t(styles.nightTitle)}>Es hora del examen</Text>
               <Text style={t(styles.nightSub)}>Diez minutos con Dios antes de dormir</Text>
             </View>
-            <Text style={styles.nightArrow}>›</Text>
+            <Glyph e="chevron" size={20} color="#EFEADB" />
           </Pressable>
         )}
 
@@ -143,24 +129,17 @@ function longDate(d: Date) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', marginTop: 6 },
-  date: { fontSize: 13, color: C.muted, fontWeight: '500' },
-  hello: { fontSize: 24, fontWeight: '700', color: C.navy, letterSpacing: -0.3, marginTop: 2 },
+  date: { fontSize: 13, color: C.muted, fontWeight: '300', letterSpacing: 0.5 },
+  hello: { fontSize: 26, fontWeight: '300', color: C.ink, letterSpacing: 0.2, marginTop: 2 },
   settings: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: C.line,
   },
-  counter: { alignItems: 'center', paddingVertical: 18, gap: 2 },
-  counterDays: { color: C.navy, fontSize: 96, fontWeight: '200', lineHeight: 104, letterSpacing: -2 },
-  counterUnit: { color: C.navy, fontSize: 17, fontWeight: '600' },
-  counterSub: { color: C.muted, fontSize: 13, marginTop: 2 },
-  counterBadge: { width: '70%', marginTop: 14, gap: 8 },
-  counterNext: { color: C.muted, fontSize: 13, textAlign: 'center' },
   night: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -169,12 +148,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
   },
-  nightTitle: { color: '#fff', fontWeight: '700', fontSize: 17 },
+  nightTitle: { color: '#fff', fontWeight: '400', fontSize: 17 },
   nightSub: { color: '#fff', opacity: 0.7, fontSize: 13, marginTop: 2 },
   nightArrow: { color: '#fff', fontSize: 28, fontWeight: '300', opacity: 0.8 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  talents: { color: C.gold, fontWeight: '700', fontSize: 14 },
-  rule: { color: C.green, fontWeight: '700', fontSize: 14 },
+  talents: { color: C.gold, fontWeight: '400', fontSize: 14 },
+  rule: { color: C.green, fontWeight: '400', fontSize: 14 },
   small: { color: C.muted, fontSize: 13 },
   why: { borderLeftWidth: 2, borderLeftColor: C.gold, paddingLeft: 14, gap: 4, marginVertical: 4 },
 });
