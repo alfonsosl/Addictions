@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { Glyph } from '../../components/icons';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Pressable } from '../../components/Tap';
 import { Text } from '../../components/Text';
 import { TabScreen } from '../../components/overlays';
 import { C, Card, H1, H2, P, Segmented, serif } from '../../components/ui';

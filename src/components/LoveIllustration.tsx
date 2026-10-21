@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Pressable } from './Tap';
 import Svg from 'react-native-svg';
 import { loveForDate } from '../content/love';
 import { useFont } from '../lib/fontScale';

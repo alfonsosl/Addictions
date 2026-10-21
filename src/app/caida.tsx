@@ -61,6 +61,7 @@ export default function Relapse() {
         />
         <Button
           title="Registrar y volver a empezar"
+          confirm="Vuelves a empezar"
           onPress={() => {
             relapse(triggers, note.trim());
             setStep(2);
@@ -90,6 +91,8 @@ export default function Relapse() {
         />
         <Button
           title="Ya me he confesado (+30 talentos)"
+          confirm="Bienvenido a casa"
+          celebrate
           kind="gold"
           onPress={() => {
             addConfession();

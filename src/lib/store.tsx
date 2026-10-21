@@ -3,6 +3,7 @@ import * as Haptics from 'expo-haptics';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 import { MISSIONS } from '../content/missions';
+import { virtueById } from '../content/virtues';
 import * as G from './game';
 
 const KEY = 'vigilia:state:v1';
@@ -19,6 +20,9 @@ type Actions = {
   relapse: (triggers: string[], note: string) => void;
   addConfession: () => void;
   saveExamen: (e: G.Examen) => void;
+  setVirtueFocus: (virtueId: string, on: boolean) => void;
+  toggleVirtueAction: (virtueId: string, actionId: string) => void;
+  logVirtue: (virtueId: string, actionId: string, dateKey?: string) => void;
   resetAll: () => void;
   dismissBadge: () => void;
 };
@@ -156,6 +160,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           icon: '🌙',
           text: 'Examen guardado. Descansa en paz.',
         }),
+      setVirtueFocus: (vid, on) => {
+        const v = virtueById(vid);
+        if (!v) return;
+        update(
+          (s, n) => G.setVirtueFocus(s, vid, on, v.actions.map((a) => a.id), G.dateKey(n)),
+          on ? { icon: 'sprout', text: `Empiezas a crecer en ${v.name.toLowerCase()}` } : undefined,
+        );
+      },
+      toggleVirtueAction: (vid, aid) => {
+        update((s) => G.toggleVirtueAction(s, vid, aid));
+        haptic('light');
+      },
+      logVirtue: (vid, aid, key) => {
+        const k = key ?? G.dateKey(new Date());
+        const added = !(stateRef.current.virtueLog[k] ?? []).includes(`${vid}:${aid}`);
+        update((s) => G.logVirtue(s, k, vid, aid));
+        if (added) {
+          const a = virtueById(vid)?.actions.find((x) => x.id === aid);
+          showToast('sprout', `${a?.text ?? 'Propósito'} · +${G.REWARDS.virtue}`);
+          haptic('success');
+        } else haptic('light');
+      },
       resetAll: () => {
         prevBest.current = null;
         setState(G.initialState);

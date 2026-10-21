@@ -44,6 +44,15 @@ export type State = {
   relapses: Relapse[];
   confessions: string[]; // ISO
   chaptersRead: string[]; // "mt-5", "jn-15"…
+  virtues: VirtuePlan;
+  virtueLog: Record<string, string[]>; // fecha → ["castidad:mirada", …] propósitos cumplidos ese día
+};
+
+/** Plan de virtudes: en cuáles trabajas, con qué propósitos y desde cuándo. */
+export type VirtuePlan = {
+  focus: string[];
+  actions: Record<string, string[]>;
+  since: Record<string, string>; // virtud → fecha en que empezaste
 };
 
 export const initialState: State = {
@@ -60,6 +69,8 @@ export const initialState: State = {
   relapses: [],
   confessions: [],
   chaptersRead: [],
+  virtues: { focus: [], actions: {}, since: {} },
+  virtueLog: {},
 };
 
 // Recompensas (talentos — Mt 25,14-30: hacer fructificar lo recibido)
@@ -71,6 +82,7 @@ export const REWARDS = {
   confession: 30,
   fullDayBonus: 15,
   chapter: 5,
+  virtue: 3,
 } as const;
 
 /** Día al que pertenece el examen: hasta las 4:00 cuenta como la noche anterior. */
@@ -246,4 +258,84 @@ export function topTriggers(relapses: Relapse[], n = 3): { trigger: string; coun
     .map(([trigger, count]) => ({ trigger, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, n);
+}
+
+// ---------- Virtudes (vencer el mal con el bien, Rom 12,21) ----------
+
+export const MAX_VIRTUES = 3;
+export const MAX_VIRTUE_ACTIONS = 3;
+
+/** Empieza o deja de trabajar una virtud. Al empezar, propone sus primeros propósitos. */
+export function setVirtueFocus(state: State, virtueId: string, on: boolean, defaults: string[], key: string): State {
+  const v = state.virtues;
+  const has = v.focus.includes(virtueId);
+  if (on === has) return state;
+  if (on && v.focus.length >= MAX_VIRTUES) return state;
+  return {
+    ...state,
+    virtues: {
+      focus: on ? [...v.focus, virtueId] : v.focus.filter((x) => x !== virtueId),
+      actions: on && !v.actions[virtueId]?.length ? { ...v.actions, [virtueId]: defaults.slice(0, MAX_VIRTUE_ACTIONS) } : v.actions,
+      since: on ? { ...v.since, [virtueId]: key } : v.since,
+    },
+  };
+}
+
+/** Activa o quita un propósito de una virtud (máximo MAX_VIRTUE_ACTIONS). */
+export function toggleVirtueAction(state: State, virtueId: string, actionId: string): State {
+  const cur = state.virtues.actions[virtueId] ?? [];
+  const has = cur.includes(actionId);
+  if (!has && cur.length >= MAX_VIRTUE_ACTIONS) return state;
+  const next = has ? cur.filter((a) => a !== actionId) : [...cur, actionId];
+  return { ...state, virtues: { ...state.virtues, actions: { ...state.virtues.actions, [virtueId]: next } } };
+}
+
+/** Marca o desmarca un propósito como cumplido en una fecha (+/- talentos). */
+export function logVirtue(state: State, key: string, virtueId: string, actionId: string): State {
+  const id = `${virtueId}:${actionId}`;
+  const day = state.virtueLog[key] ?? [];
+  const has = day.includes(id);
+  return {
+    ...state,
+    virtueLog: { ...state.virtueLog, [key]: has ? day.filter((x) => x !== id) : [...day, id] },
+    talents: Math.max(0, state.talents + (has ? -REWARDS.virtue : REWARDS.virtue)),
+  };
+}
+
+export type VirtueLevel = { min: number; name: string; text: string };
+
+// Niveles de crecimiento (Mc 4,26-29: la semilla que crece sola).
+export const VIRTUE_LEVELS: VirtueLevel[] = [
+  { min: 0, name: 'Semilla', text: 'Has sembrado. Dios hace crecer.' },
+  { min: 7, name: 'Brote', text: 'Ya asoma: la virtud empieza a verse.' },
+  { min: 21, name: 'Raíz', text: 'Echa raíces: cuesta menos que al principio.' },
+  { min: 50, name: 'Árbol', text: 'Firme ante el viento: es parte de ti.' },
+  { min: 100, name: 'Fruto', text: 'Da fruto para otros (Jn 15,5).' },
+];
+
+export function virtueStats(state: State, virtueId: string, now: Date) {
+  const prefix = `${virtueId}:`;
+  const countOn = (key: string) => (state.virtueLog[key] ?? []).filter((x) => x.startsWith(prefix)).length;
+  let total = 0;
+  for (const k in state.virtueLog) total += countOn(k);
+  // Últimos 28 días (el último es hoy)
+  const days = Array.from({ length: 28 }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() - (27 - i));
+    const key = dateKey(d);
+    return { key, count: countOn(key) };
+  });
+  // Días seguidos con al menos un propósito cumplido (hoy cuenta si ya lo has hecho)
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if (days[i].count > 0) streak++;
+    else if (i === days.length - 1) continue;
+    else break;
+  }
+  const level = [...VIRTUE_LEVELS].reverse().find((l) => total >= l.min)!;
+  const next = VIRTUE_LEVELS.find((l) => l.min > total) ?? null;
+  const progress = next ? (total - level.min) / (next.min - level.min) : 1;
+  const today = (state.virtueLog[dateKey(now)] ?? []).filter((x) => x.startsWith(prefix)).map((x) => x.slice(prefix.length));
+  const week = days.slice(-7).reduce((a, d) => a + d.count, 0);
+  return { total, days, streak, level, next, progress, today, week };
 }

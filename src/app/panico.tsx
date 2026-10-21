@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
+import { useConfirm } from '../components/useConfirm';
 import { Glyph } from '../components/icons';
 import { useEffect, useState } from 'react';
-import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable } from '../components/Tap';
 import { Text } from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { C, serif } from '../components/ui';
@@ -38,6 +40,7 @@ export default function Panic() {
   const days = streakDays(state, now);
   const p = state.profile;
 
+  const victory = useConfirm(true);
   const win = () => {
     addVictory();
     router.back();
@@ -134,8 +137,13 @@ export default function Panic() {
             <Text style={t(styles.nextText)}>Siguiente</Text>
           </Pressable>
         ) : null}
-        <Pressable style={styles.win} onPress={win}>
-          <Text style={t(styles.winText)}>He vencido esta tentación (+20 talentos)</Text>
+        <Pressable style={[styles.win, victory.flashing && styles.winDone]} onPress={() => victory.run(win)} feedback={false}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            {victory.flashing && <Glyph e="✓" size={18} color={C.night} width={2} />}
+            <Text style={[t(styles.winText), victory.flashing && { color: C.night }]}>
+              {victory.flashing ? '¡Gracias, Señor! Has vencido' : 'He vencido esta tentación (+20 talentos)'}
+            </Text>
+          </View>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -249,6 +257,7 @@ const styles = StyleSheet.create({
   footer: { padding: 16, gap: 10, maxWidth: 640, width: '100%', alignSelf: 'center' },
   next: { backgroundColor: CREAM, borderRadius: 14, padding: 16, alignItems: 'center' },
   nextText: { color: C.navy, fontWeight: '500', fontSize: 17 },
+  winDone: { backgroundColor: CREAM },
   win: { borderWidth: 1.5, borderColor: CREAM, borderRadius: 14, padding: 14, alignItems: 'center' },
   winText: { color: CREAM, fontWeight: '700' },
 });

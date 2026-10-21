@@ -1,5 +1,6 @@
 import { Link, router } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Pressable } from '../../components/Tap';
 import { Text } from '../../components/Text';
 import { Glyph } from '../../components/icons';
 import { DailyLove } from '../../components/LoveIllustration';
@@ -24,6 +25,11 @@ export default function Home() {
   const h = now.getHours();
   const isNight = h >= 20 || h < 4;
   const examenDone = !!state.examens[examenKey(now)];
+  const virtueTotal = state.virtues.focus.reduce((a, v) => a + (state.virtues.actions[v]?.length ?? 0), 0);
+  const virtueDone = (state.virtueLog[today] ?? []).filter((x) => state.virtues.focus.includes(x.split(':')[0])).length;
+  const virtueSubtitle = state.virtues.focus.length
+    ? `${virtueDone} de ${virtueTotal} propósitos hoy`
+    : 'Elige una virtud en la que crecer';
   const prayerOfMoment = h < 12 ? PRAYERS.find((p) => p.id === 'ofrecimiento')! : PRAYERS.find((p) => p.id === 'bendita-pureza')!;
 
   return (
@@ -80,6 +86,13 @@ export default function Home() {
             title={h < 12 ? 'Ofrece el día' : 'Reza a María'}
             subtitle={prayerOfMoment.title}
             onPress={() => router.push({ pathname: '/oracion/[id]', params: { id: prayerOfMoment.id } })}
+          />
+          <ListRow
+            icon="sprout"
+            title="Virtudes"
+            subtitle={virtueSubtitle}
+            done={virtueTotal > 0 && virtueDone >= virtueTotal}
+            onPress={() => router.push('/virtudes')}
           />
           <ListRow
             icon="🌙"

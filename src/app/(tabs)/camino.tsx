@@ -1,12 +1,14 @@
 import { router } from 'expo-router';
 import { Glyph } from '../../components/icons';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Pressable } from '../../components/Tap';
 import { Text } from '../../components/Text';
 import { TabScreen } from '../../components/overlays';
 import { Button, C, Card, H1, H2, Label, P, ProgressBar } from '../../components/ui';
 import { TOTAL_CHAPTERS } from '../../content/gospels';
 import { MISSIONS } from '../../content/missions';
-import { BADGES, LEVELS, REWARDS, levelFor, streakDays, topTriggers } from '../../lib/game';
+import { virtueById } from '../../content/virtues';
+import { BADGES, LEVELS, REWARDS, levelFor, streakDays, topTriggers, virtueStats } from '../../lib/game';
 import { useStore } from '../../lib/store';
 
 export default function Camino() {
@@ -50,6 +52,32 @@ export default function Camino() {
         })}
         <P muted style={{ fontSize: 13 }}>Completa todas para un bonus de +{REWARDS.fullDayBonus} talentos.</P>
       </Card>
+
+      <Pressable onPress={() => router.push('/virtudes')}>
+        <Card>
+          <View style={styles.row}>
+            <Label>Virtudes</Label>
+            <Glyph e="chevron" size={16} color={C.muted} />
+          </View>
+          {state.virtues.focus.length ? (
+            state.virtues.focus.map((id) => {
+              const v = virtueById(id);
+              const st = virtueStats(state, id, now);
+              return (
+                <View key={id} style={{ gap: 4, paddingVertical: 4 }}>
+                  <View style={styles.row}>
+                    <Text style={styles.mTitle}>{v?.name}</Text>
+                    <Text style={styles.mHint}>{st.level.name} · {st.week} esta semana</Text>
+                  </View>
+                  <ProgressBar value={st.progress} color={C.navy} />
+                </View>
+              );
+            })
+          ) : (
+            <P muted style={{ fontSize: 14 }}>Vence cada vicio con su virtud contraria: elige una y ponte propósitos.</P>
+          )}
+        </Card>
+      </Pressable>
 
       <Button title="Hacer el examen de la noche" onPress={() => router.push('/examen')} />
 
@@ -121,6 +149,7 @@ export default function Camino() {
         <P>• Vencer una tentación con el botón de pánico: +{REWARDS.victory}</P>
         <P>• Meditar las lecturas: +{REWARDS.reading} · Examen de conciencia: +{REWARDS.examen}</P>
         <P>• Leer un capítulo de los Evangelios: +{REWARDS.chapter}</P>
+        <P>• Cumplir un propósito de virtud: +{REWARDS.virtue}</P>
         <P>• Confesarte: +{REWARDS.confession}</P>
         <P muted style={{ fontSize: 14 }}>
           Los talentos nunca se pierden: una caída reinicia la racha, no tu camino. «Has sido fiel en lo poco» (Mt 25,21).

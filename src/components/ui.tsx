@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Glyph } from './icons';
-import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable } from './Tap';
+import { useConfirm } from './useConfirm';
 import { serif, Text } from './Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFont } from '../lib/fontScale';
@@ -80,29 +82,44 @@ export function Button({
   kind = 'primary',
   disabled,
   style,
+  celebrate,
+  confirm,
 }: {
   title: string;
   onPress: () => void;
   kind?: BtnKind;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
+  /** Para acciones con sentido (Amén, «lo he hecho»…): pausa más larga, color de logro y vibración. */
+  celebrate?: boolean;
+  /** Texto que se muestra al pulsar, antes de la acción. */
+  confirm?: string;
 }) {
   const { t } = useFont();
+  const { flashing, run } = useConfirm(celebrate);
   const bg = { primary: C.navy, gold: C.gold, danger: C.red, ghost: 'transparent' }[kind];
   const fg = kind === 'primary' || kind === 'danger' ? '#fff' : C.navy;
+  const flashBg = celebrate ? C.green : kind === 'ghost' ? C.goldSoft : bg;
+  const flashFg = celebrate ? '#fff' : fg;
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={onPress}
+      accessibilityState={{ disabled: !!disabled, busy: flashing }}
+      onPress={() => run(onPress)}
       disabled={disabled}
-      style={({ pressed }) => [
+      feedback={false}
+      style={[
         s.btn,
-        { backgroundColor: bg, opacity: disabled ? 0.4 : pressed ? 0.8 : 1 },
+        { backgroundColor: bg, opacity: disabled ? 0.4 : 1 },
         kind === 'ghost' && { borderWidth: 1, borderColor: C.line, backgroundColor: C.card },
+        flashing && { backgroundColor: flashBg, borderColor: flashBg },
         style,
       ]}
     >
-      <Text style={t([s.btnText, { color: fg }])}>{title}</Text>
+      <View style={s.btnRow}>
+        {flashing && <Glyph e="✓" size={18} color={flashFg} width={2} />}
+        <Text style={t([s.btnText, { color: flashing ? flashFg : fg }])}>{flashing ? (confirm ?? title) : title}</Text>
+      </View>
     </Pressable>
   );
 }
@@ -277,6 +294,7 @@ const s = StyleSheet.create({
   p: { fontSize: 16, lineHeight: 24, color: C.ink },
   label: { fontSize: 12, fontWeight: '600', color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase' },
   btn: { paddingVertical: 15, paddingHorizontal: 18, borderRadius: 16, alignItems: 'center' },
+  btnRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   btnText: { fontSize: 16, fontWeight: '600' },
   barBg: { height: 4, borderRadius: 2, backgroundColor: C.line, overflow: 'hidden' },
   barFill: { height: 4, borderRadius: 2 },

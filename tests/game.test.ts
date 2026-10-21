@@ -13,6 +13,10 @@ import {
   saveExamen,
   examenKey,
   examenStreak,
+  setVirtueFocus,
+  toggleVirtueAction,
+  logVirtue,
+  virtueStats,
   markChapter,
   REWARDS,
   DAY_MS,
@@ -101,4 +105,33 @@ test('racha de exámenes: noches seguidas, sin romperse si hoy aún no se ha hec
   s = saveExamen(s, '2026-10-21', ex);
   assert.equal(examenStreak(s, new Date(2026, 9, 21, 23, 0)), 4);
   assert.equal(examenStreak(s, new Date(2026, 9, 23, 12, 0)), 0);
+});
+
+test('virtudes: máximo 3, propósitos por defecto y seguimiento con talentos', () => {
+  let s = { ...initialState };
+  s = setVirtueFocus(s, 'castidad', true, ['a', 'b', 'c', 'd'], '2026-10-20');
+  assert.deepEqual(s.virtues.actions.castidad, ['a', 'b', 'c']);
+  s = setVirtueFocus(s, 'templanza', true, ['x'], 'k');
+  s = setVirtueFocus(s, 'humildad', true, ['y'], 'k');
+  s = setVirtueFocus(s, 'caridad', true, ['z'], 'k');
+  assert.equal(s.virtues.focus.length, 3);
+  // no se pueden elegir más de 3 propósitos
+  assert.equal(toggleVirtueAction(s, 'castidad', 'd').virtues.actions.castidad.length, 3);
+  s = toggleVirtueAction(s, 'castidad', 'c');
+  s = toggleVirtueAction(s, 'castidad', 'd');
+  assert.deepEqual(s.virtues.actions.castidad, ['a', 'b', 'd']);
+  // marcar suma talentos; desmarcar los quita
+  s = logVirtue(s, '2026-10-20', 'castidad', 'a');
+  s = logVirtue(s, '2026-10-21', 'castidad', 'a');
+  s = logVirtue(s, '2026-10-21', 'castidad', 'b');
+  assert.equal(s.talents, 3 * REWARDS.virtue);
+  const st = virtueStats(s, 'castidad', new Date(2026, 9, 21, 20, 0));
+  assert.equal(st.total, 3);
+  assert.equal(st.streak, 2);
+  assert.deepEqual(st.today, ['a', 'b']);
+  assert.equal(st.level.name, 'Semilla');
+  s = logVirtue(s, '2026-10-21', 'castidad', 'b');
+  assert.equal(s.talents, 2 * REWARDS.virtue);
+  // la racha no se rompe si hoy aún no has marcado nada
+  assert.equal(virtueStats(s, 'castidad', new Date(2026, 9, 22, 9, 0)).streak, 2);
 });

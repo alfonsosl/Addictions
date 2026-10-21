@@ -1,9 +1,10 @@
-node_modules/
-.expo/
-dist/
-web-build/
-ios/
-android/
 *.log
 .DS_Store
+.expo/
+android/
+dist/
 expo-env.d.ts
+ios/
+node_modules/
+scripts/icons/out/
+web-build/

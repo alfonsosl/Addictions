@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Pressable } from '../../../components/Tap';
 import { SCENE_META } from '../../../components/art/scenes';
 import { IllustratedScroll } from '../../../components/IllustratedScroll';
 import { Text } from '../../../components/Text';
@@ -79,6 +80,8 @@ export default function Chapter() {
           title={done ? 'Capítulo leído' : 'He leído este capítulo (+5)'}
           kind={done ? 'ghost' : 'primary'}
           disabled={done}
+          celebrate
+          confirm="Capítulo leído"
           onPress={() => markChapter(id)}
         />
 

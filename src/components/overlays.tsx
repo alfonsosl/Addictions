@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { Glyph } from './icons';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { Pressable } from './Tap';
 import { Text } from './Text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { haptic, useStore } from '../lib/store';

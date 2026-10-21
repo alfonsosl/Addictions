@@ -23,6 +23,8 @@ export default function PrayerScreen() {
       {isMorning && !offered ? (
         <Button
           title="He ofrecido mi día (+5)"
+          confirm="Día ofrecido"
+          celebrate
           kind="gold"
           onPress={() => {
             toggleMission('ofrecimiento');
@@ -30,7 +32,7 @@ export default function PrayerScreen() {
           }}
         />
       ) : (
-        <Button title="Amén" kind="gold" onPress={() => router.back()} />
+        <Button title="Amén" confirm="Amén" celebrate kind="gold" onPress={() => router.back()} />
       )}
     </Screen>
   );

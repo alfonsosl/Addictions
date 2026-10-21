@@ -16,12 +16,21 @@ Cinco pestañas con un **estilo de ilustración de línea** (papel crema, tinta 
 | **🆘 Botón de pánico** | Respiración guiada → oración → acciones de huida, tus planes «si… entonces…» y llamar/SMS al compañero → tu porqué → temporizador de 10 min. |
 | **Evangelio · Hoy** | Lecturas del día, **comentario del día con su autor** (santos, papas y sacerdotes), enlaces a comentarios de sacerdotes (evangeli.net, Vatican News, Opus Dei) y *Lectio Divina*. |
 | **Ilustración de fondo en el Evangelio** | El Evangelio del día y cada capítulo tienen una ilustración relacionada (el mar en Mt 14, el rebaño en Lc 15, la vid en Jn 15, el pozo en Jn 4, la cruz en la Pasión…). Se ve en grande detrás del título y, al desplazarte, queda como fondo muy tenue para no estorbar la lectura. |
+| **Virtudes** | Ocho virtudes frente a los pecados capitales (castidad, templanza, fortaleza, humildad, paciencia, caridad, diligencia y generosidad), cada una con su porqué en la lucha contra la adicción, una cita, su referencia en el Catecismo y seis propósitos concretos. Eliges hasta 3 virtudes y 3 propósitos por virtud, los marcas cada día (también desde el examen de la noche) y ves tu crecimiento: niveles (semilla → brote → raíz → árbol → fruto), días seguidos y las últimas cuatro semanas. +3 talentos por propósito. |
 | **Aviso de racha** | Al abrir la app con 3 o más días seguidos sin caer, una lámina con la racha, una ilustración y un versículo (una vez al día). |
 | **Recordatorios** | Notificaciones diarias opcionales para el Evangelio y el examen de la noche, con la hora que elijas (Ajustes). Se programan en el teléfono y funcionan sin conexión. |
 | **Evangelio · Los 4 Evangelios** | **Texto completo sin conexión** de Mateo, Marcos, Lucas y Juan (traducción católica de Torres Amat), 89 capítulos titulados, lector con tamaño de letra ajustable, «Continuar leyendo», capítulos recomendados para la lucha, progreso y +5 talentos por capítulo. |
 | **Rezar** | 7 oraciones; **8 reflexiones a partir de palabras de sacerdotes, obispos y papas** (San Agustín, San Josemaría, Francisco, Benedicto XVI, Juan Pablo II, San Alfonso, Padre Pío), cada una con su fuente; 21 reflexiones bíblicas. |
 | **Camino** | Regla de vida, examen, estadísticas, insignias (con celebración al conseguirlas) y niveles. |
 | **Ayuda** | Tus planes, 10 estrategias con su fundamento y teléfonos de crisis (024 / 112). |
+
+### Respuesta al pulsar
+
+Todos los botones se encogen y vibran al tocarlos. Los importantes («Amén», «He leído», «Ya me he confesado», «He vencido»…) muestran además una confirmación con ✓ antes de hacer la acción.
+
+### Icono
+
+El Buen Pastor con la oveja sobre los hombros (Lc 15,5), en el mismo estilo de ilustración. Se genera con `python3 scripts/icons/make_svg.py` y `node scripts/icons/render.js` (Playwright).
 
 ### Mecánica de juego
 

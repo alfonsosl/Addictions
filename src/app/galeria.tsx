@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable } from '../components/Tap';
 import { SCENE_META, type SceneId } from '../components/art/scenes';
 import { SceneFull } from '../components/LoveIllustration';
 import { Text } from '../components/Text';

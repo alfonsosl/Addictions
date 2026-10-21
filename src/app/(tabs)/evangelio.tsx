@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { Pressable } from '../../components/Tap';
 import { Text } from '../../components/Text';
 import type { SceneId } from '../../components/art/scenes';
 import { Glyph } from '../../components/icons';
@@ -128,6 +129,8 @@ function Today({ tabs }: { tabs: (dark: boolean) => ReactNode }) {
                 title={read ? 'Ya has meditado el Evangelio de hoy' : 'He leído y meditado (+10 talentos)'}
                 kind={read ? 'ghost' : 'primary'}
                 disabled={read}
+                celebrate
+                confirm="Palabra meditada"
                 onPress={markReading}
               />
             )}

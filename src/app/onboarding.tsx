@@ -131,7 +131,7 @@ export default function Onboarding() {
               usar los medios. María, Madre mía, acompáñame».
             </P>
           </Card>
-          <Button title="Comenzar mi camino" kind="gold" onPress={finish} />
+          <Button title="Comenzar mi camino" confirm="Que Dios te acompañe" celebrate kind="gold" onPress={finish} />
         </>
       )}
 

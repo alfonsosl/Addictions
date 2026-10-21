@@ -1,7 +1,10 @@
 import { router } from 'expo-router';
+import { VirtueCheck } from '../../components/VirtueTracker';
+import { useConfirm } from '../../components/useConfirm';
 import { Glyph } from '../../components/icons';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable } from '../../components/Tap';
 import { Text, TextInput } from '../../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DailyLove } from '../../components/LoveIllustration';
@@ -41,6 +44,7 @@ export default function ExamenGuiado() {
   const [resolution, setResolution] = useState(prev?.resolution ?? '');
   const [sleep, setSleep] = useState<string[]>(prev?.sleep ?? []);
   const last = EXAMEN_STEP_TITLES.length - 1;
+  const amen = useConfirm(true);
 
   const finish = () => {
     saveExamen({
@@ -172,6 +176,19 @@ export default function ExamenGuiado() {
                 })}
               </View>
             ))}
+            {state.virtues.focus.length > 0 && (
+              <View style={styles.box}>
+                <View style={styles.boxHead}>
+                  <Glyph e="sprout" size={20} color={C.goldSoft} />
+                  <Text style={t(styles.boxTitle)}>Tus virtudes: ¿qué propósitos has cumplido hoy?</Text>
+                </View>
+                {state.virtues.focus.flatMap((vid) =>
+                  (state.virtues.actions[vid] ?? []).map((aid) => (
+                    <VirtueCheck key={`${vid}:${aid}`} virtueId={vid} actionId={aid} dark dateKey={examenKey(now)} />
+                  )),
+                )}
+              </View>
+            )}
             <Text style={t(styles.hint)}>Lo que marques se guarda solo en este dispositivo.</Text>
           </>
         )}
@@ -252,8 +269,13 @@ export default function ExamenGuiado() {
             <Text style={[styles.nextText, { fontSize: fs(17) }]}>Siguiente</Text>
           </Pressable>
         ) : (
-          <Pressable style={styles.next} onPress={finish}>
-            <Text style={[styles.nextText, { fontSize: fs(17) }]}>{prev ? 'Guardar · Buenas noches' : 'Amén · Buenas noches (+10)'}</Text>
+          <Pressable style={[styles.next, amen.flashing && styles.nextDone]} onPress={() => amen.run(finish)} feedback={false}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {amen.flashing && <Glyph e="✓" size={18} color={C.night} width={2} />}
+              <Text style={[styles.nextText, { fontSize: fs(17) }]}>
+                {amen.flashing ? 'Amén. Descansa en paz' : prev ? 'Guardar · Buenas noches' : 'Amén · Buenas noches (+10)'}
+              </Text>
+            </View>
           </Pressable>
         )}
       </View>
@@ -311,5 +333,6 @@ const styles = StyleSheet.create({
   back: { width: 56, borderRadius: 16, borderWidth: 1, borderColor: W + '0.25)', alignItems: 'center', justifyContent: 'center' },
   backText: { color: '#fff', fontSize: 28, fontWeight: '300' },
   next: { flex: 1, backgroundColor: C.goldSoft, borderRadius: 16, padding: 16, alignItems: 'center' },
+  nextDone: { backgroundColor: '#C9D3A8' },
   nextText: { color: C.night, fontWeight: '700' },
 });

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, Switch, View } from 'react-native';
+import { Alert, Platform, Switch, View } from 'react-native';
+import { Pressable } from '../components/Tap';
 import { Text, TextInput } from '../components/Text';
 import { Button, C, Card, H2, inputStyle, Label, P, Screen } from '../components/ui';
 import { FONT_SCALES, useFont } from '../lib/fontScale';
@@ -150,7 +151,7 @@ export default function Ajustes() {
         <Button title="+ Añadir plan" kind="ghost" onPress={() => set('ifThen', [...p.ifThen, { when: '', then: '' }])} />
       </Card>
 
-      <Button title="Guardar" kind="gold" onPress={save} />
+      <Button title="Guardar" confirm="Guardado" celebrate kind="gold" onPress={save} />
 
       <Card>
         <Label>Privacidad</Label>

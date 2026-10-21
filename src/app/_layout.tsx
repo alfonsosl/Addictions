@@ -52,6 +52,8 @@ export default function RootLayout() {
           <Stack.Screen name="sacerdote/[id]" options={{ title: 'Palabra de un pastor' }} />
           <Stack.Screen name="capitulo/[book]/[ch]" options={{ title: 'Evangelio' }} />
           <Stack.Screen name="oracion/[id]" options={{ title: 'Oración' }} />
+          <Stack.Screen name="virtudes/index" options={{ title: 'Virtudes' }} />
+          <Stack.Screen name="virtudes/[id]" options={{ title: 'Virtud' }} />
           <Stack.Screen name="galeria" options={{ title: 'Ilustraciones', headerTransparent: true, headerTitle: '' }} />
         </Stack>
         <ToastHost />

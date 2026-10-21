@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useConfirm } from './useConfirm';
 import { useEffect, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Modal, StyleSheet, View } from 'react-native';
+import { Pressable } from './Tap';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { dateKey, streakDays } from '../lib/game';
 import { haptic, useStore } from '../lib/store';
@@ -83,6 +85,7 @@ export function MilestoneModal({
   source?: string;
 }) {
   const insets = useSafeAreaInsets();
+  const thanks = useConfirm(true);
   const [fade] = useState(() => new Animated.Value(0));
   useEffect(() => {
     if (visible) {
@@ -108,8 +111,11 @@ export function MilestoneModal({
           {verse ? <Text style={styles.verse}>«{verse}»</Text> : null}
           {source ? <Text style={styles.source}>{source}</Text> : null}
         </Animated.View>
-        <Pressable onPress={onClose} style={styles.btn} accessibilityRole="button">
-          <Text style={styles.btnText}>Gracias, Señor</Text>
+        <Pressable onPress={() => thanks.run(onClose)} style={[styles.btn, thanks.flashing && { backgroundColor: C.green }]} accessibilityRole="button" feedback={false}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            {thanks.flashing && <Glyph e="✓" size={18} color={C.bg} width={2} />}
+            <Text style={styles.btnText}>{thanks.flashing ? 'Amén' : 'Gracias, Señor'}</Text>
+          </View>
         </Pressable>
       </View>
     </Modal>
