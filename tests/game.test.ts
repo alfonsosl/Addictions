@@ -11,6 +11,8 @@ import {
   topTriggers,
   markReading,
   saveExamen,
+  examenKey,
+  examenStreak,
   markChapter,
   REWARDS,
   DAY_MS,
@@ -82,4 +84,21 @@ test('capítulos del Evangelio: premio una sola vez', () => {
   s = markChapter(s, 'jn-15');
   assert.equal(s.talents, REWARDS.chapter);
   assert.deepEqual(s.chaptersRead, ['jn-15']);
+});
+
+test('el examen de madrugada cuenta para la noche anterior', () => {
+  assert.equal(examenKey(new Date(2026, 9, 21, 1, 30)), '2026-10-20');
+  assert.equal(examenKey(new Date(2026, 9, 21, 23, 0)), '2026-10-21');
+});
+
+test('racha de exámenes: noches seguidas, sin romperse si hoy aún no se ha hecho', () => {
+  const ex = { gratitude: '', struggle: '', resolution: '' };
+  let s = { ...initialState };
+  s = saveExamen(s, '2026-10-18', ex);
+  s = saveExamen(s, '2026-10-19', ex);
+  s = saveExamen(s, '2026-10-20', ex);
+  assert.equal(examenStreak(s, new Date(2026, 9, 21, 12, 0)), 3);
+  s = saveExamen(s, '2026-10-21', ex);
+  assert.equal(examenStreak(s, new Date(2026, 9, 21, 23, 0)), 4);
+  assert.equal(examenStreak(s, new Date(2026, 9, 23, 12, 0)), 0);
 });

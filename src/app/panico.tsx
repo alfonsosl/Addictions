@@ -4,6 +4,7 @@ import { Animated, Easing, Linking, Pressable, ScrollView, StyleSheet, Text, Vie
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { C } from '../components/ui';
 import { PRAYERS } from '../content/prayers';
+import { useFont } from '../lib/fontScale';
 import { streakDays } from '../lib/game';
 import { useStore } from '../lib/store';
 
@@ -28,6 +29,7 @@ const ACTIONS = [
 ];
 
 export default function Panic() {
+  const { t } = useFont();
   const { state, now, addVictory } = useStore();
   const [step, setStep] = useState(0);
   const days = streakDays(state, now);
@@ -41,7 +43,7 @@ export default function Panic() {
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.topBar}>
-        <Text style={styles.stepText}>
+        <Text style={t(styles.stepText)}>
           {step + 1}/{STEPS.length} · {STEPS[step]}
         </Text>
         <Pressable onPress={() => router.back()} hitSlop={12}>
@@ -59,27 +61,27 @@ export default function Panic() {
 
         {step === 1 && (
           <>
-            <Text style={styles.title}>Reza, aunque sea con pocas palabras</Text>
-            <Text style={styles.prayer}>{PRAYERS[0].text}</Text>
-            <Text style={styles.subtitle}>{PRAYERS[1].title}</Text>
-            <Text style={styles.prayerSmall}>{PRAYERS[1].text}</Text>
+            <Text style={t(styles.title)}>Reza, aunque sea con pocas palabras</Text>
+            <Text style={t(styles.prayer)}>{PRAYERS[0].text}</Text>
+            <Text style={t(styles.subtitle)}>{PRAYERS[1].title}</Text>
+            <Text style={t(styles.prayerSmall)}>{PRAYERS[1].text}</Text>
           </>
         )}
 
         {step === 2 && (
           <>
-            <Text style={styles.title}>Huye: no dialogues con la tentación</Text>
-            <Text style={styles.text}>«Él, dejando el manto en sus manos, salió huyendo» (Gn 39,12). Elige una y hazla YA:</Text>
+            <Text style={t(styles.title)}>Huye: no dialogues con la tentación</Text>
+            <Text style={t(styles.text)}>«Él, dejando el manto en sus manos, salió huyendo» (Gn 39,12). Elige una y hazla YA:</Text>
             {ACTIONS.map((a) => (
               <View key={a} style={styles.action}>
-                <Text style={styles.actionText}>{a}</Text>
+                <Text style={t(styles.actionText)}>{a}</Text>
               </View>
             ))}
             {p?.ifThen.length ? (
               <View style={styles.plans}>
-                <Text style={styles.subtitle}>Tus planes</Text>
+                <Text style={t(styles.subtitle)}>Tus planes</Text>
                 {p.ifThen.map((x, i) => (
-                  <Text key={i} style={styles.planText}>
+                  <Text key={i} style={t(styles.planText)}>
                     Si {x.when}, entonces {x.then}.
                   </Text>
                 ))}
@@ -88,7 +90,7 @@ export default function Panic() {
             {p?.contactPhone ? (
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <Pressable style={[styles.callBtn, { flex: 1 }]} onPress={() => Linking.openURL(`tel:${p.contactPhone}`)}>
-                  <Text style={styles.callText}>📞 Llamar a {p.contactName || 'mi contacto'}</Text>
+                  <Text style={t(styles.callText)}>📞 Llamar a {p.contactName || 'mi contacto'}</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.callBtn, { flex: 1, backgroundColor: C.navySoft }]}
@@ -96,26 +98,26 @@ export default function Panic() {
                     Linking.openURL(`sms:${p.contactPhone}?body=${encodeURIComponent('Estoy teniendo una lucha ahora. ¿Puedes rezar por mí o llamarme?')}`)
                   }
                 >
-                  <Text style={styles.callText}>💬 Enviar mensaje</Text>
+                  <Text style={t(styles.callText)}>💬 Enviar mensaje</Text>
                 </Pressable>
               </View>
             ) : (
-              <Text style={styles.textMuted}>Añade un contacto de confianza en Ajustes para poder llamarle desde aquí.</Text>
+              <Text style={t(styles.textMuted)}>Añade un contacto de confianza en Ajustes para poder llamarle desde aquí.</Text>
             )}
           </>
         )}
 
         {step === 3 && (
           <>
-            <Text style={styles.title}>Recuerda por qué luchas</Text>
-            {p?.why ? <Text style={styles.why}>«{p.why}»</Text> : null}
+            <Text style={t(styles.title)}>Recuerda por qué luchas</Text>
+            {p?.why ? <Text style={t(styles.why)}>«{p.why}»</Text> : null}
             <Text style={styles.big}>{days}</Text>
-            <Text style={styles.text}>días de libertad. No los cambies por unos minutos que dejan vacío.</Text>
-            <Text style={styles.text}>
+            <Text style={t(styles.text)}>días de libertad. No los cambies por unos minutos que dejan vacío.</Text>
+            <Text style={t(styles.text)}>
               La pornografía promete descanso y deja más soledad. Lo que de verdad buscas —amor, paz, sentido— está en
               Dios y en las personas reales.
             </Text>
-            <Text style={styles.quote}>«Fiel es Dios… con la tentación os dará también la salida» (1 Cor 10,13)</Text>
+            <Text style={t(styles.quote)}>«Fiel es Dios… con la tentación os dará también la salida» (1 Cor 10,13)</Text>
           </>
         )}
 
@@ -125,11 +127,11 @@ export default function Panic() {
       <View style={styles.footer}>
         {step < STEPS.length - 1 ? (
           <Pressable style={styles.next} onPress={() => setStep(step + 1)}>
-            <Text style={styles.nextText}>Siguiente →</Text>
+            <Text style={t(styles.nextText)}>Siguiente →</Text>
           </Pressable>
         ) : null}
         <Pressable style={styles.win} onPress={win}>
-          <Text style={styles.winText}>✝️ He vencido esta tentación (+20 talentos)</Text>
+          <Text style={t(styles.winText)}>✝️ He vencido esta tentación (+20 talentos)</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -137,11 +139,12 @@ export default function Panic() {
 }
 
 function Breathing() {
+  const { t } = useFont();
   const [scale] = useState(() => new Animated.Value(0.55));
-  const [t, setT] = useState(0); // segundos transcurridos
-  const phase = Math.floor(t / PHASE_S) % PHASES.length;
-  const left = PHASE_S - (t % PHASE_S);
-  const cycles = Math.floor(t / (PHASE_S * PHASES.length));
+  const [secs, setSecs] = useState(0); // segundos transcurridos
+  const phase = Math.floor(secs / PHASE_S) % PHASES.length;
+  const left = PHASE_S - (secs % PHASE_S);
+  const cycles = Math.floor(secs / (PHASE_S * PHASES.length));
 
   useEffect(() => {
     Animated.timing(scale, {
@@ -153,14 +156,14 @@ function Breathing() {
   }, [phase, scale]);
 
   useEffect(() => {
-    const id = setInterval(() => setT((x) => x + 1), 1000);
+    const id = setInterval(() => setSecs((x) => x + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <View style={{ alignItems: 'center', gap: 16 }}>
-      <Text style={styles.title}>Para. Respira despacio.</Text>
-      <Text style={styles.text}>No tienes que decidir nada ahora. Solo respira con el círculo.</Text>
+      <Text style={t(styles.title)}>Para. Respira despacio.</Text>
+      <Text style={t(styles.text)}>No tienes que decidir nada ahora. Solo respira con el círculo.</Text>
       <View style={styles.circleWrap}>
         <Animated.View style={[styles.circle, { transform: [{ scale }] }]} />
         <View style={styles.circleCenter}>
@@ -168,12 +171,13 @@ function Breathing() {
           <Text style={styles.phaseCount}>{left}</Text>
         </View>
       </View>
-      <Text style={styles.textMuted}>Ciclos completados: {cycles} · Intenta llegar a 3</Text>
+      <Text style={t(styles.textMuted)}>Ciclos completados: {cycles} · Intenta llegar a 3</Text>
     </View>
   );
 }
 
 function UrgeTimer() {
+  const { t } = useFont();
   const TOTAL = 10 * 60;
   const [left, setLeft] = useState(TOTAL);
   const [running, setRunning] = useState(false);
@@ -189,8 +193,8 @@ function UrgeTimer() {
 
   return (
     <View style={{ alignItems: 'center', gap: 14 }}>
-      <Text style={styles.title}>Surfea la ola 🌊</Text>
-      <Text style={styles.text}>
+      <Text style={t(styles.title)}>Surfea la ola 🌊</Text>
+      <Text style={t(styles.text)}>
         El impulso sube, llega a un pico y baja. Si no lo alimentas, pasa. Espera 10 minutos haciendo otra cosa: reza
         un misterio del Rosario, camina, habla con alguien.
       </Text>
@@ -198,13 +202,13 @@ function UrgeTimer() {
         {mm}:{ss}
       </Text>
       {left === 0 ? (
-        <Text style={styles.text}>La ola ha pasado. Da gracias a Dios: has sido fiel.</Text>
+        <Text style={t(styles.text)}>La ola ha pasado. Da gracias a Dios: has sido fiel.</Text>
       ) : (
         <Pressable style={styles.next} onPress={() => setRunning(!running)}>
-          <Text style={styles.nextText}>{running ? 'Pausar' : 'Empezar 10 minutos'}</Text>
+          <Text style={t(styles.nextText)}>{running ? 'Pausar' : 'Empezar 10 minutos'}</Text>
         </Pressable>
       )}
-      <Text style={styles.prayerSmall}>{PRAYERS[3].text}</Text>
+      <Text style={t(styles.prayerSmall)}>{PRAYERS[3].text}</Text>
     </View>
   );
 }

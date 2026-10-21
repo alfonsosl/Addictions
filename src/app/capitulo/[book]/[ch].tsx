@@ -1,14 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button, C, Card, H1, Label, P, Screen, serif } from '../../../components/ui';
 import { chapterId, GOSPEL_TEXT, GOSPELS, onlineUrl, RECOMMENDED, TEXT_CREDIT } from '../../../content/gospels';
+import { useFont } from '../../../lib/fontScale';
 import { useStore } from '../../../lib/store';
-
-const FONT_KEY = 'vigilia:reader:font';
-const SIZES = [16, 18, 20, 23, 26];
 
 export default function Chapter() {
   const params = useLocalSearchParams<{ book: string; ch: string }>();
@@ -21,18 +17,10 @@ export default function Chapter() {
   const hasGaps = verses.some((v) => !v);
   const reco = RECOMMENDED.find((r) => r.book === book.id && r.ch === ch);
 
-  const [sizeIdx, setSizeIdx] = useState(1);
-  useEffect(() => {
-    AsyncStorage.getItem(FONT_KEY)
-      .then((v) => v && setSizeIdx(Math.min(SIZES.length - 1, Math.max(0, parseInt(v, 10) || 1))))
-      .catch(() => {});
-  }, []);
-  const changeSize = (d: number) => {
-    const n = Math.min(SIZES.length - 1, Math.max(0, sizeIdx + d));
-    setSizeIdx(n);
-    AsyncStorage.setItem(FONT_KEY, String(n)).catch(() => {});
-  };
-  const fontSize = SIZES[sizeIdx];
+  // El tamaño de letra es el mismo de toda la app (Ajustes); A−/A+ lo cambia también aquí.
+  const { idx, setIdx, fs } = useFont();
+  const changeSize = (d: number) => setIdx(idx + d);
+  const fontSize = fs(18);
 
   const go = (n: number) => router.replace({ pathname: '/capitulo/[book]/[ch]', params: { book: book.id, ch: String(n) } });
 
@@ -53,7 +41,7 @@ export default function Chapter() {
           </Pressable>
         </View>
       </View>
-      <Text style={{ fontFamily: serif, fontSize: 19, color: C.navySoft, fontStyle: 'italic' }}>{book.chapters[ch - 1]}</Text>
+      <Text style={{ fontFamily: serif, fontSize: fs(19), color: C.navySoft, fontStyle: 'italic' }}>{book.chapters[ch - 1]}</Text>
 
       {reco && (
         <Card style={{ backgroundColor: C.goldSoft, borderColor: C.gold }}>

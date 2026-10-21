@@ -54,33 +54,69 @@ export function BadgeCelebration() {
   );
 }
 
-/** Botón SOS flotante: siempre a un toque en todas las pestañas (en Inicio ya hay uno grande). */
-export function PanicFab() {
+function usePulse(to: number, ms: number) {
   const [pulse] = useState(() => new Animated.Value(1));
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulse, { toValue: 1.08, duration: 900, useNativeDriver: true }),
-        Animated.timing(pulse, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: to, duration: ms, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1, duration: ms, useNativeDriver: true }),
       ]),
     );
     loop.start();
     return () => loop.stop();
-  }, [pulse]);
+  }, [pulse, to, ms]);
+  return pulse;
+}
+
+function openPanic() {
+  haptic('heavy');
+  router.push('/panico');
+}
+
+/** Botón SOS flotante para el resto de pestañas. */
+export function PanicFab() {
+  const pulse = usePulse(1.06, 1000);
   return (
     <Animated.View style={[styles.fabWrap, { transform: [{ scale: pulse }] }]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Botón de pánico"
-        onPress={() => {
-          haptic('heavy');
-          router.push('/panico');
-        }}
-        style={styles.fab}
-      >
-        <Text style={styles.fabText}>🆘 SOS</Text>
+      <Pressable accessibilityRole="button" accessibilityLabel="Botón de pánico" onPress={openPanic} style={styles.fab}>
+        <Text style={styles.fabText}>SOS</Text>
       </Pressable>
     </Animated.View>
+  );
+}
+
+/** Barra flotante de Inicio: «He caído» y «Pánico», siempre visibles sobre el contenido. */
+export function HomeActions() {
+  const pulse = usePulse(1.04, 1100);
+  return (
+    <View pointerEvents="box-none" style={styles.barWrap}>
+      <View style={styles.bar}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="He caído, quiero levantarme"
+          onPress={() => {
+            haptic('light');
+            router.push('/caida');
+          }}
+          style={({ pressed }) => [styles.fall, pressed && { opacity: 0.7 }]}
+        >
+          <Text style={styles.fallIcon}>↺</Text>
+          <Text style={styles.fallText}>He caído</Text>
+        </Pressable>
+        <Animated.View style={{ flex: 1.5, transform: [{ scale: pulse }] }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Botón de pánico"
+            onPress={openPanic}
+            style={({ pressed }) => [styles.panic, pressed && { opacity: 0.9 }]}
+          >
+            <View style={styles.panicDot} />
+            <Text style={styles.panicText}>Pánico</Text>
+          </Pressable>
+        </Animated.View>
+      </View>
+    </View>
   );
 }
 
@@ -109,19 +145,68 @@ const styles = StyleSheet.create({
   celebrateTitle: { fontSize: 26, fontWeight: '900', color: C.navy, textAlign: 'center' },
   celebrateDays: { color: C.muted, fontWeight: '700' },
   celebrateText: { fontSize: 16, lineHeight: 23, color: C.ink, textAlign: 'center', marginBottom: 8 },
-  fabWrap: { position: 'absolute', right: 16, bottom: 16 },
+  fabWrap: { position: 'absolute', right: 20, bottom: 20 },
   fab: {
     backgroundColor: C.red,
+    width: 64,
+    height: 64,
     borderRadius: 32,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.9)',
     shadowColor: C.red,
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 8,
   },
-  fabText: { color: '#fff', fontWeight: '900', fontSize: 17 },
+  fabText: { color: '#fff', fontWeight: '800', fontSize: 16, letterSpacing: 1 },
+  barWrap: { position: 'absolute', left: 0, right: 0, bottom: 14, alignItems: 'center', paddingHorizontal: 16 },
+  bar: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+    maxWidth: 520,
+    padding: 8,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255,255,255,0.96)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
+    shadowColor: '#1F2A52',
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
+  fall: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 22,
+    paddingVertical: 14,
+    backgroundColor: '#F3F0E8',
+  },
+  fallIcon: { fontSize: 18, color: C.navy, fontWeight: '700' },
+  fallText: { color: C.navy, fontWeight: '700', fontSize: 16 },
+  panic: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    borderRadius: 22,
+    paddingVertical: 14,
+    backgroundColor: C.red,
+    shadowColor: C.red,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  panicDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
+  panicText: { color: '#fff', fontWeight: '800', fontSize: 17, letterSpacing: 0.5 },
 });
 
 /** Pantalla de pestaña con el botón SOS flotante siempre visible. */

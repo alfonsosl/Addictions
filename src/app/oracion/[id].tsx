@@ -2,11 +2,13 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Text } from 'react-native';
 import { Button, C, Card, P, Screen, serif } from '../../components/ui';
 import { PRAYERS } from '../../content/prayers';
+import { useFont } from '../../lib/fontScale';
 import { useStore } from '../../lib/store';
 
 export default function PrayerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { state, today, toggleMission } = useStore();
+  const { fs } = useFont();
   const p = PRAYERS.find((x) => x.id === id) ?? PRAYERS[0];
   const isMorning = p.id === 'ofrecimiento';
   const offered = (state.missionsByDate[today] ?? []).includes('ofrecimiento');
@@ -16,7 +18,7 @@ export default function PrayerScreen() {
       <Stack.Screen options={{ title: p.title }} />
       <P muted>{p.when}</P>
       <Card>
-        <Text style={{ fontFamily: serif, fontSize: 21, lineHeight: 34, color: C.ink }}>{p.text}</Text>
+        <Text style={{ fontFamily: serif, fontSize: fs(21), lineHeight: fs(34), color: C.ink }}>{p.text}</Text>
       </Card>
       {isMorning && !offered ? (
         <Button

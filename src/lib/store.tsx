@@ -18,7 +18,7 @@ type Actions = {
   addVictory: () => void;
   relapse: (triggers: string[], note: string) => void;
   addConfession: () => void;
-  saveExamen: (e: { gratitude: string; struggle: string; resolution: string }) => void;
+  saveExamen: (e: G.Examen) => void;
   resetAll: () => void;
   dismissBadge: () => void;
 };
@@ -152,7 +152,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           text: `Has vuelto a casa · +${G.REWARDS.confession} talentos`,
         }),
       saveExamen: (e) =>
-        update((s, n) => ensureMission(G.saveExamen(s, G.dateKey(n), e), G.dateKey(n), 'examen'), {
+        update((s, n) => ensureMission(G.saveExamen(s, G.examenKey(n), { ...e, at: n.toISOString() }), G.examenKey(n), 'examen'), {
           icon: '🌙',
           text: 'Examen guardado. Descansa en paz.',
         }),

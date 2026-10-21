@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { Button, C, Card, H2, inputStyle, Label, P, Screen } from '../components/ui';
+import { FONT_SCALES, useFont } from '../lib/fontScale';
 import type { Profile } from '../lib/game';
 import { useStore } from '../lib/store';
 
@@ -11,6 +12,7 @@ export default function Ajustes() {
     state.profile ?? { name: '', why: '', contactName: '', contactPhone: '', ifThen: [] },
   );
   const set = (k: keyof Profile, v: any) => setP((x) => ({ ...x, [k]: v }));
+  const font = useFont();
 
   const save = () => {
     updateProfile({ ...p, ifThen: p.ifThen.filter((x) => x.when.trim() || x.then.trim()) });
@@ -34,6 +36,40 @@ export default function Ajustes() {
 
   return (
     <Screen edges={['left', 'right', 'bottom']}>
+      <Card>
+        <Label>Tamaño de letra</Label>
+        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-end' }}>
+          {FONT_SCALES.map((f, i) => {
+            const on = font.idx === i;
+            return (
+              <Pressable
+                key={f.label}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={`Letra ${f.label}`}
+                onPress={() => font.setIdx(i)}
+                style={{
+                  flex: 1,
+                  height: 56,
+                  borderRadius: 14,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: on ? C.navy : C.line,
+                  backgroundColor: on ? C.navy : '#fff',
+                }}
+              >
+                <Text style={{ fontSize: Math.round(16 * f.scale), fontWeight: '700', color: on ? '#fff' : C.navy }}>A</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <P muted style={{ fontSize: 14 }}>
+          {FONT_SCALES[font.idx].label} · Se aplica a toda la app, también al lector del Evangelio.
+        </P>
+        <P>«Lámpara es tu palabra para mis pasos, luz en mi sendero» (Sal 119,105).</P>
+      </Card>
+
       <Card>
         <Label>Nombre</Label>
         <TextInput style={inputStyle} value={p.name} onChangeText={(v) => set('name', v)} />

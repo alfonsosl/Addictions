@@ -18,6 +18,18 @@ export type Profile = {
   ifThen: { when: string; then: string }[];
 };
 
+/** Examen de conciencia de una noche. Los campos opcionales se añadieron en la v1.1. */
+export type Examen = {
+  gratitude: string;
+  struggle: string;
+  resolution: string;
+  godToday?: string; // dónde ha estado Dios hoy
+  halt?: string[]; // estados de riesgo del día (HALT…)
+  marked?: string[]; // preguntas del examen marcadas para pedir perdón
+  sleep?: string[]; // rutina antes de dormir cumplida
+  at?: string; // ISO de cuándo se hizo
+};
+
 export type State = {
   version: 1;
   profile: Profile | null;
@@ -27,7 +39,7 @@ export type State = {
   talents: number;
   missionsByDate: Record<string, string[]>;
   readingsRead: string[]; // claves de fecha
-  examens: Record<string, { gratitude: string; struggle: string; resolution: string }>;
+  examens: Record<string, Examen>;
   victories: string[]; // ISO: tentaciones vencidas con el botón de pánico
   relapses: Relapse[];
   confessions: string[]; // ISO
@@ -60,6 +72,23 @@ export const REWARDS = {
   fullDayBonus: 15,
   chapter: 5,
 } as const;
+
+/** Día al que pertenece el examen: hasta las 4:00 cuenta como la noche anterior. */
+export function examenKey(d: Date): string {
+  return dateKey(d.getHours() < 4 ? new Date(d.getTime() - 5 * 3_600_000) : d);
+}
+
+/** Noches seguidas con examen hasta `key` (o hasta la noche anterior si hoy aún no se ha hecho). */
+export function examenStreak(state: State, now: Date): number {
+  const d = new Date(now.getTime() - (now.getHours() < 4 ? 5 * 3_600_000 : 0));
+  if (!state.examens[dateKey(d)]) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (state.examens[dateKey(d)]) {
+    n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}
 
 export function dateKey(d: Date): string {
   const y = d.getFullYear();
@@ -150,7 +179,7 @@ export function addConfession(state: State, now: Date): State {
 export function saveExamen(
   state: State,
   key: string,
-  examen: { gratitude: string; struggle: string; resolution: string },
+  examen: Examen,
 ): State {
   const isNew = !state.examens[key];
   return {

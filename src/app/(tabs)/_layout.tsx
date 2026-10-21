@@ -1,16 +1,13 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+import { Icon, type IconName } from '../../components/icons';
 import { C } from '../../components/ui';
 import { useStore } from '../../lib/store';
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return <Text style={{ fontSize: focused ? 24 : 21, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
-}
-
-function icon(emoji: string) {
-  return function Icon({ focused }: { focused: boolean }) {
-    return <TabIcon emoji={emoji} focused={focused} />;
+function icon(name: IconName) {
+  return function TabIcon({ focused }: { focused: boolean }) {
+    return <Icon name={name} color={focused ? C.navy : C.muted} />;
   };
 }
 
@@ -30,16 +27,16 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: C.navy,
         tabBarInactiveTintColor: C.muted,
-        tabBarStyle: { backgroundColor: '#fff', borderTopColor: C.line },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '700' },
+        tabBarStyle: { backgroundColor: C.bg, borderTopColor: C.line, elevation: 0 },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         sceneStyle: { backgroundColor: C.bg },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: icon('🏠') }} />
-      <Tabs.Screen name="evangelio" options={{ title: 'Evangelio', tabBarIcon: icon('📖') }} />
-      <Tabs.Screen name="rezar" options={{ title: 'Rezar', tabBarIcon: icon('🙏') }} />
-      <Tabs.Screen name="camino" options={{ title: 'Camino', tabBarIcon: icon('⛰️') }} />
-      <Tabs.Screen name="ayuda" options={{ title: 'Ayuda', tabBarIcon: icon('🧭') }} />
+      <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: icon('home') }} />
+      <Tabs.Screen name="evangelio" options={{ title: 'Evangelio', tabBarIcon: icon('book') }} />
+      <Tabs.Screen name="rezar" options={{ title: 'Rezar', tabBarIcon: icon('candle') }} />
+      <Tabs.Screen name="camino" options={{ title: 'Camino', tabBarIcon: icon('mountain') }} />
+      <Tabs.Screen name="ayuda" options={{ title: 'Ayuda', tabBarIcon: icon('compass') }} />
     </Tabs>
   );
 }

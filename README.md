@@ -6,11 +6,13 @@ App móvil (iOS / Android, también web) para ayudar a dejar la pornografía des
 
 ## Funcionalidades
 
-Cinco pestañas, con el **botón SOS siempre a un toque**: grande en Inicio y flotante en el resto.
+Cinco pestañas, diseño minimalista y **ayuda siempre a un toque**: en Inicio, una barra flotante con «Pánico» y «He caído»; en el resto de pestañas, un botón SOS flotante.
 
 | Pantalla | Qué hace |
 |---|---|
-| **Inicio** | Contador, **botón de pánico arriba del todo**, «Tu día con Dios» (Evangelio, reflexión, oración del momento, examen), nivel y regla de vida, «mi porqué». |
+| **Inicio** | Contador, **ilustración diaria «El amor de Dios, hoy»** (14 escenas y versículos que rotan cada día, sin conexión), «Tu día con Dios», nivel y regla de vida, «mi porqué». Por la noche, aviso para hacer el examen. Barra flotante con **Pánico** y **He caído**. |
+| **🌙 Examen de la noche** | Examen ignaciano guiado en 7 pasos con tema nocturno: presencia, gratitud (3 cosas), repaso del día y estados de riesgo (HALT), preguntas por áreas (Dios, pureza, los demás, uno mismo), acto de contrición, propósito «si… entonces…», rutina antes de dormir y oraciones a la Virgen. Guarda el historial, la racha de noches y te recuerda el propósito de ayer. Hasta las 4:00 cuenta como la noche anterior. |
+| **Ajustes** | **Tamaño de letra** (5 niveles) para toda la app, incluido el lector del Evangelio; perfil, compañero de camino y planes. |
 | **🆘 Botón de pánico** | Respiración guiada → oración → acciones de huida, tus planes «si… entonces…» y llamar/SMS al compañero → tu porqué → temporizador de 10 min. |
 | **Evangelio · Hoy** | Lecturas del día, **comentario del día con su autor** (santos, papas y sacerdotes), enlaces a comentarios de sacerdotes (evangeli.net, Vatican News, Opus Dei) y *Lectio Divina*. |
 | **Evangelio · Los 4 Evangelios** | **Texto completo sin conexión** de Mateo, Marcos, Lucas y Juan (traducción católica de Torres Amat), 89 capítulos titulados, lector con tamaño de letra ajustable, «Continuar leyendo», capítulos recomendados para la lucha, progreso y +5 talentos por capítulo. |
@@ -46,7 +48,7 @@ Todo se guarda en el propio dispositivo (AsyncStorage). No hay cuentas, servidor
 ## Stack
 
 - Expo SDK 58, React Native 0.88, TypeScript, Expo Router (`src/app/`)
-- `@react-native-async-storage/async-storage` para los datos y `expo-haptics` para la vibración del botón de pánico
+- `@react-native-async-storage/async-storage` para los datos, `expo-haptics` para la vibración y `react-native-svg` para ilustraciones e iconos (vectoriales, sin conexión)
 - Lógica del juego pura en `src/lib/game.ts`, con tests en `tests/game.test.ts`
 
 ```
@@ -86,7 +88,8 @@ Para publicar en las tiendas: `npx eas-cli@latest build` (ver la documentación 
 - **Lecturas**: se descargan del feed público de Evangelizo (`feed.evangelizo.org`). No se ha podido probar desde el entorno de desarrollo (la red estaba bloqueada), así que hay que verificarlo en un dispositivo. Necesitan conexión; sin red, la app muestra enlaces a fuentes oficiales y remite a los Evangelios completos, que sí funcionan offline. Antes de publicar conviene revisar los términos de uso del feed o buscar un acuerdo con la fuente.
 - **Citas**: siguen traducciones castellanas habituales y pueden variar ligeramente según la edición. Las citas de sacerdotes y papas son breves, llevan su fuente y se contrastaron en internet; la de Padre Pío es de atribución tradicional (se indica en la app).
 - **Comentarios de sacerdotes**: no se copian homilías completas (tienen derechos de autor). El comentario diario se carga en directo desde su fuente, con el autor, y hay enlaces a otras webs.
-- **Ideas para más adelante**: recordatorios (expo-notifications), bloqueo con PIN o biometría, modo oscuro, exportar/importar datos y Rosario guiado.
+- **Ideas para más adelante**: recordatorio nocturno del examen con notificación (expo-notifications), bloqueo con PIN o biometría, modo oscuro, exportar/importar datos y Rosario guiado.
+- **Tamaño de letra**: se aplica a los textos comunes, lector, oraciones, examen, inicio y botón de pánico; algunas etiquetas pequeñas de otras pantallas aún no escalan.
 
 ## Texto de los Evangelios (sin conexión)
 

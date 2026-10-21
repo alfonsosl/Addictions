@@ -1,20 +1,26 @@
 import type { ReactNode } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFont } from '../lib/fontScale';
 
+// Paleta minimalista: fondo marfil, tinta azul noche y un único acento dorado.
 export const C = {
-  bg: '#F7F3EA', // pergamino
+  bg: '#FAF8F4',
   card: '#FFFFFF',
   ink: '#1E2235',
-  muted: '#6B6F80',
+  muted: '#7A7E8C',
   navy: '#1F2A52',
-  navySoft: '#2E3C70',
-  gold: '#C9A227',
-  goldSoft: '#F3E6B8',
+  navySoft: '#3A4778',
+  gold: '#B8912A',
+  goldSoft: '#F5EDD6',
   red: '#B3261E',
+  redSoft: '#FBEAE8',
   green: '#2E7D4F',
-  line: '#E6DFCF',
+  line: '#ECE7DC',
+  night: '#141B38',
 };
+
+export const serif = Platform.select({ ios: 'Georgia', android: 'serif', default: 'Georgia, "Times New Roman", serif' });
 
 export function Screen({
   children,
@@ -24,16 +30,14 @@ export function Screen({
 }: {
   children: ReactNode;
   scroll?: boolean;
-  fabSpace?: boolean; // deja hueco abajo para el botón SOS flotante
+  fabSpace?: boolean | number; // deja hueco abajo para los botones flotantes
   edges?: ('top' | 'left' | 'right' | 'bottom')[];
 }) {
+  const pad = typeof fabSpace === 'number' ? fabSpace : fabSpace ? 110 : 0;
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={edges}>
       {scroll ? (
-        <ScrollView
-          contentContainerStyle={[s.screen, fabSpace && { paddingBottom: 110 }]}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={[s.screen, pad ? { paddingBottom: pad } : null]} keyboardShouldPersistTaps="handled">
           {children}
         </ScrollView>
       ) : (
@@ -48,16 +52,20 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
 }
 
 export function H1({ children }: { children: ReactNode }) {
-  return <Text style={s.h1}>{children}</Text>;
+  const { t } = useFont();
+  return <Text style={t(s.h1)}>{children}</Text>;
 }
 export function H2({ children }: { children: ReactNode }) {
-  return <Text style={s.h2}>{children}</Text>;
+  const { t } = useFont();
+  return <Text style={t(s.h2)}>{children}</Text>;
 }
 export function P({ children, muted, style }: { children: ReactNode; muted?: boolean; style?: any }) {
-  return <Text style={[s.p, muted && { color: C.muted }, style]}>{children}</Text>;
+  const { t } = useFont();
+  return <Text style={t([s.p, muted && { color: C.muted }, style])}>{children}</Text>;
 }
-export function Label({ children }: { children: ReactNode }) {
-  return <Text style={s.label}>{children}</Text>;
+export function Label({ children, color }: { children: ReactNode; color?: string }) {
+  const { t } = useFont();
+  return <Text style={t([s.label, color ? { color } : null])}>{children}</Text>;
 }
 
 type BtnKind = 'primary' | 'gold' | 'danger' | 'ghost';
@@ -74,8 +82,9 @@ export function Button({
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
+  const { t } = useFont();
   const bg = { primary: C.navy, gold: C.gold, danger: C.red, ghost: 'transparent' }[kind];
-  const fg = kind === 'ghost' ? C.navy : kind === 'gold' ? C.navy : '#fff';
+  const fg = kind === 'primary' || kind === 'danger' ? '#fff' : C.navy;
   return (
     <Pressable
       accessibilityRole="button"
@@ -84,11 +93,11 @@ export function Button({
       style={({ pressed }) => [
         s.btn,
         { backgroundColor: bg, opacity: disabled ? 0.4 : pressed ? 0.8 : 1 },
-        kind === 'ghost' && { borderWidth: 1.5, borderColor: C.navy },
+        kind === 'ghost' && { borderWidth: 1, borderColor: C.line, backgroundColor: C.card },
         style,
       ]}
     >
-      <Text style={[s.btnText, { color: fg }]}>{title}</Text>
+      <Text style={t([s.btnText, { color: fg }])}>{title}</Text>
     </Pressable>
   );
 }
@@ -102,9 +111,15 @@ export function ProgressBar({ value, color = C.gold, track }: { value: number; c
 }
 
 export function Chip({ label, active, onPress }: { label: string; active?: boolean; onPress: () => void }) {
+  const { fs } = useFont();
   return (
-    <Pressable onPress={onPress} style={[s.chip, active && { backgroundColor: C.navy, borderColor: C.navy }]}>
-      <Text style={{ color: active ? '#fff' : C.ink, fontSize: 14 }}>{label}</Text>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: !!active }}
+      onPress={onPress}
+      style={[s.chip, active && { backgroundColor: C.navy, borderColor: C.navy }]}
+    >
+      <Text style={{ color: active ? '#fff' : C.ink, fontSize: fs(14) }}>{label}</Text>
     </Pressable>
   );
 }
@@ -113,74 +128,29 @@ export const inputStyle = {
   backgroundColor: '#fff',
   borderWidth: 1,
   borderColor: C.line,
-  borderRadius: 12,
+  borderRadius: 14,
   padding: 12,
   fontSize: 16,
   color: C.ink,
   marginBottom: 12,
 } as const;
 
-const s = StyleSheet.create({
-  screen: { padding: 16, paddingBottom: 40, gap: 14, maxWidth: 640, width: '100%', alignSelf: 'center' },
-  card: {
-    backgroundColor: C.card,
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: C.line,
-    gap: 8,
-  },
-  h1: { fontSize: 28, fontWeight: '800', color: C.navy },
-  h2: { fontSize: 19, fontWeight: '700', color: C.navy },
-  p: { fontSize: 16, lineHeight: 23, color: C.ink },
-  label: { fontSize: 12, fontWeight: '700', color: C.muted, letterSpacing: 1, textTransform: 'uppercase' },
-  btn: { paddingVertical: 14, paddingHorizontal: 18, borderRadius: 14, alignItems: 'center' },
-  btnText: { fontSize: 16, fontWeight: '700' },
-  barBg: { height: 10, borderRadius: 5, backgroundColor: C.line, overflow: 'hidden' },
-  barFill: { height: 10, borderRadius: 5 },
-  seg: { flexDirection: 'row', backgroundColor: '#ECE5D3', borderRadius: 14, padding: 4, gap: 4 },
-  segItem: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
-  segActive: { backgroundColor: C.navy },
-  segText: { fontWeight: '700', color: C.navy, fontSize: 14 },
-  tile: {
-    flexBasis: '47%',
-    flexGrow: 1,
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    borderWidth: 1.5,
-    borderColor: C.line,
-    padding: 14,
-    gap: 4,
-    minHeight: 118,
-  },
-  tileTitle: { fontSize: 16, fontWeight: '800', color: C.navy },
-  tileSub: { fontSize: 13, color: C.muted },
-  section: { fontSize: 13, fontWeight: '800', color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 6 },
-  chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: C.line,
-    backgroundColor: '#fff',
-  },
-});
-
-export const serif = Platform.select({ ios: 'Georgia', android: 'serif', default: 'Georgia, "Times New Roman", serif' });
-
 /** Bloque de cita bíblica o de un santo, con tipografía serif. */
 export function Quote({ text, source, dark }: { text: string; source?: string; dark?: boolean }) {
+  const { fs } = useFont();
   return (
     <View style={{ gap: 6 }}>
-      <Text style={{ fontFamily: serif, fontSize: 18, lineHeight: 27, fontStyle: 'italic', color: dark ? '#fff' : C.navy }}>
+      <Text
+        style={{ fontFamily: serif, fontSize: fs(18), lineHeight: fs(27), fontStyle: 'italic', color: dark ? '#fff' : C.navy }}
+      >
         «{text}»
       </Text>
-      {source ? <Text style={{ color: dark ? C.gold : C.muted, fontWeight: '700', fontSize: 13 }}>{source}</Text> : null}
+      {source ? <Text style={{ color: dark ? C.goldSoft : C.muted, fontWeight: '600', fontSize: fs(13) }}>{source}</Text> : null}
     </View>
   );
 }
 
-/** Tarjeta-acceso grande con icono, para el inicio. */
+/** Tarjeta-acceso con icono. */
 export function Tile({
   icon,
   title,
@@ -194,22 +164,64 @@ export function Tile({
   done?: boolean;
   onPress: () => void;
 }) {
+  const { t } = useFont();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
       onPress={onPress}
-      style={({ pressed }) => [s.tile, done && { borderColor: C.green }, pressed && { transform: [{ scale: 0.97 }] }]}
+      style={({ pressed }) => [s.tile, pressed && { transform: [{ scale: 0.97 }] }]}
     >
-      <Text style={{ fontSize: 30 }}>{icon}</Text>
-      <Text style={s.tileTitle}>{title}</Text>
-      <Text style={[s.tileSub, done && { color: C.green, fontWeight: '700' }]}>{done ? '✓ Hecho' : subtitle}</Text>
+      <Text style={{ fontSize: 26 }}>{icon}</Text>
+      <Text style={t(s.tileTitle)}>{title}</Text>
+      <Text style={t([s.tileSub, done && { color: C.green, fontWeight: '700' }])}>{done ? '✓ Hecho' : subtitle}</Text>
+    </Pressable>
+  );
+}
+
+/** Fila de lista limpia: icono en círculo, título, subtítulo y estado. */
+export function ListRow({
+  icon,
+  title,
+  subtitle,
+  done,
+  onPress,
+  last,
+}: {
+  icon: string;
+  title: string;
+  subtitle?: string;
+  done?: boolean;
+  onPress: () => void;
+  last?: boolean;
+}) {
+  const { t } = useFont();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      onPress={onPress}
+      style={({ pressed }) => [s.row, !last && s.rowLine, pressed && { opacity: 0.6 }]}
+    >
+      <View style={[s.rowIcon, done && { backgroundColor: '#E6F2EA' }]}>
+        <Text style={{ fontSize: 18 }}>{done ? '✓' : icon}</Text>
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={t(s.rowTitle)}>{title}</Text>
+        {subtitle ? (
+          <Text style={t(s.rowSub)} numberOfLines={1}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      <Text style={s.rowChevron}>›</Text>
     </Pressable>
   );
 }
 
 export function SectionTitle({ children }: { children: ReactNode }) {
-  return <Text style={s.section}>{children}</Text>;
+  const { t } = useFont();
+  return <Text style={t(s.section)}>{children}</Text>;
 }
 
 /** Selector de secciones tipo "pestañas" dentro de una pantalla. */
@@ -222,6 +234,7 @@ export function Segmented<T extends string>({
   value: T;
   onChange: (v: T) => void;
 }) {
+  const { t } = useFont();
   return (
     <View style={s.seg}>
       {options.map((o) => {
@@ -234,7 +247,7 @@ export function Segmented<T extends string>({
             onPress={() => onChange(o.value)}
             style={[s.segItem, active && s.segActive]}
           >
-            <Text style={[s.segText, active && { color: '#fff' }]} numberOfLines={1}>
+            <Text style={t([s.segText, active && { color: C.navy }])} numberOfLines={1}>
               {o.label}
             </Text>
           </Pressable>
@@ -243,3 +256,62 @@ export function Segmented<T extends string>({
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  screen: { padding: 20, paddingBottom: 40, gap: 16, maxWidth: 640, width: '100%', alignSelf: 'center' },
+  card: {
+    backgroundColor: C.card,
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
+    gap: 8,
+  },
+  h1: { fontSize: 28, fontWeight: '700', color: C.navy, letterSpacing: -0.3 },
+  h2: { fontSize: 19, fontWeight: '700', color: C.navy },
+  p: { fontSize: 16, lineHeight: 24, color: C.ink },
+  label: { fontSize: 12, fontWeight: '600', color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase' },
+  btn: { paddingVertical: 15, paddingHorizontal: 18, borderRadius: 16, alignItems: 'center' },
+  btnText: { fontSize: 16, fontWeight: '600' },
+  barBg: { height: 4, borderRadius: 2, backgroundColor: C.line, overflow: 'hidden' },
+  barFill: { height: 4, borderRadius: 2 },
+  seg: { flexDirection: 'row', backgroundColor: '#F0ECE3', borderRadius: 14, padding: 3, gap: 3 },
+  segItem: { flex: 1, paddingVertical: 9, borderRadius: 11, alignItems: 'center' },
+  segActive: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
+  segText: { fontWeight: '600', color: C.muted, fontSize: 14 },
+  tile: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.line,
+    padding: 16,
+    gap: 4,
+    minHeight: 112,
+  },
+  tileTitle: { fontSize: 16, fontWeight: '700', color: C.navy },
+  tileSub: { fontSize: 13, color: C.muted },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 12 },
+  rowLine: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.line },
+  rowIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F4F1EA', alignItems: 'center', justifyContent: 'center' },
+  rowTitle: { fontSize: 16, fontWeight: '600', color: C.ink },
+  rowSub: { fontSize: 13, color: C.muted, marginTop: 1 },
+  rowChevron: { fontSize: 24, color: '#C9C4B8', fontWeight: '300' },
+  section: { fontSize: 12, fontWeight: '600', color: C.muted, letterSpacing: 1.4, textTransform: 'uppercase', marginTop: 8 },
+  chip: {
+    paddingVertical: 8,
+    paddingHorizontal: 13,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: C.line,
+    backgroundColor: '#fff',
+  },
+});
