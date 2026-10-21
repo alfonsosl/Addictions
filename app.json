@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Vigilia",
+    "slug": "vigilia",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vigilia.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1F2A52",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.vigilia.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "vigilia",
+    "description": "Acompañamiento católico para dejar la pornografía: lecturas del día, oración, contador, botón de pánico y un camino gamificado.",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F3EA"
+    }
+  }
+}
