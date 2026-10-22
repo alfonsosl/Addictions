@@ -1,4 +1,4 @@
-// "La grandeza del amor de Dios": una ilustración y un versículo distintos cada día (ciclo de 16 días).
+// "La grandeza del amor de Dios": una ilustración y un versículo distintos cada día (ciclo de 50 días).
 // Citas según traducciones castellanas habituales; pueden variar ligeramente según la edición.
 
 import type { SceneId } from '../components/art/scenes';
@@ -125,10 +125,247 @@ export const LOVE_DAYS: LoveDay[] = [
     source: 'Jn 6,35',
     thought: 'El hambre de tu corazón tiene nombre: es hambre de Él.',
   },
+  {
+    scene: 'storm',
+    title: 'No temas',
+    verse: 'No temas, que yo te he redimido; te he llamado por tu nombre: tú eres mío.',
+    source: 'Is 43,1',
+    thought: 'Antes que tu historia y tus caídas, está tu nombre en sus labios.',
+  },
+  {
+    scene: 'storm',
+    title: 'Contigo en las aguas',
+    verse: 'Si atraviesas las aguas, yo estaré contigo; si pasas por los ríos, no te anegarán.',
+    source: 'Is 43,2',
+    thought: 'No te promete un mar en calma; te promete no soltarte en la tormenta.',
+  },
+  {
+    scene: 'eagle',
+    title: 'Nuevas fuerzas',
+    verse: 'Los que esperan en el Señor renuevan sus fuerzas, echan alas como las águilas, corren y no se fatigan.',
+    source: 'Is 40,31',
+    thought: 'Tus fuerzas se acaban; las suyas no. Espera en Él.',
+  },
+  {
+    scene: 'shepherd',
+    title: 'Nada me falta',
+    verse: 'El Señor es mi pastor, nada me falta.',
+    source: 'Sal 23,1',
+    thought: 'Lo que buscas en otras partes ya lo tienes en Él.',
+  },
+  {
+    scene: 'shepherd',
+    title: 'Tú vas conmigo',
+    verse: 'Aunque camine por cañadas oscuras, nada temo, porque tú vas conmigo.',
+    source: 'Sal 23,4',
+    thought: 'Las noches difíciles no las pasas solo.',
+  },
+  {
+    scene: 'garden',
+    title: 'Cerca del corazón herido',
+    verse: 'El Señor está cerca de los que tienen el corazón quebrantado.',
+    source: 'Sal 34,19',
+    thought: 'Tu herida no le aleja: le acerca.',
+  },
+  {
+    scene: 'heart',
+    title: 'Un corazón puro',
+    verse: 'Oh Dios, crea en mí un corazón puro, renuévame por dentro con espíritu firme.',
+    source: 'Sal 51,12',
+    thought: 'Pídeselo hoy: es una oración que Él siempre escucha.',
+  },
+  {
+    scene: 'stars',
+    title: 'Obra de sus manos',
+    verse: 'Tú has creado mis entrañas, me has tejido en el seno materno. Te doy gracias porque me has escogido portentosamente.',
+    source: 'Sal 139,13-14',
+    thought: 'Eres obra suya, hecho con cuidado. No eres un error.',
+  },
+  {
+    scene: 'stars',
+    title: 'Cuenta las estrellas',
+    verse: 'Mira al cielo y cuenta las estrellas, si puedes contarlas.',
+    source: 'Gn 15,5',
+    thought: 'Sus promesas son más grandes que tus miedos.',
+  },
+  {
+    scene: 'lamb',
+    title: 'El Cordero de Dios',
+    verse: 'Este es el Cordero de Dios, que quita el pecado del mundo.',
+    source: 'Jn 1,29',
+    thought: 'Tu pecado ya tiene quien lo cargue. Dáselo.',
+  },
+  {
+    scene: 'cross',
+    title: 'El amor más grande',
+    verse: 'Nadie tiene amor más grande que el que da la vida por sus amigos.',
+    source: 'Jn 15,13',
+    thought: 'Te llama amigo, y lo ha demostrado.',
+  },
+  {
+    scene: 'light',
+    title: 'Vino a salvar',
+    verse: 'Dios no envió a su Hijo al mundo para juzgar al mundo, sino para que el mundo se salve por él.',
+    source: 'Jn 3,17',
+    thought: 'Jesús no viene a acusarte, viene a sacarte.',
+  },
+  {
+    scene: 'path',
+    title: 'Tampoco yo te condeno',
+    verse: 'Tampoco yo te condeno. Anda, y en adelante no peques más.',
+    source: 'Jn 8,11',
+    thought: 'Primero el perdón; después, la fuerza para cambiar.',
+  },
+  {
+    scene: 'dove',
+    title: 'Mi paz os doy',
+    verse: 'La paz os dejo, mi paz os doy. Que no tiemble vuestro corazón ni se acobarde.',
+    source: 'Jn 14,27',
+    thought: 'Su paz no depende de que todo vaya bien.',
+  },
+  {
+    scene: 'nets',
+    title: 'Tú sabes que te quiero',
+    verse: 'Señor, tú lo sabes todo; tú sabes que te quiero.',
+    source: 'Jn 21,17',
+    thought: 'Después de cada caída, Él te pregunta lo mismo que a Pedro: ¿me quieres?',
+  },
+  {
+    scene: 'nets',
+    title: 'Desde ahora',
+    verse: 'No temas; desde ahora serás pescador de hombres.',
+    source: 'Lc 5,10',
+    thought: 'Tu historia, también la difícil, puede servir a otros.',
+  },
+  {
+    scene: 'storm',
+    title: '¿Por qué tenéis miedo?',
+    verse: '¡Silencio, enmudece! … ¿Por qué tenéis miedo? ¿Aún no tenéis fe?',
+    source: 'Mc 4,39-40',
+    thought: 'La tempestad obedece a su voz. También la que llevas dentro.',
+  },
+  {
+    scene: 'mountain',
+    title: 'Todos los días',
+    verse: 'Yo estoy con vosotros todos los días, hasta el fin del mundo.',
+    source: 'Mt 28,20',
+    thought: 'Hoy también. Ahora también.',
+  },
+  {
+    scene: 'tree',
+    title: 'Como un grano de mostaza',
+    verse: 'El reino de los cielos se parece a un grano de mostaza… se hace un árbol, hasta el punto de que vienen los pájaros del cielo a anidar en sus ramas.',
+    source: 'Mt 13,31-32',
+    thought: 'Lo pequeño que haces hoy, Dios lo hace crecer.',
+  },
+  {
+    scene: 'tree',
+    title: 'Junto a la acequia',
+    verse: 'Será como un árbol plantado al borde de la acequia: da fruto en su sazón y no se marchitan sus hojas.',
+    source: 'Sal 1,3',
+    thought: 'Arraigado en su Palabra, darás fruto a su tiempo.',
+  },
+  {
+    scene: 'mary',
+    title: 'Hágase',
+    verse: 'He aquí la esclava del Señor; hágase en mí según tu palabra.',
+    source: 'Lc 1,38',
+    thought: 'Con María, dile hoy «sí» a lo que Dios te pida.',
+  },
+  {
+    scene: 'mary',
+    title: 'Ahí tienes a tu madre',
+    verse: 'Ahí tienes a tu madre.',
+    source: 'Jn 19,27',
+    thought: 'Desde la cruz, Jesús te la regaló. Acude a ella en la lucha.',
+  },
+  {
+    scene: 'garden',
+    title: 'Tu voluntad',
+    verse: 'Padre, si quieres, aparta de mí este cáliz; pero que no se haga mi voluntad, sino la tuya.',
+    source: 'Lc 22,42',
+    thought: 'Él también conoció la angustia. Ora con Él en tu huerto.',
+  },
+  {
+    scene: 'garden',
+    title: 'Probado como nosotros',
+    verse: 'No tenemos un sumo sacerdote incapaz de compadecerse de nuestras debilidades, sino que ha sido probado en todo como nosotros, menos en el pecado.',
+    source: 'Heb 4,15',
+    thought: 'Te entiende desde dentro: también fue tentado.',
+  },
+  {
+    scene: 'light',
+    title: 'Te basta mi gracia',
+    verse: 'Te basta mi gracia: la fuerza se realiza en la debilidad.',
+    source: '2 Cor 12,9',
+    thought: 'Tu debilidad es el lugar donde Él actúa.',
+  },
+  {
+    scene: 'dove',
+    title: 'Fiel para perdonar',
+    verse: 'Si confesamos nuestros pecados, él, que es fiel y justo, nos perdonará los pecados.',
+    source: '1 Jn 1,9',
+    thought: 'La confesión no es un tribunal: es un abrazo.',
+  },
+  {
+    scene: 'stars',
+    title: 'Hijos de Dios',
+    verse: 'Mirad qué amor nos ha tenido el Padre para llamarnos hijos de Dios, ¡pues lo somos!',
+    source: '1 Jn 3,1',
+    thought: 'Tu identidad más profunda no es tu adicción: es ser hijo.',
+  },
+  {
+    scene: 'tomb',
+    title: 'Nos hizo vivir',
+    verse: 'Dios, rico en misericordia, por el gran amor con que nos amó, estando nosotros muertos por los pecados, nos ha hecho vivir con Cristo.',
+    source: 'Ef 2,4-5',
+    thought: 'Ninguna muerte interior es definitiva para Él.',
+  },
+  {
+    scene: 'path',
+    title: 'Estoy a la puerta',
+    verse: 'Mira que estoy a la puerta y llamo. Si alguno oye mi voz y abre la puerta, entraré en su casa.',
+    source: 'Ap 3,20',
+    thought: 'No fuerza la puerta: espera a que le abras.',
+  },
+  {
+    scene: 'heart',
+    title: 'Un corazón nuevo',
+    verse: 'Os daré un corazón nuevo y os infundiré un espíritu nuevo.',
+    source: 'Ez 36,26',
+    thought: 'Lo que tú no puedes cambiar solo, Él lo renueva.',
+  },
+  {
+    scene: 'shepherd',
+    title: 'Lazos de amor',
+    verse: 'Con cuerdas humanas los atraía, con lazos de amor.',
+    source: 'Os 11,4',
+    thought: 'Su forma de atraerte es siempre la ternura.',
+  },
+  {
+    scene: 'path',
+    title: 'Vino por los pecadores',
+    verse: 'No he venido a llamar a justos, sino a pecadores.',
+    source: 'Mt 9,13',
+    thought: 'Si te sientes lejos, eres justo a quien busca.',
+  },
+  {
+    scene: 'flock',
+    title: 'Buscar lo perdido',
+    verse: 'El Hijo del hombre ha venido a buscar y a salvar lo que estaba perdido.',
+    source: 'Lc 19,10',
+    thought: 'Perdido no es un final: es la razón por la que vino.',
+  },
 ];
 
 /** La ilustración de hoy (cambia a medianoche, hora local). */
 export function loveForDate(d: Date): LoveDay {
   const days = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86_400_000);
   return LOVE_DAYS[((days % LOVE_DAYS.length) + LOVE_DAYS.length) % LOVE_DAYS.length];
+}
+
+/** Un versículo al azar, distinto del de hoy (para la pantalla de inicio). */
+export function randomLove(exclude?: LoveDay): LoveDay {
+  const pool = LOVE_DAYS.filter((d) => d !== exclude);
+  return pool[Math.floor(Math.random() * pool.length)];
 }

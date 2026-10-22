@@ -3,6 +3,8 @@ import { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import {
   BRICK,
   Christ,
+  Glow,
+  SKIN,
   FAINT,
   NIGHT,
   OUTLINE,
@@ -41,13 +43,26 @@ export type SceneId =
   | 'light'
   | 'dove'
   | 'tomb'
-  | 'heart';
+  | 'heart'
+  | 'shepherd'
+  | 'storm'
+  | 'nets'
+  | 'mary'
+  | 'lamb'
+  | 'garden'
+  | 'tree'
+  | 'stars'
+  | 'eagle';
 
-export type SceneMeta = { focus: number; dark?: boolean; bg: string };
+export type SceneMeta = { focus: number; top?: number; dark?: boolean; bg: string };
+
+// Altura donde empieza el dibujo en escenas que llegan muy arriba (para no tapar el título).
+const TOP: Partial<Record<SceneId, number>> = { flock: 250 };
 
 const FOCUS: Record<SceneId, number> = {
-  sea: 440, flock: 500, cross: 380, path: 380, mountain: 370, field: 430, night: 330,
+  sea: 440, flock: 420, cross: 380, path: 380, mountain: 370, field: 430, night: 330,
   vine: 360, well: 420, bread: 360, light: 340, dove: 380, tomb: 400, heart: 340,
+  shepherd: 420, storm: 370, nets: 460, mary: 400, lamb: 400, garden: 390, tree: 330, stars: 380, eagle: 330,
 };
 
 // El fondo se lee en cada acceso (cambia con el modo oscuro).
@@ -56,11 +71,12 @@ export const SCENE_META = Object.fromEntries(
     id,
     {
       focus: FOCUS[id],
+      top: TOP[id],
       get bg() {
-        return id === 'night' ? NIGHT : PAPER;
+        return id === 'night' || id === 'stars' ? NIGHT : PAPER;
       },
       get dark() {
-        return id === 'night' || PAPER !== '#EFEADB';
+        return id === 'night' || id === 'stars' || PAPER !== '#EFEADB';
       },
     },
   ]),
@@ -98,7 +114,7 @@ function SeaScene() {
 function FlockScene() {
   const r = rng(3);
   const sheep: ReactElement[] = [];
-  for (let row = 0; row < 8; row++) {
+  for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 8; col++) {
       const x = 66 + col * 32 + (r() - 0.5) * 6;
       const y = 262 + row * 28 + (r() - 0.5) * 4;
@@ -109,7 +125,7 @@ function FlockScene() {
     <G>
       {sheep}
       {/* El pastor encuentra a la oveja perdida (Lc 15,4-6) */}
-      <G transform="translate(196 548)">
+      <G transform="translate(196 480)">
         <Path d="M-40 4 Q0 2 34 5" {...stroke(FAINT, 0.8)} />
         <Christ x={4} y={0} s={1.05} sitting />
         <Sheep x={-14} y={-4} s={1.1} wool={WHITE} head={INK} />
@@ -392,6 +408,269 @@ function HeartScene() {
   );
 }
 
+
+function ShepherdScene() {
+  const r = rng(53);
+  return (
+    <G>
+      <Glow id="gl-shep" cx={250} cy={300} r={80} color={OCHRE} opacity={0.35} />
+      <Circle cx={250} cy={300} r={26} {...stroke(OCHRE, 1)} />
+      {Array.from({ length: 9 }, (_, i) => (
+        <Path key={i} d={hillLine(470 + i * 20, 200, 50 - i * 3, 160 + i * 10, r)} {...stroke(i % 2 ? OLIVE : FAINT, 1.1)} />
+      ))}
+      {/* El Buen Pastor lleva la oveja sobre los hombros (Jn 10,11; Lc 15,5) */}
+      <Path d="M206 470 L214 352 Q215 336 228 338 Q238 341 234 352" {...stroke(WOOD, 2)} />
+      <Christ x={190} y={472} s={2.3} carry />
+      <Sheep x={110} y={476} s={1.2} wool={WOOL[1]} />
+      <Sheep x={80} y={486} s={1.05} wool={WOOL[3]} />
+      <Sheep x={128} y={494} s={1.1} wool={WOOL[0]} />
+    </G>
+  );
+}
+
+function StormScene() {
+  const r = rng(59);
+  const rain: ReactElement[] = [];
+  for (let i = 0; i < 46; i++) {
+    const x = r() * 380 - 10;
+    const y = 120 + r() * 230;
+    rain.push(<Path key={i} d={`M${x} ${y} l-6 14`} {...stroke(SEA, 0.9)} opacity={0.5} />);
+  }
+  return (
+    <G>
+      {[90, 120, 150].map((y, i) => (
+        <Path key={`c${i}`} d={waveLine(y, 10 + i * 2, r, -30, 390, 22)} {...stroke(INK, 1.4)} opacity={0.5 - i * 0.1} />
+      ))}
+      {rain}
+      <Glow id="gl-storm" cx={196} cy={330} r={120} />
+      <Sea y0={380} n={24} gap={11} seed={61} amp={13} grow={0.5} />
+      {/* «¡Silencio, enmudece!» (Mc 4,39) */}
+      <G transform="translate(120 382) rotate(-10)">
+        {[0, 8, 16, 24, 40, 48].map((x, i) => (
+          <Person key={i} x={x + 16} y={-4} s={0.7} />
+        ))}
+        <Path d="M0 -4 L96 -8 Q90 8 70 12 L22 12 Q6 10 0 -4 Z" fill="#E9DFC9" {...edge(WOOD, 1)} />
+        <Path d="M4 1 L92 -2 M9 6 L86 4" {...stroke(WOOD, 0.8)} />
+        <Path d="M54 -6 L56 -70" {...stroke(WOOD, 1.2)} />
+      </G>
+      <Christ x={198} y={372} s={1.25} arm={2} />
+    </G>
+  );
+}
+
+function NetsScene() {
+  const r = rng(67);
+  const fish: ReactElement[] = [];
+  for (let i = 0; i < 26; i++) {
+    const x = 70 + r() * 110;
+    const y = 470 + r() * 70;
+    fish.push(<Path key={i} d={`M${x - 6} ${y} q6 -4 12 0 q-6 4 -12 0 Z M${x + 6} ${y} l4 -3 l0 6 Z`} fill={SEA} opacity={0.75} />);
+  }
+  return (
+    <G>
+      <Glow id="gl-nets" cx={290} cy={360} r={110} />
+      <Circle cx={292} cy={350} r={20} {...stroke(OCHRE, 1)} />
+      <Sea y0={440} n={18} gap={11} seed={71} amp={3} grow={0.2} />
+      {/* La red llena de peces (Jn 21,6) */}
+      <Path d="M60 450 Q120 560 190 452" fill={PAPER} opacity={0.5} />
+      {Array.from({ length: 8 }, (_, i) => (
+        <Path key={`n${i}`} d={`M${66 + i * 16} 452 Q${76 + i * 14} 500 ${90 + i * 10} ${540 - Math.abs(i - 3.5) * 10}`} {...stroke(WOOD, 0.7)} />
+      ))}
+      {Array.from({ length: 5 }, (_, i) => (
+        <Path key={`m${i}`} d={`M${64 + i * 6} ${466 + i * 16} Q125 ${480 + i * 18} ${186 - i * 8} ${466 + i * 16}`} {...stroke(WOOD, 0.7)} />
+      ))}
+      {fish}
+      <G transform="translate(40 446)">
+        {[10, 18, 26, 34].map((x, i) => (
+          <Person key={i} x={x + 30} y={-6} s={0.75} />
+        ))}
+        <Path d="M0 -6 L100 -10 Q94 6 74 10 L22 10 Q6 8 0 -6 Z" fill="#E9DFC9" {...edge(WOOD, 1)} />
+        <Path d="M50 -8 L52 -60" {...stroke(WOOD, 1.2)} />
+      </G>
+      {/* En la orilla, Jesús y unas brasas (Jn 21,9) */}
+      <Path d={waveLine(436, 1.5, r, 240, 390, 20)} {...stroke(WOOD, 1.2)} />
+      <Christ x={300} y={434} s={1.15} arm={-1} />
+      <Path d="M262 432 q4 -10 8 0 q2 -8 6 0" fill={OCHRE} />
+      <Path d="M268 424 q-4 -10 2 -18 q-4 -8 2 -16" {...stroke(FAINT, 1)} />
+    </G>
+  );
+}
+
+function MaryScene() {
+  const r = rng(73);
+  const stars = Array.from({ length: 12 }, (_, i) => {
+    const a = (i / 12) * Math.PI * 2;
+    return <Circle key={i} cx={180 + Math.cos(a) * 30} cy={352 + Math.sin(a) * 30} r={1.6} fill={OCHRE} />;
+  });
+  return (
+    <G>
+      <Glow id="gl-mary" cx={180} cy={360} r={150} />
+      {Array.from({ length: 7 }, (_, i) => (
+        <Path key={i} d={waveLine(500 + i * 20, 2, r)} {...stroke(i % 2 ? OLIVE : FAINT, 1)} />
+      ))}
+      <Circle cx={180} cy={352} r={19} {...stroke(OCHRE, 1.2)} />
+      {stars}
+      {/* «He aquí la esclava del Señor» (Lc 1,38) */}
+      <G transform="translate(180 500) scale(2.6)">
+        <Ellipse cx={0} cy={0.6} rx={11} ry={1.4} fill={INK} opacity={0.1} />
+        <Path d="M-4 -58 C-14 -58 -16 -44 -15 -30 C-15 -18 -18 -8 -20 0 L20 0 C18 -8 15 -18 15 -30 C16 -44 14 -58 4 -58 Z" fill={SEA} />
+        <Path d="M-6 -40 C-7 -26 -8 -12 -9 0 L9 0 C8 -12 7 -26 6 -40 Z" fill={WHITE} stroke={OUTLINE} strokeWidth={0.4} />
+        <Ellipse cx={0} cy={-54} rx={3.8} ry={4.6} fill={SKIN} />
+        <Path d="M-1.5 -36 L0 -30 L1.5 -36 Z" fill={SKIN} />
+        <Path d="M-4 -60 C-10 -60 -12 -50 -11 -44 M4 -60 C10 -60 12 -50 11 -44" {...stroke(INK, 0.4)} opacity={0.5} />
+      </G>
+      {/* Lirios */}
+      {[[76, 520], [96, 528], [270, 522], [290, 530]].map(([x, y], i) => (
+        <G key={`l${i}`}>
+          <Path d={`M${x} ${y} Q${x + 4} ${y - 40} ${x + 2} ${y - 70}`} {...stroke(OLIVE, 1.2)} />
+          <Path d={`M${x + 2} ${y - 70} l-6 -10 l6 4 l6 -4 Z`} fill={WHITE} stroke={OUTLINE} strokeWidth={0.6} />
+          <Path d={`M${x + 3} ${y - 40} q8 -4 12 -12`} {...stroke(OLIVE, 1)} />
+        </G>
+      ))}
+    </G>
+  );
+}
+
+function LambScene() {
+  const r = rng(79);
+  return (
+    <G>
+      <Glow id="gl-lamb" cx={180} cy={380} r={140} />
+      {Array.from({ length: 10 }, (_, i) => (
+        <Path key={i} d={hillLine(450 + i * 18, 180, 40 - i * 2.5, 120 + i * 12, r)} {...stroke(i % 2 ? OLIVE : FAINT, 1.1)} />
+      ))}
+      {/* «Este es el Cordero de Dios» (Jn 1,29) */}
+      <Path d="M206 410 L206 300" {...stroke(WOOD, 1.6)} />
+      <Path d="M201 306 L211 306" {...stroke(WOOD, 1.6)} />
+      <Path d="M206 312 C226 308 236 318 250 312 L244 326 L250 340 C236 346 226 336 206 340 Z" fill={WHITE} stroke={OUTLINE} strokeWidth={0.8} />
+      <Path d="M226 318 L226 334 M219 326 L233 326" {...stroke(BRICK, 1.6)} />
+      <Circle cx={210} cy={388} r={13} {...stroke(OCHRE, 1.2)} />
+      <G transform="translate(180 420) scale(2.8)">
+        <Sheep x={0} y={0} s={1} wool={WHITE} head={SKIN} />
+      </G>
+    </G>
+  );
+}
+
+function GardenScene() {
+  const r = rng(83);
+  const tree = (x: number, y: number, k: number) => (
+    <G key={`t${x}`}>
+      <Path d={`M${x} ${y} C${x - 6 * k} ${y - 30 * k} ${x + 8 * k} ${y - 50 * k} ${x - 2 * k} ${y - 80 * k}`} {...stroke(WOOD, 2.4 * k)} />
+      <Path d={`M${x - 1 * k} ${y - 50 * k} C${x + 14 * k} ${y - 60 * k} ${x + 20 * k} ${y - 74 * k} ${x + 24 * k} ${y - 86 * k}`} {...stroke(WOOD, 1.4 * k)} />
+      {Array.from({ length: 22 }, (_, i) => {
+        const a = r() * Math.PI * 2;
+        const d = r() * 30 * k;
+        const cx = x + 4 * k + Math.cos(a) * d * 1.3;
+        const cy = y - 92 * k + Math.sin(a) * d * 0.7;
+        return <Ellipse key={i} cx={cx} cy={cy} rx={4 * k} ry={1.7 * k} transform={`rotate(${r() * 60 - 30} ${cx} ${cy})`} fill={OLIVE} opacity={0.75} />;
+      })}
+    </G>
+  );
+  return (
+    <G>
+      <Glow id="gl-gard" cx={260} cy={230} r={90} />
+      <Path d="M246 210 A26 26 0 1 0 276 244 A20 20 0 1 1 246 210 Z" fill={OCHRE} opacity={0.8} />
+      {Array.from({ length: 6 }, (_, i) => (
+        <Path key={i} d={waveLine(470 + i * 26, 2, r)} {...stroke(FAINT, 1)} />
+      ))}
+      {tree(70, 470, 1.3)}
+      {tree(300, 476, 1.1)}
+      {/* Jesús ora en el huerto (Lc 22,41-42) */}
+      <Path d="M150 470 C150 440 176 430 206 436 C226 440 232 458 230 470 Z" fill={FAINT} {...edge(WOOD, 1)} />
+      <Christ x={190} y={438} s={1.4} kneel />
+      <Path d="M190 380 L190 300" {...stroke(OCHRE, 0.8)} opacity={0.6} />
+    </G>
+  );
+}
+
+function TreeScene() {
+  const r = rng(89);
+  const leaves: ReactElement[] = [];
+  for (let i = 0; i < 150; i++) {
+    const a = r() * Math.PI * 2;
+    const d = Math.sqrt(r()) * 100;
+    const cx = 180 + Math.cos(a) * d * 1.25;
+    const cy = 270 + Math.sin(a) * d * 0.75;
+    leaves.push(<Ellipse key={i} cx={cx} cy={cy} rx={5} ry={2.2} transform={`rotate(${r() * 180} ${cx} ${cy})`} fill={r() > 0.4 ? OLIVE : '#A3AE7C'} opacity={0.85} />);
+  }
+  return (
+    <G>
+      <Glow id="gl-tree" cx={180} cy={280} r={170} />
+      {/* El árbol junto a la acequia (Sal 1,3) y el grano de mostaza (Mt 13,31-32) */}
+      <Path d="M172 470 C170 420 160 380 168 330 L192 330 C200 380 190 420 188 470 Z" fill={WOOD} />
+      <Path d="M176 340 C150 320 120 300 100 280 M184 338 C210 316 240 300 262 278 M180 330 C178 300 182 270 180 240" {...stroke(WOOD, 3)} />
+      {leaves}
+      {[[120, 236], [236, 250], [182, 214]].map(([x, y], i) => (
+        <Path key={`b${i}`} d={`M${x - 5} ${y} Q${x - 2} ${y - 4} ${x} ${y} Q${x + 2} ${y - 4} ${x + 5} ${y}`} {...stroke(INK, 1.2)} />
+      ))}
+      <Path d="M150 472 C160 476 200 476 210 472" {...stroke(WOOD, 1.2)} />
+      <Sea y0={500} n={10} gap={12} seed={97} amp={3} grow={0.2} />
+    </G>
+  );
+}
+
+function StarsScene() {
+  const r = rng(101);
+  const stars: ReactElement[] = [];
+  for (let i = 0; i < 160; i++) {
+    const x = r() * 360;
+    const y = r() * 430;
+    const big = r() > 0.94;
+    stars.push(
+      big ? (
+        <Path key={i} d={`M${x} ${y - 4} L${x} ${y + 4} M${x - 4} ${y} L${x + 4} ${y}`} {...stroke('#E9D9A8', 0.8)} />
+      ) : (
+        <Circle key={i} cx={x} cy={y} r={0.4 + r() * 1} fill="#E9E3D2" opacity={0.4 + r() * 0.6} />
+      ),
+    );
+  }
+  // Vía Láctea
+  const milky: ReactElement[] = [];
+  for (let i = 0; i < 140; i++) {
+    const t = r();
+    const x = t * 380 - 10;
+    const y = 360 - t * 280 + (r() - 0.5) * 50;
+    milky.push(<Circle key={`m${i}`} cx={x} cy={y} r={0.5 + r() * 0.6} fill="#E9E3D2" opacity={0.3} />);
+  }
+  return (
+    <G>
+      <Glow id="gl-stars" cx={180} cy={220} r={220} color="#3A4680" opacity={0.6} />
+      {milky}
+      {stars}
+      {/* «Mira al cielo y cuenta las estrellas» (Gn 15,5) */}
+      <Path d={hillLine(520, 150, 40, 120, r)} {...stroke('#8E8877', 1.2)} />
+      <Path d="M-30 640 L-30 520 Q150 470 390 530 L390 640 Z" fill="#0E1330" />
+      <Person x={150} y={484} s={1.3} color="#C9C3B2" />
+      <Path d="M150.5 470 L156 462" {...stroke('#C9C3B2', 1.2)} />
+    </G>
+  );
+}
+
+function EagleScene() {
+  const r = rng(107);
+  return (
+    <G>
+      <Glow id="gl-eagle" cx={180} cy={300} r={170} />
+      <Circle cx={250} cy={260} r={30} {...stroke(OCHRE, 1)} />
+      {/* «Echan alas como las águilas» (Is 40,31) */}
+      <G transform="translate(170 320)">
+        <Path
+          d="M0 0 C-20 -10 -50 -30 -96 -34 C-80 -26 -66 -18 -58 -10 C-74 -12 -86 -10 -96 -6 C-74 0 -46 4 -20 8 C-14 16 -6 22 0 24 C6 22 14 16 20 8 C46 4 74 0 96 -6 C86 -10 74 -12 58 -10 C66 -18 80 -26 96 -34 C50 -30 20 -10 0 0 Z"
+          fill={WOOD}
+          {...edge(INK, 0.8)}
+        />
+        <Path d="M-4 -2 C-4 -10 4 -10 4 -2" fill={WHITE} />
+        <Path d="M-6 22 L0 34 L6 22" fill={WOOD} {...edge(INK, 0.8)} />
+        <Path d="M-70 -22 L-40 -8 M-80 -14 L-48 -4 M70 -22 L40 -8 M80 -14 L48 -4" {...stroke(INK, 0.6)} opacity={0.5} />
+      </G>
+      {Array.from({ length: 8 }, (_, i) => (
+        <Path key={i} d={hillLine(520 + i * 14, i % 2 ? 90 : 260, 110 - i * 10, 60 + i * 6, r)} {...stroke(i % 2 ? SEA : INK, 1.1)} />
+      ))}
+    </G>
+  );
+}
+
 const SCENES: Record<SceneId, () => ReactElement> = {
   sea: SeaScene,
   flock: FlockScene,
@@ -407,6 +686,15 @@ const SCENES: Record<SceneId, () => ReactElement> = {
   dove: DoveScene,
   tomb: TombScene,
   heart: HeartScene,
+  shepherd: ShepherdScene,
+  storm: StormScene,
+  nets: NetsScene,
+  mary: MaryScene,
+  lamb: LambScene,
+  garden: GardenScene,
+  tree: TreeScene,
+  stars: StarsScene,
+  eagle: EagleScene,
 };
 
 /** Contenido de la escena (sin el <Svg>), memorizado: el dibujo es determinista. */
@@ -415,6 +703,7 @@ export const SceneArt = memo(function SceneArt({ id }: { id: SceneId }) {
   return (
     <G>
       <Rect x={-200} y={-200} width={760} height={1040} fill={SCENE_META[id].bg} />
+      {id !== 'night' && id !== 'stars' && <Glow id={`g-${id}`} cx={180} cy={FOCUS[id] - 40} r={240} opacity={0.35} />}
       <S />
     </G>
   );

@@ -10,13 +10,14 @@ Cinco pestañas con un **estilo de ilustración de línea** (papel crema, tinta 
 
 | Pantalla | Qué hace |
 |---|---|
-| **Inicio** | **Contador en forma de gráfico**: anillo de progreso hacia la siguiente insignia, horas del día en curso, camino de hitos (1 día → 1 año) y últimos 14 días. **Ilustración diaria «El amor de Dios, hoy»** (14 escenas dibujadas y 17 versículos que rotan cada día, sin conexión), «Tu día con Dios», nivel y regla de vida, «mi porqué». Por la noche, aviso para hacer el examen. Barra flotante con **Pánico** y **He caído**. |
+| **Inicio** | **Contador en forma de gráfico**: anillo de progreso hacia la siguiente insignia, horas del día en curso, camino de hitos (1 día → 1 año) y últimos 14 días. **Ilustración diaria «El amor de Dios, hoy»** (23 escenas dibujadas y 50 versículos que rotan cada día, sin conexión), «Tu día con Dios», nivel y regla de vida, «mi porqué». Por la noche, aviso para hacer el examen. Barra flotante con **Pánico** y **He caído**. |
 | **🌙 Examen de la noche** | Examen ignaciano guiado en 7 pasos con tema nocturno: presencia, gratitud (3 cosas), repaso del día y estados de riesgo (HALT), preguntas por áreas (Dios, pureza, los demás, uno mismo), acto de contrición, propósito «si… entonces…», rutina antes de dormir y oraciones a la Virgen. Guarda el historial, la racha de noches y te recuerda el propósito de ayer. Hasta las 4:00 cuenta como la noche anterior. |
 | **Ajustes** | **Tamaño de letra** (5 niveles) para toda la app, incluido el lector del Evangelio; perfil, compañero de camino y planes. |
 | **🆘 Botón de pánico** | Respiración guiada → oración → acciones de huida, tus planes «si… entonces…» y llamar/SMS al compañero → tu porqué → temporizador de 10 min. |
 | **Evangelio · Hoy** | Lecturas del día, **comentario del día con su autor** (santos, papas y sacerdotes), enlaces a comentarios de sacerdotes (evangeli.net, Vatican News, Opus Dei) y *Lectio Divina*. |
-| **Ilustración de fondo en el Evangelio** | El Evangelio del día y cada capítulo tienen una ilustración relacionada (el mar en Mt 14, el rebaño en Lc 15, la vid en Jn 15, el pozo en Jn 4, la cruz en la Pasión…). Se ve en grande detrás del título y, al desplazarte, queda como fondo muy tenue para no estorbar la lectura. |
+| **Ilustración de fondo en el Evangelio** | El Evangelio del día y cada capítulo tienen una ilustración relacionada (el mar en Mt 14, el rebaño en Lc 15, la vid en Jn 15, el pozo en Jn 4, la cruz en la Pasión…). Se ve en grande detrás del título; el texto va siempre sobre una hoja lisa que sube por encima del dibujo, para leer sin interferencias. |
 | **Virtudes** | Ocho virtudes frente a los pecados capitales (castidad, templanza, fortaleza, humildad, paciencia, caridad, diligencia y generosidad), cada una con su porqué en la lucha contra la adicción, una cita, su referencia en el Catecismo y seis propósitos concretos. Eliges hasta 3 virtudes y 3 propósitos por virtud, los marcas cada día (también desde el examen de la noche) y ves tu crecimiento: niveles (semilla → brote → raíz → árbol → fruto), días seguidos y las últimas cuatro semanas. +3 talentos por propósito. |
+| **Versículo al abrir** | Cada vez que abres la app, un versículo del amor de Dios a pantalla completa sobre una ilustración (se puede desactivar en Ajustes). |
 | **Aviso de racha** | Al abrir la app con 3 o más días seguidos sin caer, una lámina con la racha, una ilustración y un versículo (una vez al día). |
 | **Recordatorios** | Notificaciones diarias opcionales para el Evangelio y el examen de la noche, con la hora que elijas (Ajustes). Se programan en el teléfono y funcionan sin conexión. |
 | **Evangelio · Los 4 Evangelios** | **Texto completo sin conexión** de Mateo, Marcos, Lucas y Juan (traducción católica de Torres Amat), 89 capítulos titulados, lector con tamaño de letra ajustable, «Continuar leyendo», capítulos recomendados para la lucha, progreso y +5 talentos por capítulo. |
@@ -34,7 +35,7 @@ Todos los botones se encogen y vibran al tocarlos. Los importantes («Amén», �
 
 ### Icono
 
-El Buen Pastor con la oveja sobre los hombros (Lc 15,5), en el mismo estilo de ilustración. Se genera con `python3 scripts/icons/make_svg.py` y `node scripts/icons/render.js` (Playwright).
+Un crucifijo en el mismo estilo de ilustración (cruz de madera, Cristo con aureola, colina de líneas). Se genera con `python3 scripts/icons/make_svg.py` y `node scripts/icons/render.js` (Playwright).
 
 ### Mecánica de juego
 
@@ -56,6 +57,12 @@ El Buen Pastor con la oveja sobre los hombros (Lc 15,5), en el mismo estilo de i
 | Ejercicio y sueño | Evidencia en otras adicciones; en pornografía todavía es limitada |
 | Hábitos ~66 días | Lally et al. (2010) |
 | Ayuda profesional | CIE-11 6C72 (trastorno de conducta sexual compulsiva); en España, 024 y 112 |
+
+## Peso de la app
+
+- Tipografías reducidas a los caracteres que usa la app (`npm run build:fonts`): 9 archivos, ~490 KB en lugar de ~5,7 MB (antes se incluían todos los pesos de cada familia).
+- APK solo para procesadores ARM (`arm64-v8a`, `armeabi-v7a`), los de los móviles.
+- Ilustraciones vectoriales dibujadas en código (sin imágenes) y PNG del icono optimizados.
 
 ## Privacidad
 

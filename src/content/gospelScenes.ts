@@ -6,19 +6,19 @@ const BOOK_DEFAULT: Record<string, SceneId> = { mt: 'mountain', mc: 'sea', lc: '
 
 const BY_CHAPTER: Record<string, SceneId> = {
   // Mateo
-  'mt-1': 'night', 'mt-2': 'night', 'mt-3': 'dove', 'mt-4': 'sea', 'mt-5': 'mountain', 'mt-6': 'field', 'mt-7': 'mountain',
-  'mt-8': 'sea', 'mt-9': 'path', 'mt-10': 'field', 'mt-11': 'well', 'mt-13': 'field', 'mt-14': 'sea', 'mt-15': 'bread',
-  'mt-17': 'mountain', 'mt-18': 'flock', 'mt-20': 'vine', 'mt-21': 'vine', 'mt-25': 'light', 'mt-26': 'bread', 'mt-27': 'cross', 'mt-28': 'tomb',
+  'mt-1': 'night', 'mt-2': 'stars', 'mt-3': 'dove', 'mt-4': 'sea', 'mt-5': 'mountain', 'mt-6': 'field', 'mt-7': 'mountain',
+  'mt-8': 'storm', 'mt-9': 'path', 'mt-10': 'field', 'mt-11': 'well', 'mt-13': 'tree', 'mt-14': 'sea', 'mt-15': 'bread',
+  'mt-17': 'mountain', 'mt-18': 'flock', 'mt-20': 'vine', 'mt-21': 'vine', 'mt-25': 'light', 'mt-26': 'garden', 'mt-27': 'cross', 'mt-28': 'tomb',
   // Marcos
-  'mc-1': 'dove', 'mc-2': 'path', 'mc-4': 'sea', 'mc-5': 'sea', 'mc-6': 'bread', 'mc-8': 'bread', 'mc-9': 'mountain', 'mc-10': 'path',
-  'mc-12': 'vine', 'mc-14': 'bread', 'mc-15': 'cross', 'mc-16': 'tomb',
+  'mc-1': 'dove', 'mc-2': 'path', 'mc-4': 'storm', 'mc-5': 'sea', 'mc-6': 'bread', 'mc-8': 'bread', 'mc-9': 'mountain', 'mc-10': 'path',
+  'mc-12': 'vine', 'mc-14': 'garden', 'mc-15': 'cross', 'mc-16': 'tomb',
   // Lucas
-  'lc-1': 'light', 'lc-2': 'night', 'lc-3': 'dove', 'lc-5': 'sea', 'lc-6': 'mountain', 'lc-8': 'field', 'lc-9': 'bread',
-  'lc-10': 'path', 'lc-11': 'light', 'lc-12': 'field', 'lc-15': 'flock', 'lc-19': 'path', 'lc-22': 'bread', 'lc-23': 'cross', 'lc-24': 'tomb',
+  'lc-1': 'mary', 'lc-2': 'night', 'lc-3': 'dove', 'lc-5': 'nets', 'lc-6': 'mountain', 'lc-8': 'field', 'lc-9': 'bread',
+  'lc-10': 'path', 'lc-11': 'light', 'lc-12': 'field', 'lc-13': 'tree', 'lc-15': 'flock', 'lc-19': 'tree', 'lc-22': 'garden', 'lc-23': 'cross', 'lc-24': 'tomb',
   // Juan
   'jn-1': 'light', 'jn-2': 'vine', 'jn-3': 'night', 'jn-4': 'well', 'jn-6': 'bread', 'jn-7': 'well', 'jn-8': 'light', 'jn-9': 'light',
-  'jn-10': 'flock', 'jn-11': 'tomb', 'jn-12': 'field', 'jn-13': 'bread', 'jn-14': 'path', 'jn-15': 'vine', 'jn-17': 'heart',
-  'jn-19': 'cross', 'jn-20': 'tomb', 'jn-21': 'sea',
+  'jn-10': 'shepherd', 'jn-11': 'tomb', 'jn-12': 'field', 'jn-13': 'bread', 'jn-14': 'path', 'jn-15': 'vine', 'jn-17': 'heart',
+  'jn-19': 'cross', 'jn-20': 'tomb', 'jn-21': 'nets',
 };
 
 export function sceneForChapter(book: string, ch: number): SceneId {

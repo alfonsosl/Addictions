@@ -23,6 +23,15 @@ const CAPTIONS: Record<SceneId, string> = {
   dove: 'Tú eres mi Hijo amado',
   tomb: 'No está aquí: ha resucitado',
   heart: 'Eres precioso a mis ojos',
+  shepherd: 'El Señor es mi pastor',
+  storm: '¡Silencio, enmudece!',
+  nets: 'Echad la red',
+  mary: 'Hágase en mí según tu palabra',
+  lamb: 'El Cordero de Dios',
+  garden: 'No se haga mi voluntad, sino la tuya',
+  tree: 'Como árbol junto a la acequia',
+  stars: 'Mira al cielo y cuenta las estrellas',
+  eagle: 'Alas como de águila',
 };
 
 /** Galería de ilustraciones a pantalla completa (para rezar con ellas). */

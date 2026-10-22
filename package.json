@@ -1,10 +1,8 @@
 {
   "name": "vigilia",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "main": "expo-router/entry",
   "dependencies": {
-    "@expo-google-fonts/eb-garamond": "^0.4.3",
-    "@expo-google-fonts/jost": "^0.4.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.16",
     "expo-constants": "~58.0.12",
@@ -24,6 +22,8 @@
     "react-native-web": "~0.21.4"
   },
   "devDependencies": {
+    "@expo-google-fonts/eb-garamond": "^0.4.3",
+    "@expo-google-fonts/jost": "^0.4.2",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
@@ -38,7 +38,9 @@
     "test": "node --test tests/game.test.ts tests/gospel-text.test.ts tests/scenes.test.ts",
     "export:web": "expo export --platform web",
     "build:gospels": "python3 scripts/gospels/build.py",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "build:fonts": "python3 scripts/fonts/subset.py",
+    "build:icons": "python3 scripts/icons/make_svg.py && node scripts/icons/render.js"
   },
   "private": true
 }

@@ -1,4 +1,4 @@
-"""Genera el icono de Vigilia: el Buen Pastor con la oveja sobre los hombros (Lc 15,5).
+"""Genera el icono de Vigilia: un crucifijo (antes: el Buen Pastor, función shepherd_art).
 
 Estilo de ilustración de línea (papel crema, tinta azul marino, tonos tierra).
 Salida: SVG en scripts/icons/out/ (full, fg, mono). Después: node scripts/icons/render.js
@@ -57,7 +57,7 @@ def wool_band(pts, thick, seed):
     return smooth(top + bot[::-1])
 
 
-def art(mono=False):
+def shepherd_art(mono=False):
     c = (lambda col: '#FFFFFF') if mono else (lambda col: col)
     sw = 9
     DARK = '#3A2A1E'
@@ -103,13 +103,67 @@ def art(mono=False):
     return '\n'.join(g)
 
 
+def tube(d, w, fill, edge, sw):
+    """Trazo con contorno (brazos, piernas)."""
+    return (f'<path d="{d}" stroke="{edge}" stroke-width="{w + 2 * sw}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<path d="{d}" stroke="{fill}" stroke-width="{w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def art(mono=False):
+    """Crucifijo: cruz de madera, Cristo en blanco con aureola, sobre una colina."""
+    c = (lambda col: '#FFFFFF') if mono else (lambda col: col)
+    sw = 8
+    WOODF, GRAIN, SKIN, CLOTH = '#9A7350', '#B48E68', '#EBD9C2', '#FBFAF6'
+    g = []
+    # Colina
+    for i, y in enumerate([838, 868, 898]):
+        g.append(f'<path d="{wave(y, 200 + i * 50, 824 - i * 50, 6, i + 11)}" stroke="{c(SEA if i % 2 else INK)}" stroke-width="{sw}" fill="none" stroke-linecap="round"/>')
+    # Resplandor suave detrás
+    if not mono:
+        g.append('<circle cx="512" cy="330" r="190" fill="#E7D7AE" opacity="0.45"/>')
+        g.append('<circle cx="512" cy="330" r="130" fill="#EADDB9" opacity="0.55"/>')
+    # Cruz de madera
+    g.append(f'<path d="M484 118 L540 118 L540 836 L484 836 Z" fill="{c(WOODF)}" stroke="{c(INK)}" stroke-width="{sw}" stroke-linejoin="round"/>')
+    g.append(f'<path d="M236 282 L788 282 L788 334 L236 334 Z" fill="{c(WOODF)}" stroke="{c(INK)}" stroke-width="{sw}" stroke-linejoin="round"/>')
+    if not mono:
+        for d in ['M500 140 C504 300 498 520 504 820', 'M524 360 C520 520 528 680 522 820', 'M262 300 C400 296 600 304 770 298', 'M300 318 C420 322 640 314 760 318']:
+            g.append(f'<path d="{d}" stroke="{GRAIN}" stroke-width="4" fill="none" stroke-linecap="round"/>')
+    # Cartela INRI
+    g.append(f'<rect x="468" y="150" width="88" height="50" rx="4" fill="{c(CLOTH)}" stroke="{c(INK)}" stroke-width="{sw - 2}"/>')
+    if not mono:
+        g.append(f'<path d="M484 168 L540 168 M484 182 L528 182" stroke="{INK}" stroke-width="5" stroke-linecap="round"/>')
+    # Aureola
+    g.append(f'<circle cx="512" cy="356" r="66" fill="none" stroke="{c(OCHRE)}" stroke-width="7"/>')
+    # Brazos extendidos sobre el travesaño
+    g.append(tube('M482 412 C420 380 350 336 286 312', 30, c(SKIN), c(INK), sw - 2))
+    g.append(tube('M542 412 C604 380 674 336 738 312', 30, c(SKIN), c(INK), sw - 2))
+    # Piernas
+    g.append(tube('M496 640 C494 700 500 760 508 800', 30, c(SKIN), c(INK), sw - 2))
+    g.append(tube('M528 640 C532 700 526 760 516 800', 30, c(SKIN), c(INK), sw - 2))
+    # Torso
+    g.append(f'<path d="M468 404 C470 470 478 520 484 566 L540 566 C546 520 554 470 556 404 C540 392 484 392 468 404 Z" fill="{c(SKIN)}" stroke="{c(INK)}" stroke-width="{sw - 2}" stroke-linejoin="round"/>')
+    # Paño de pureza con un nudo
+    g.append(f'<path d="M474 560 C500 552 528 552 552 560 L560 626 C536 650 492 652 470 632 Z" fill="{c(CLOTH)}" stroke="{c(INK)}" stroke-width="{sw - 2}" stroke-linejoin="round"/>')
+    if not mono:
+        g.append(f'<path d="M490 584 C506 600 520 604 540 600 M552 566 C570 590 572 610 566 640" stroke="#D8CFBA" stroke-width="5" fill="none" stroke-linecap="round"/>')
+    # Cabeza inclinada, cabello y corona de espinas
+    g.append(f'<g transform="rotate(-14 512 360)">')
+    g.append(f'<path d="M478 360 C474 318 492 300 512 300 C534 300 552 318 548 360 C552 388 546 404 536 412 L490 412 C480 404 474 388 478 360 Z" fill="{c(WOOD)}"/>')
+    g.append(f'<ellipse cx="512" cy="358" rx="26" ry="34" fill="{c(SKIN)}" stroke="{c(INK)}" stroke-width="{sw - 3}"/>')
+    if not mono:
+        g.append(f'<path d="M482 328 Q512 316 542 328" stroke="#4A3524" stroke-width="5" fill="none"/>')
+        g.append(f'<path d="M486 322 l-6 -8 M498 318 l-2 -9 M512 316 l1 -9 M526 318 l4 -8 M538 322 l6 -7" stroke="#4A3524" stroke-width="4" stroke-linecap="round"/>')
+    g.append('</g>')
+    return '\n'.join(g)
+
+
 def svg(content, bg=None, scale=1.0):
     t = f'translate({512 - 512 * scale} {512 - 540 * scale + 28 * scale}) scale({scale})'
     back = f'<rect width="1024" height="1024" fill="{bg}"/>' if bg else ''
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">{back}<g transform="{t}">{content}</g></svg>'
 
 
-open(os.path.join(OUT, 'icon.svg'), 'w').write(svg(art(), PAPER, 1.08))
+open(os.path.join(OUT, 'icon.svg'), 'w').write(svg(art(), PAPER, 1.0))
 open(os.path.join(OUT, 'fg.svg'), 'w').write(svg(art(), None, 0.86))
 open(os.path.join(OUT, 'mono.svg'), 'w').write(svg(art(True), None, 0.86))
 open(os.path.join(OUT, 'splash.svg'), 'w').write(svg(art(), None, 0.9))

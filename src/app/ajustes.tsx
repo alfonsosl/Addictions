@@ -1,6 +1,8 @@
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LAUNCH_VERSE_KEY } from '../components/LaunchVerse';
 import { THEME_OPTIONS, useTheme } from '../lib/theme';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Platform, Switch, View } from 'react-native';
 import { Pressable } from '../components/Tap';
 import { Text, TextInput } from '../components/Text';
@@ -19,6 +21,16 @@ export default function Ajustes() {
   const font = useFont();
   const reminders = useReminders();
   const theme = useTheme();
+  const [launchVerse, setLaunchVerse] = useState(true);
+  useEffect(() => {
+    AsyncStorage.getItem(LAUNCH_VERSE_KEY)
+      .then((v) => setLaunchVerse(v !== 'off'))
+      .catch(() => {});
+  }, []);
+  const toggleLaunchVerse = (on: boolean) => {
+    setLaunchVerse(on);
+    AsyncStorage.setItem(LAUNCH_VERSE_KEY, on ? 'on' : 'off').catch(() => {});
+  };
 
   const save = () => {
     updateProfile({ ...p, ifThen: p.ifThen.filter((x) => x.when.trim() || x.then.trim()) });
@@ -107,6 +119,19 @@ export default function Ajustes() {
         <P muted style={{ fontSize: 13 }}>
           El modo oscuro usa tonos cálidos y suaves, sin blancos puros, para leer de noche sin cansar la vista.
         </P>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 6 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, color: C.ink }}>Versículo al abrir la app</Text>
+            <Text style={{ fontSize: 13, color: C.muted, fontWeight: '300' }}>Una palabra de Dios cada vez que entras</Text>
+          </View>
+          <Switch
+            accessibilityLabel="Versículo al abrir la app"
+            value={launchVerse}
+            onValueChange={toggleLaunchVerse}
+            trackColor={{ true: C.navy, false: C.line }}
+            thumbColor={C.card}
+          />
+        </View>
       </Card>
 
       <Card>

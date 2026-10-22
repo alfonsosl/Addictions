@@ -1,6 +1,6 @@
-import { EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medium, EBGaramond_500Medium_Italic, EBGaramond_600SemiBold } from '@expo-google-fonts/eb-garamond';
-import { Jost_300Light, Jost_400Regular, Jost_500Medium, Jost_600SemiBold } from '@expo-google-fonts/jost';
 import { useFonts } from 'expo-font';
+import { useState } from 'react';
+import { LaunchVerse } from '../components/LaunchVerse';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
@@ -14,16 +14,17 @@ import { ThemeProvider, themeIsDark } from '../lib/theme';
 import { StoreProvider } from '../lib/store';
 
 export default function RootLayout() {
+  // Tipografías reducidas a los caracteres que usa la app (scripts/fonts/subset.py): ~460 KB en total.
   const [fontsLoaded, fontError] = useFonts({
-    Jost_300Light,
-    Jost_400Regular,
-    Jost_500Medium,
-    Jost_600SemiBold,
-    EBGaramond_400Regular,
-    EBGaramond_400Regular_Italic,
-    EBGaramond_500Medium,
-    EBGaramond_500Medium_Italic,
-    EBGaramond_600SemiBold,
+    Jost_300Light: require('../../assets/fonts/Jost_300Light.ttf'),
+    Jost_400Regular: require('../../assets/fonts/Jost_400Regular.ttf'),
+    Jost_500Medium: require('../../assets/fonts/Jost_500Medium.ttf'),
+    Jost_600SemiBold: require('../../assets/fonts/Jost_600SemiBold.ttf'),
+    EBGaramond_400Regular: require('../../assets/fonts/EBGaramond_400Regular.ttf'),
+    EBGaramond_400Regular_Italic: require('../../assets/fonts/EBGaramond_400Regular_Italic.ttf'),
+    EBGaramond_500Medium: require('../../assets/fonts/EBGaramond_500Medium.ttf'),
+    EBGaramond_500Medium_Italic: require('../../assets/fonts/EBGaramond_500Medium_Italic.ttf'),
+    EBGaramond_600SemiBold: require('../../assets/fonts/EBGaramond_600SemiBold.ttf'),
   });
   // Las fuentes van dentro de la app: cargan al instante y sin conexión. Si fallaran, se usa la del sistema.
   if (!fontsLoaded && !fontError) return <View style={{ flex: 1, backgroundColor: C.bg }} />;
@@ -33,10 +34,6 @@ export default function RootLayout() {
       <FontScaleProvider>
       <StoreProvider>
         <RootStack />
-        <ToastHost />
-        <BadgeCelebration />
-        <StreakWelcome />
-        <NotificationRouter />
       </StoreProvider>
       </FontScaleProvider>
       </ThemeProvider>
@@ -46,6 +43,8 @@ export default function RootLayout() {
 
 /** Navegación principal. Va en su propio componente para leer los colores del tema actual. */
 function RootStack() {
+  // Primero el versículo de inicio; después, si toca, el aviso de racha.
+  const [launched, setLaunched] = useState(false);
   return (
     <>
       <StatusBar style={themeIsDark() ? 'light' : 'dark'} />
@@ -74,6 +73,11 @@ function RootStack() {
         <Stack.Screen name="virtudes/[id]" options={{ title: 'Virtud' }} />
         <Stack.Screen name="galeria" options={{ title: 'Ilustraciones', headerTransparent: true, headerTitle: '' }} />
       </Stack>
+      <ToastHost />
+      <BadgeCelebration />
+      <LaunchVerse onDone={() => setLaunched(true)} />
+      {launched && <StreakWelcome />}
+      <NotificationRouter />
     </>
   );
 }
